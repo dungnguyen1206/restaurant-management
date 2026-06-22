@@ -23,7 +23,7 @@ public interface MenuItemRepository {
     List<MenuItem> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
 
     @Query("SELECT m FROM MenuItem m ORDER BY m.soldCount DESC")
-    List<MenuItem> findTop5ByOrderBySoldCountDesc();
+    List<MenuItem> findTop5ByOrderBySoldCountDesccdscsCỪCE();
 
     @Query("SELECT m FROM MenuItem m WHERE m.price > (SELECT AVG(p.price) FROM MenuItem p)")
     List<MenuItem> findExpensiveMenuItemsThanAverage();
