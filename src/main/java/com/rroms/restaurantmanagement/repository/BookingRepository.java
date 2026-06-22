@@ -5,39 +5,54 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BookingRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    // 1. Tìm tất cả booking của một khách hàng
+    // 1. Lấy tất cả reservation của customer
     List<Reservation> findByCustomerId(Long customerId);
 
-    // 2. Tìm các booking theo trạng thái (e.g., PENDING, CONFIRMED, CANCELLED)
+    // 2. Lấy reservation theo status
     List<Reservation> findByStatus(String status);
 
-    // 3. Tìm booking của khách hàng theo trạng thái cụ thể
+    // 3. Lấy reservation theo customer + status
     List<Reservation> findByCustomerIdAndStatus(Long customerId, String status);
 
-    // 4. Tìm các booking trong khoảng thời gian (Tìm lịch trùng, báo cáo doanh thu...)
-    List<Reservation> findByBookingDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    // 4. Lấy reservation trong khoảng thời gian
+    List<Reservation> findByBookingDateBetween(LocalDateTime start, LocalDateTime end);
 
-    // 5. Kiểm tra xem một phòng/bàn/xe đã bị đặt trong khoảng thời gian này chưa (Tránh đặt trùng)
-    boolean existsByRoomIdAndBookingDateBetween(Long roomId, LocalDateTime start, LocalDateTime end);
+    // 5. Check trùng booking (room + time range)
+    boolean existsByRoomIdAndBookingDateBetween(
+            Long roomId,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 
-    // 6. Tìm booking mới nhất của một khách hàng
+    // 6. Lấy booking mới nhất của customer
     Optional<Reservation> findFirstByCustomerIdOrderByBookingDateDesc(Long customerId);
 
-    // 7. Đếm tổng số booking của một phòng
+    // 7. Đếm booking theo room
     long countByRoomId(Long roomId);
 
-    // 8. Viết Custom Query (JPQL) - Lấy danh sách booking quá hạn chưa thanh toán
-    @Query("SELECT b FROM Booking b WHERE b.status = 'PENDING' AND b.createdAt < :timeout")
-    List<Reservation> findExpiredBookings(@Param("timeout") LocalDateTime timeout);
+    // 8. Lấy reservation bị timeout (PENDING quá hạn)
+    @Query("""
+        SELECT r
+        FROM Reservation r
+        WHERE r.status = 'PENDING'
+        AND r.createdAt < :timeout
+    """)
+    List<Reservation> findExpiredReservations(@Param("timeout") LocalDateTime timeout);
 
-    // 9. Viết Native Query (SQL thuần) - Thống kê doanh thu theo tháng (Ví dụ vui vẻ)
-    @Query(value = "SELECT SUM(total_price) FROM bookings WHERE status = 'COMPLETED' AND MONTH(booking_date) = :month", nativeQuery = true)
+    // 9. Thống kê doanh thu theo tháng (native query)
+    @Query(value = """
+        SELECT COALESCE(SUM(total_price), 0)
+        FROM reservations
+        WHERE status = 'COMPLETED'
+        AND MONTH(booking_date) = :month
+    """, nativeQuery = true)
     Double calculateMonthlyRevenue(@Param("month") int month);
 }
