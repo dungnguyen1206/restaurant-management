@@ -10,8 +10,7 @@ import java.util.List;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-    @Query("SELECT sum(i.finalAmount) from Invoice i where month (i.paidAt)=:month and year(i.paidAt)=:year")
-    BigDecimal findByInvoiceNumber(String invoiceNumber, int month,int year);
+    Invoice findInvoiceById(Integer invoiceId);
 
     List<Invoice> findByStatus(String status);
 
