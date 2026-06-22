@@ -48,4 +48,30 @@ public interface MenuItemRepository {
     @Transactional
     @Query(value = "UPDATE menu_items SET price = price * (1 + :percentage / 100) WHERE category = :category", nativeQuery = true)
     int increasePriceByCategoryNative(@Param("category") String category, @Param("percentage") double percentage);
+
+    // 11. Tìm kiếm tổng hợp: Theo tên HOẶC mô tả, thuộc danh mục và có giá thấp hơn mức chỉ định
+    // (Phù hợp cho bộ lọc Filter chi tiết ở Frontend)
+    List<MenuItem> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategoryAndPriceLessThanEqual(
+            String name, String description, String category, BigDecimal maxPrice);
+
+    // 12. [JPQL] Lấy danh sách các danh mục (Category) đang có món ăn mở bán (Không trùng lặp - DISTINCT)
+    // (Dùng để render thanh menu bộ lọc danh mục tự động ngoài giao diện)
+    @Query("SELECT DISTINCT m.category FROM MenuItem m WHERE m.isActive = true")
+    List<String> findDistinctActiveCategories();
+
+    // 13. [JPQL] Tính tổng doanh thu dự kiến của một danh mục (Giá bán * Số lượng đã bán)
+    // (Phù hợp cho các trang DashBoard thống kê Admin)
+    @Query("SELECT SUM(m.price * m.soldCount) FROM MenuItem m WHERE m.category = :category")
+    BigDecimal calculateTotalRevenueByCategory(@Param("category") String category);
+
+    // 14. [Native SQL] Lấy ngẫu nhiên N món ăn (Ví dụ: gợi ý 3 món ăn ngẫu nhiên hôm nay cho khách)
+    // Lưu ý: RAND() dành cho MySQL/Mssql (Nếu dùng PostgreSQL hãy đổi thành RANDOM())
+    @Query(value = "SELECT * FROM menu_items WHERE is_active = true ORDER BY RAND() LIMIT :limit", nativeQuery = true)
+    List<MenuItem> findRandomMenuItemsActive(@Param("limit") int limit);
+
+    // 15. [Modifying] Xóa các món ăn có số lượng bán bằng 0 và đã tắt kích hoạt từ lâu (Dọn dẹp DB)
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM MenuItem m WHERE m.soldCount = 0 AND m.isActive = false")
+    int deleteUnusedAndInactiveMenuItems();
 }
