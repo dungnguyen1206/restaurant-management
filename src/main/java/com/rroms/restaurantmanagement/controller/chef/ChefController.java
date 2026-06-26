@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/chef")
 @RequiredArgsConstructor
 public class ChefController {
-    private final OrderService orderService;
 
 
 }
