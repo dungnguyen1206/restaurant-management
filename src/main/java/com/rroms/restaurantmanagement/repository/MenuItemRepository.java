@@ -14,4 +14,5 @@ import java.util.List;
 
 @Repository
 public interface MenuItemRepository {
+    List<MenuItem> findAll();
 }
