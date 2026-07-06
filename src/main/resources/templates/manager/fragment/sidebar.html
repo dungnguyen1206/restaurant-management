@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+    <link rel="stylesheet" th:href="@{/manager/manager-dashboard.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+
+<body>
+<div th:fragment="sidebar(activeMenu)">
+    <div class="container-fluid min-vh-100 py-3 d-flex flex-column" style="background-color: #2C1A0E;">
+        <div class="row py-4">
+            <header class="col-sm-12 col-md-12 col-xl-12" style="color: #FCF9F4; ">
+                <h2 style="font-family: Playfair Display">Phúc Viên</h2>
+            </header>
+            <p style="color: #E5E2DD99">Restaurant suite</p>
+            <hr style="color: #E5E2DD99">
+        </div>
+        <div class="row">
+            <ul class="nav flex-column nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='dashboard'} ? 'active'" th:href="@{/manager/dashboard}"><i
+                            class="bi bi-house"></i> Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='menu'} ? 'active'" th:href="@{/manager/menu/list}"> <i
+                            class="bi bi-fork-knife"></i> Món ăn</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='reservation'} ? 'active'" href="#"> <i class="bi bi-calendar-check"></i> Đơn đặt chỗ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='table'} ? 'active'" href="#"><i class="bi bi-easel"></i> Bàn</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='menu'} ? 'staff'" href="#"><i class="bi bi-people"></i> Nhân viên</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activeMenu=='revenue'} ? 'active'" href="#"> <i class="bi bi-cash-coin"></i> Doanh thu</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="d-flex align-items-center mt-auto" style="gap: 12px; padding: 0 10px;">
+            <div style="width: 36px;
+                height: 36px;
+                min-width: 36px;
+                border-radius: 50%;
+                background: #C9A84C;
+                color: white;
+                font-size: 13px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;">
+                HM
+            </div>
+
+            <div class="flex-grow-1"
+                 style="color: #E5E2DD; font-size: 14px; line-height: 1.3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                <strong style="display: block;">Quản lý nhà hàng</strong>
+                <span style="color: #E5E2DD99; font-size: 12px;">manager@hms.vn</span>
+            </div>
+
+            <div>
+                <a th:href="@{/login}" style="color: #E5E2DD; font-size: 20px; cursor: pointer"><i
+                        class="bi bi-box-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

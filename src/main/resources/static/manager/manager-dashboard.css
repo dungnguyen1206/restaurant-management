@@ -1,0 +1,16 @@
+.nav-pills .nav-link {
+    color: #E5E2DD;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-pills .nav-link.active {
+    font-weight: 600;
+    background-color: #C9A84C !important;
+    color: #2C1A0E !important;
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: rgba(201, 168, 76, 0.2);
+    color: #FCF9F4;
+}
