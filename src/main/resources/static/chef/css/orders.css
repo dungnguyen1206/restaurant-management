@@ -1,0 +1,300 @@
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+.main-workspace{
+    margin-left:280px;
+    padding-top:0;
+}
+.annam-header{
+    position:fixed;
+    top:0;
+    left:240px;
+    right:0;
+    height:80px;
+}
+.content {
+    flex: 1;
+    padding: 24px;
+    width: 100%;
+}
+.annam-footer{
+    flex-shrink:0;
+    margin-top: 80px;
+}
+.main-workspace{
+    margin-left:240px;
+    padding-top:72px;
+    flex-grow: 1;
+}
+
+/* Màu nền tổng thể cho vùng content KDS (nếu cần giống hình) */
+.content {
+    background-color: #FDFBF7 !important;
+}
+
+/* Định hình cấu trúc Card KDS */
+.kds-order-card {
+    background-color: #F7F4E9 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-top: 6px solid #bfa15f; /* Mặc định màu vàng */
+}
+
+/* Các nhóm màu viền trên của thẻ theo trạng thái */
+.border-top-warning-custom {
+    border-top: 6px solid #D9A036 !important; /* Màu vàng cam */
+}
+.border-top-success-custom {
+    border-top: 6px solid #1E5E3A !important; /* Màu xanh lá đậm */
+}
+.border-top-danger-custom {
+    border-top: 6px solid #C83232 !important; /* Màu đỏ quá giờ */
+}
+
+/* Cấu trúc phần Đầu của Thẻ */
+.card-header-kds {
+    padding: 16px 20px 8px 20px;
+    background: transparent;
+}
+
+.order-id-text {
+    font-size: 18px;
+    color: #333;
+}
+
+.table-badge {
+    background-color: #BFA15F;
+    color: #fff;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+/* Thẻ tag phân loại Đồ nóng / Đồ lạnh */
+.food-type-tag {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+.tag-hot {
+    background-color: #FEECEB;
+    color: #C83232;
+}
+.tag-cold {
+    background-color: #EBF3FE;
+    color: #1A66CC;
+}
+
+/* Thân của thẻ */
+.card-body-kds {
+    padding: 8px 20px 20px 20px;
+    flex: 1;
+}
+
+.clock-icon {
+    font-size: 18px;
+    color: #1E5E3A;
+}
+
+.time-text {
+    font-size: 20px;
+    color: #1E5E3A;
+    letter-spacing: -0.5px;
+}
+
+.priority-text {
+    font-size: 11px;
+    font-weight: bold;
+    color: #888;
+}
+
+/* Danh sách món ăn */
+.kds-items-list {
+    margin-top: 15px;
+}
+
+.item-name {
+    font-size: 16px;
+    color: #222;
+}
+
+.item-note {
+    font-size: 13px;
+    color: #666;
+    display: block;
+    margin-top: 2px;
+    font-style: italic;
+}
+
+.item-quantity {
+    font-size: 16px;
+    color: #BFA15F;
+    background-color: rgba(191, 161, 95, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* Chân thẻ và hệ thống nút bấm hành động */
+.card-footer-kds .btn {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-kds-primary {
+    background: #8B4A1E;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 0;
+}
+.btn-kds-primary:hover { background: #7C3A14; }
+
+.btn-kds-done {
+    background: #2A6B3A;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 0;
+}
+.btn-kds-done:hover { background: #215A2E; }
+
+.btn-kds-cancel {
+  background: transparent;
+  color: #A02A20;
+  border: 1.5px solid #C0352A;
+  border-radius: 8px;
+  padding: 8px 0;
+}
+.btn-kds-cancel:hover { background: #FCEBEB; }
+.card-footer-kds .btn:disabled {
+    background-color: #E2E0D8 !important;
+    color: #A19F98 !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+
+
+// phần filterr
+.kds-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9e9e9;
+}
+
+.kds-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f5;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: border-color 0.15s;
+    margin-right: 10px;
+}
+
+.kds-search:focus-within {
+    border-color: #bbb;
+    background: #fff;
+}
+
+.kds-search i {
+    font-size: 15px;
+    color: #aaa;
+}
+
+.kds-search input {
+    border: #bbb;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    color: #333;
+    width: 180px;
+}
+
+.kds-search input::placeholder {
+    color: #bbb;
+}
+
+.kds-divider {
+    width: 1px;
+    height: 24px;
+    background: #e0e0e0;
+}
+
+.btn-filter {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 400;
+    border: 1px solid transparent;
+    background: #bfa15f33;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-right: 10px;
+}
+
+.btn-filter:hover {
+    color: #555;
+    background: #f0f0f0;
+}
+
+.btn-filter.active {
+    background: #8B4A1E;
+    color: #fff;
+    border-color: #8B4A1E;
+}
+
+//ptrang
+.kds-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 24px 0 8px;
+}
+
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #666;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+
+.page-btn:hover:not(.disabled):not(.active) {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.page-btn.active {
+    background: #8B4A1E;
+    color: #fff;
+}
+
+.page-btn.disabled {
+    color: #ccc;
+    pointer-events: none;
+}
+
+

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{chef/layout/layout}"> <!-- Kế thừa từ layout chung -->
+<head>
+    <title>Đơn Hàng</title>
+
+    <!-- Nhúng CSS riêng của trang orders vào đây (sẽ tự động đẩy vào layout) -->
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/chef/css/orders.css}"/>
+    </th:block>
+</head>
+<body>
+
+<!-- Tất cả nội dung chính bọc trong layout:fragment="content" -->
+<main layout:fragment="content">
+    <form th:action="@{/chef/orders}" method="get" class="kds-filter-bar d-flex mb-5">
+        <div class="kds-search">
+            <i class="ti ti-search"></i>
+            <input type="text" name="orderId" id="searchInput"
+                   placeholder="Tìm theo ID...."
+                   th:value="${param.orderId}">
+        </div>
+
+        <div class="kds-divider"></div>
+
+        <button type="submit" name="status" value=""
+                class="btn btn-filter"
+                th:classappend="${param.status == null or param.status == ''} ? 'active' : ''">
+            Tất cả
+        </button>
+        <button type="submit" name="status" value="PENDING"
+                class="btn btn-filter"
+                th:classappend="${param.status == 'PENDING'} ? 'active' : ''">
+            Chờ xác nhận
+        </button>
+        <button type="submit" name="status" value="PREPARING"
+                class="btn btn-filter"
+                th:classappend="${param.status == 'PREPARING'} ? 'active' : ''">
+            Đang làm
+        </button>
+    </form>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
+        <div class="col" th:each="order : ${orders}">
+            <div class="card kds-order-card h-100 border-0 shadow-sm">
+                <div class="card-header-kds d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="order-id-text fw-bold" th:text="'#' + ${order.orderId}">#1</span>
+                        <span class="table-badge" th:text="${order.table != null ? 'T-' + order.table.tableId : 'T-00'}">T-12</span>
+                    </div>
+                </div>
+
+                <div class="card-body-kds d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="time-container d-flex align-items-center gap-2">
+                                    <span class="time-text fw-bold"
+                                          th:text="${#temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'HH:mm')}">
+                                        08:13
+                                    </span>
+                            </div>
+                        </div>
+
+                        <div class="kds-items-list">
+                            <div class="kds-item-row d-flex justify-content-between align-items-start mb-3"
+                                 th:each="item : ${order.orderItems}">
+                                <div class="item-info">
+                                    <p class="item-name fw-bold m-0" th:text="${item.menuItem.itemName}">Phở Bò (Wagyu)</p>
+                                    <small class="item-note text-muted italic" th:if="${item.specialNote}" th:text="${item.specialNote}">— Medium Rare, Extra Broth</small>
+                                </div>
+                                <span class="item-quantity fw-bold" th:text="${item.quantity} + 'x'">2x</span>
+                            </div>
+
+                            <div class="kds-item-row d-flex justify-content-between align-items-start mb-3" th:if="${#lists.isEmpty(order.orderItems)}">
+                                <div class="item-info">
+                                    <p class="item-name fw-bold m-0">Gỏi Cuốn Tôm</p>
+                                </div>
+                                <span class="item-quantity fw-bold">1x</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <th:block th:if="${order.status.name() == 'PENDING'}">
+                            <form th:action="@{/chef/orders/{id}/confirm(id=${order.orderId})}" method="post" class="w-100">
+                                <button type="submit" class="btn btn-kds-primary w-100 fw-bold">
+                                    Xác nhận đơn hàng
+                                </button>
+                            </form>
+                        </th:block>
+
+                        <th:block th:if="${order.status.name() == 'PREPARING'}">
+                            <div style="display: flex; gap: 8px;">
+                                <form th:action="@{/chef/orders/{id}/done(id=${order.orderId})}" method="post" style="flex:1">
+                                    <button type="submit" class="btn btn-kds-done w-100 fw-bold">
+                                        <i class="ti ti-check"></i> Xong
+                                    </button>
+                                </form>
+                                <form th:action="@{/chef/orders/{id}/cancel(id=${order.orderId})}" method="post" style="flex:1">
+                                    <button type="submit" class="btn btn-kds-cancel w-100 fw-bold">
+                                        <i class="ti ti-x"></i> Hủy
+                                    </button>
+                                </form>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation" th:if="${orderPage != null and orderPage.totalPages > 1}" >
+        <ul class="pagination justify-content-center mt-5">
+            <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
+                <a class="page-link" th:href="@{/chef/orders(page=${currentPage - 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
+            </li>
+            <li class="page-item"
+                th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                th:classappend="${pageNumber == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/chef/orders(page=${pageNumber}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}"
+                   th:text="${pageNumber + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
+                <a class="page-link" th:href="@{/chef/history(page=${currentPage + 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+</main>
+
+</body>
+</html>
