@@ -27,13 +27,13 @@ public class User extends BaseEntity{
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", columnDefinition = "NVARCHAR(20)")
     private String firstName;
 
-    @Column(name = "middle_name")
+    @Column(name = "middle_name", columnDefinition = "NVARCHAR(30)")
     private String middleName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", columnDefinition = "NVARCHAR(20)", nullable = false)
     private String lastName;
 
     private String phone;

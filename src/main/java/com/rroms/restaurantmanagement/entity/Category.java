@@ -22,7 +22,7 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "category_name", nullable = false, columnDefinition ="NVARCHAR(50)")
+    @Column(name = "category_name", nullable = false, columnDefinition = "NVARCHAR(500)")
     private String categoryName;
 
     private Instant createAt;
