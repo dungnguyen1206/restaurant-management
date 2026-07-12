@@ -24,7 +24,7 @@ public class RestaurantTable {
     private Long tableId;
 
     @Column(name = "table_number", nullable = false)
-    private Integer tableNumber;
+    private String tableNumber;
 
     @Column(nullable = false)
     private Integer capacity;

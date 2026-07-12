@@ -1,0 +1,15 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    padding: 24px;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}

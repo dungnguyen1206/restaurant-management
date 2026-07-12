@@ -1,0 +1,80 @@
+:root {
+    --sidebar-bg: #2b1a0e;
+    --sidebar-hover: #3d2512;
+    --sidebar-active: #4a2d14;
+    --accent-gold: #c9a84c;
+    --page-bg: #f8f3eb;
+    --sidebar-w: 260px;
+}
+
+body {
+    background: var(--page-bg);
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    flex-shrink: 0;
+    padding: 24px 12px 16px;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-brand {
+    padding: 0 8px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-title {
+    color: var(--accent-gold);
+    font-weight: 700;
+    display: block;
+}
+
+.brand-sub {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.sidebar-nav {
+    padding-top: 16px;
+}
+
+.sidebar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.68);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 4px;
+}
+
+.sidebar-nav .nav-link:hover {
+    background: var(--sidebar-hover);
+    color: #fff;
+}
+
+.sidebar-nav .nav-link.active {
+    background: var(--sidebar-active);
+    color: var(--accent-gold);
+}
+
+.main-content {
+    flex: 1;
+    padding: 36px 40px;
+    min-width: 0;
+}
+
+.table-card {
+    transition: 0.15s ease;
+}
+
+.table-card:hover {
+    transform: translateY(-2px);
+}
