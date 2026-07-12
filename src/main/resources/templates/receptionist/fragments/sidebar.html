@@ -3,56 +3,64 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
-
 <aside th:fragment="sidebar" id="sidebar">
-
     <div class="sidebar-brand">
-        <span class="brand-title">Phúc Viên<br>Management Portal</span>
+        <span class="brand-title">Fine Dining<br>Management Suite</span>
         <span class="brand-sub">L'HÉRITAGE</span>
     </div>
 
     <nav class="sidebar-nav">
-        <a th:href="@{/dashboard}"
+        <a th:href="@{/receptionist/dashboard}"
            th:classappend="${currentPage == 'dashboard'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-grid"></i> Dashboard
+            <i class="fa-solid fa-table-cells-large"></i>
+            Dashboard
         </a>
+
         <a th:href="@{/receptionist/reservations}"
            th:classappend="${currentPage == 'reservations'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-calendar3"></i> Reservations
+            <i class="fa-regular fa-calendar"></i>
+            Reservations
         </a>
+
         <a th:href="@{/receptionist/tables}"
            th:classappend="${currentPage == 'tables'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-diagram-3"></i> Tables
+            <i class="fa-solid fa-utensils"></i>
+            Tables
         </a>
+
         <a th:href="@{/receptionist/orders}"
            th:classappend="${currentPage == 'orders'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-receipt"></i> Orders
+            <i class="fa-regular fa-money-bill-1"></i>
+            Orders
         </a>
-        <a th:href="@{/payments}"
+
+        <a th:href="@{/receptionist/payments}"
            th:classappend="${currentPage == 'payments'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-credit-card"></i> Payments
+            <i class="fa-regular fa-credit-card"></i>
+            Payments
         </a>
-        <a th:href="@{/waiters}"
+
+        <a th:href="@{/receptionist/waiters}"
            th:classappend="${currentPage == 'waiters'} ? 'active'"
            class="nav-link">
-            <i class="bi bi-person-badge"></i> Waiters
+            <i class="fa-regular fa-user"></i>
+            Waiters
         </a>
     </nav>
 
-    <!-- User info at bottom -->
     <div class="sidebar-footer">
         <div class="user-avatar">LN</div>
+
         <div class="user-info">
             <span class="user-name" sec:authentication="name">Linh Nguyen</span>
             <span class="user-role">Lead Receptionist</span>
         </div>
     </div>
-
 </aside>
 
 </body>

@@ -4,6 +4,7 @@ import com.rroms.restaurantmanagement.dto.response.OrderHistoryDTO;
 import com.rroms.restaurantmanagement.entity.Order;
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
+import com.rroms.restaurantmanagement.repository.projection.OrderListProjection;
 import com.rroms.restaurantmanagement.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -100,6 +101,22 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.getOrderHistoryByUserId(searchKeyword, startInstant, endInstant, orderStatus, pageable);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderListProjection> getReceptionistOrderList(String keyword, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
+        String searchKeyword = null;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            searchKeyword = keyword.trim();
+        }
+
+        String orderStatus = null;
+        if (status != null && !status.trim().isEmpty()) {
+            orderStatus = status.trim();
+        }
+
+        return orderRepository.getReceptionistOrderList(searchKeyword, orderStatus, pageable);
+    }
 }
 

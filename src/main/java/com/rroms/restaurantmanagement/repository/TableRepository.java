@@ -1,6 +1,7 @@
 package com.rroms.restaurantmanagement.repository;
 
 import com.rroms.restaurantmanagement.entity.RestaurantTable;
+import com.rroms.restaurantmanagement.entity.constant.TableStatus;
 import com.rroms.restaurantmanagement.repository.projection.TableView;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,5 +28,10 @@ public interface TableRepository extends JpaRepository<RestaurantTable, Long> {
             @Param("keyword") String keyword,
             @Param("area") String area,
             @Param("capacity") Integer capacity
+    );
+
+    List<RestaurantTable> findByStatusAndCapacityGreaterThanEqualOrderByTableNumberAsc(
+            TableStatus status,
+            Integer capacity
     );
 }

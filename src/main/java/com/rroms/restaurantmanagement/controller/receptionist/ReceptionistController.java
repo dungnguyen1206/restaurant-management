@@ -10,10 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/receptionist")
 public class ReceptionistController {
     private final TableService tableService;
 
-    @GetMapping("/table/list")
+    @GetMapping("/dashboard")
+    public String dashboard() {
+        return "receptionist/home";
+    }
+
+    @GetMapping("/tables")
     public String listTable(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String area,
@@ -25,7 +31,8 @@ public class ReceptionistController {
         model.addAttribute("keyword",keyword);
         model.addAttribute("area",area);
         model.addAttribute("capacity",capacity);
-
+        model.addAttribute("pageTitle", "Tables");
+        model.addAttribute("currentPage", "tables");
         return "receptionist/roomlist";
     }
 }
