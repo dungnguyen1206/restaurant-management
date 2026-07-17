@@ -26,17 +26,20 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Column(length = 500, columnDefinition = "NVARCHAR(500)")
+    @Column(length = 500)
     private String note;
 
     @Column(name = "reservation_time", nullable = false)
     private LocalDateTime reservationTime;
 
-    @Column(name = "full_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
+
+    @Column(name = "number_of_guests")
+    private Integer numberOfGuests;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

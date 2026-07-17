@@ -1,0 +1,46 @@
+.page-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.reservation-card {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table th {
+    white-space: nowrap;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #6d6258;
+    background: #fff7df;
+    padding: 14px 16px;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 14px 16px;
+}
+
+.reservation-id {
+    color: #9b7a18;
+    font-weight: 700;
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+    border-color: #e4d8ca;
+}
+
+.btn-dark {
+    background: #2b1a0e;
+    border-color: #2b1a0e;
+}
+
+.btn-warning {
+    background: #ffd86b;
+    border-color: #ffd86b;
+    color: #2d2118;
+}

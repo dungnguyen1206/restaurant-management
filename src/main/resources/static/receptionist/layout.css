@@ -1,0 +1,124 @@
+:root {
+    --sidebar-bg: #2b1a0e;
+    --sidebar-active: #4a2d14;
+    --accent-gold: #ffd86b;
+    --page-bg: #fbf4ec;
+    --sidebar-w: 280px;
+}
+
+body {
+    margin: 0;
+    background: var(--page-bg);
+    color: #2d2118;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-brand {
+    padding: 32px 24px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-title {
+    color: var(--accent-gold);
+    font-weight: 700;
+    display: block;
+    line-height: 1.25;
+}
+
+.brand-sub {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12px;
+}
+
+.sidebar-nav {
+    padding: 24px 12px;
+}
+
+.sidebar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 12px 18px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.sidebar-nav .nav-link i {
+    width: 22px;
+    margin-right: 8px;
+}
+
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link.active {
+    background: var(--sidebar-active);
+    color: var(--accent-gold);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 22px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    color: #2b1a0e;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.user-name {
+    color: #fff;
+    display: block;
+    font-weight: 700;
+}
+
+.user-role {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 13px;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 42px 40px;
+}
+
+.content-area {
+    flex: 1;
+    min-width: 0;
+}
+
+.top-header {
+    height: 76px;
+    background: #fffaf3;
+    border-bottom: 1px solid #eadfd4;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.main-content {
+    padding: 36px 40px;
+}

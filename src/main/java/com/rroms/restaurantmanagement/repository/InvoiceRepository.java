@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
@@ -61,5 +62,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     List<RevenueTrendProjection> getRevenueTrendByYear(@Param("startDate") Instant startDate,
                                                        @Param("endDate") Instant endDate);
 
+
+    Optional<Invoice> findByOrderOrderId(Long orderId);
 
 }

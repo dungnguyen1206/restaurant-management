@@ -1,0 +1,64 @@
+
+.dashboard-panel {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 18px;
+    min-height: 620px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 12px;
+}
+
+.panel-header h5 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.panel-header span {
+    color: #777;
+    font-size: 13px;
+}
+
+.dashboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #fff3cd;
+    color: #7a5200;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.empty-text {
+    padding: 24px 12px;
+    text-align: center;
+    color: #888;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+}
