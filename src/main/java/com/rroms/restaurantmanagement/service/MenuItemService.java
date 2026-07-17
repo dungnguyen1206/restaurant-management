@@ -5,7 +5,7 @@ import com.rroms.restaurantmanagement.dto.response.MenuItemResponseForManager;
 import org.springframework.data.domain.Page;
 
 public interface MenuItemService {
-    Page<MenuItemResponseForManager> getAllMenuItems(Long categoryId, String filterKey , int page, int size);
+    Page<MenuItemResponseForManager> findAllMenuItems4Manager(Long categoryId, String filterKey , int page, int size);
     CreateMenuItemsRequest addNewMenuItem(CreateMenuItemsRequest createMenuItemsRequest);
 
     CreateMenuItemsRequest findMenuItemById(Long menuItemId);

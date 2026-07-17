@@ -27,7 +27,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     private final CloudinaryService cloudinaryService;
 
     @Override
-    public Page<MenuItemResponseForManager> getAllMenuItems(Long categoryId, String filterKey, int page, int size) {
+    public Page<MenuItemResponseForManager> findAllMenuItems4Manager(Long categoryId, String filterKey, int page, int size) {
         if (filterKey != null && filterKey.trim().isEmpty()) {
             filterKey = null;
         }
