@@ -5,7 +5,9 @@ import com.rroms.restaurantmanagement.dto.response.MenuItemResponseForManager;
 import com.rroms.restaurantmanagement.entity.Category;
 import com.rroms.restaurantmanagement.entity.MenuItem;
 import com.rroms.restaurantmanagement.exception.DataConflictException;
+import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.CategoryRepository;
+import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.MenuItemRepository;
 import com.rroms.restaurantmanagement.service.CloudinaryService;
 import com.rroms.restaurantmanagement.service.MenuItemService;
@@ -22,6 +24,7 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 public class MenuItemServiceImpl implements MenuItemService {
+
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
     private final CloudinaryService cloudinaryService;
@@ -37,6 +40,23 @@ public class MenuItemServiceImpl implements MenuItemService {
         }
         Pageable pageable = PageRequest.of(page, size);
         return menuItemRepository.findAllMenuItems(searchKey, categoryId, pageable).map(this::toMenuItemResponseForManager);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MenuItem> getAllMenuItems(String name, Long categoryId, Pageable pageable) {
+        boolean hasName = name != null && !name.trim().isEmpty();
+        boolean hasCategory = categoryId != null;
+
+        if (hasName && hasCategory) {
+            return menuItemRepository.findByNameAndCategory(name.trim(), categoryId, pageable);
+        } else if (hasName) {
+            return menuItemRepository.findByName(name.trim(), pageable);
+        } else if (hasCategory) {
+            return menuItemRepository.findByCategory(categoryId, pageable);
+        } else {
+            return menuItemRepository.findAllWithCategory(pageable);
+        }
     }
 
     @Override
@@ -103,7 +123,19 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .itemName(menuItem.getItemName())
                 .itemDescription(menuItem.getDescription())
                 .itemPrice(menuItem.getPrice())
-                .image(menuItem.getImageUrl()).build();
+                .image(menuItem.getImageUrl()).build();}
+    @Override
+    @Transactional
+    public void updateVirtualStock(Long itemId, Integer virtualInStock) {
+        if (virtualInStock == null || virtualInStock < 0) {
+            throw new IllegalArgumentException("Số lượng tồn kho phải lớn hơn hoặc bằng 0.");
+        }
+
+        MenuItem item = menuItemRepository.findById(itemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy món ăn có ID " + itemId + "."));
+
+        item.setVirtualInStock(virtualInStock);
+        item.setIsSoldOut(virtualInStock == 0);
     }
 
 

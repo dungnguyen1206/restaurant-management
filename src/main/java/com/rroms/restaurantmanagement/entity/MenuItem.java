@@ -22,12 +22,13 @@ public class MenuItem extends BaseEntity {
     @Column(name = "item_id")
     private Long itemId;
 
-    @Column(columnDefinition = "NVARCHAR(100)")
+    @Column(name = "item_name", columnDefinition = "NVARCHAR(500)")
     private String itemName;
+
 
     private BigDecimal price;
 
-    @Column(columnDefinition = "NVARCHAR(255)")
+    @Column(columnDefinition = "NVARCHAR(500)")
     private String description;
 
     private String imageUrl;

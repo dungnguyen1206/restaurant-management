@@ -37,7 +37,7 @@ public class ManagerMenuController {
 
         model.addAttribute("categoryResponseForManagers", categoryResponseForManagers);
 
-        Page<MenuItemResponseForManager> menuItemResponseForManagerList = menuItemService.getAllMenuItems(categoryId, filterKey, page, size);
+        Page<MenuItemResponseForManager> menuItemResponseForManagerList = menuItemService.findAllMenuItems4Manager(categoryId, filterKey, page, size);
         model.addAttribute("menuItemResponseForManagerList", menuItemResponseForManagerList.getContent());
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("filterKey", filterKey);

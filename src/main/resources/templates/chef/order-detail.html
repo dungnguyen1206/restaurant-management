@@ -1,0 +1,111 @@
+<div th:fragment="orderDetail" class="modal-content border-0 rounded-4 overflow-hidden shadow-lg bg-ivory" style="background-color: #fcf9f4;" xmlns:th="http://www.thymeleaf.org">
+
+    <!-- Modal Top Color Band -->
+    <div class="bg-espresso" style="height: 6px;"></div>
+
+    <!-- Modal Header -->
+    <div class="modal-header border-bottom py-3 px-4 d-flex align-items-center justify-content-between bg-white">
+        <div class="d-flex align-items-center gap-3">
+            <h5 class="modal-title font-serif fw-bold text-espresso mb-0">Chi Tiết Đơn Hàng</h5>
+            <span class="badge bg-gold text-espresso font-mono fw-bold" th:text="|#${order.orderId}|">#840</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body p-4 d-flex flex-column gap-4">
+
+        <!-- Metas Info rows -->
+        <div class="row g-3">
+            <div class="col-sm-6 col-md-3">
+                <div class="d-flex flex-column">
+                    <span class="text-muted fw-bold text-uppercase" style="font-size: 9px; letter-spacing: 0.5px;">Bàn Vị Trí</span>
+                    <!-- Thay order.tableNumber thành ID của liên kết table -->
+                    <span class="fw-bold text-espresso" th:text="${order.table != null ? 'Bàn ' + order.table.tableId : 'Mang về'}">Bàn 5</span>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="d-flex flex-column">
+                    <span class="text-muted fw-bold text-uppercase" style="font-size: 9px; letter-spacing: 0.5px;">Giờ Đặt Đơn</span>
+                    <span class="fw-bold text-espresso" th:text="${#temporals.format(order.createdAt, 'HH:mm:ss')}">12:10:22</span>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="d-flex flex-column">
+                    <span class="text-muted fw-bold text-uppercase" style="font-size: 9px; letter-spacing: 0.5px;">Cập nhật cuối</span>
+                    <span class="fw-bold text-success font-mono" th:text="${order.updatedAt != null ? #temporals.format(order.updatedAt, 'HH:mm:ss') : '--:--'}">08:45</span>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="d-flex flex-column">
+                    <span class="text-muted fw-bold text-uppercase" style="font-size: 9px; letter-spacing: 0.5px;">Trạng Thái KDS</span>
+                    <!-- Thay order.orderStatus thành order.status -->
+                    <span class="badge text-uppercase d-inline-block text-start" th:text="${order.status}" style="font-size: 9px; width: fit-content; background-color: rgba(16, 185, 129, 0.1); color: #10b981;">Đã Hoàn Thành</span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-1 border-secondary-subtle">
+
+        <!-- Staff row -->
+        <div class="row g-3">
+            <div class="col-sm-12">
+                <div class="d-flex align-items-center gap-2 border rounded-3 p-3 bg-white">
+                    <div class="d-flex flex-column">
+                        <span class="text-muted text-uppercase" style="font-size: 8px; letter-spacing: 0.5px;">Người tạo đơn / Phụ trách</span>
+                        <strong class="text-espresso small" th:text="${order.createdBy != null ? order.createdBy : 'Hệ thống'}">Bếp Phó Hoàng Lâm</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Food items lists -->
+        <div class="card border-0 rounded-3 overflow-hidden shadow-sm bg-white">
+            <div class="card-header border-bottom py-2 px-3 text-muted fw-bold text-uppercase" style="font-size: 10px; letter-spacing: 0.5px; background-color: #fcf9f4;">
+                Danh sách món ăn của hóa đơn
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr class="text-muted" style="font-size: 9px; text-transform: uppercase;">
+                        <th class="ps-3 py-2">STT</th>
+                        <th class="py-2">Món Ăn</th>
+                        <th class="py-2 text-center">Số Lượng</th>
+                        <th class="py-2 text-end">Đơn Giá</th>
+                        <th class="pe-3 py-2 text-end">Thành Tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, index : ${order.orderItems}">
+                        <td class="ps-3 py-2.5 font-mono" th:text="${index.count}">1</td>
+
+                        <!-- SỬA Ở ĐÂY: Thay item.menuItems thành item.menuItem -->
+                        <td class="py-2.5 fw-bold text-espresso"
+                            th:text="${item.menuItem != null ? item.menuItem.itemName : 'Món đã xóa'}">Phở Bò Wagyu</td>
+
+                        <td class="py-2.5 text-center font-mono" th:text="${item.quantity}">2</td>
+                        <td class="py-2.5 text-end font-mono" th:text="${item.unitPrice != null ? #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">150.000đ</td>
+                        <td class="pe-3 py-2.5 text-end font-mono fw-bold text-espresso" th:text="${item.unitPrice != null ? #numbers.formatDecimal(item.unitPrice * item.quantity, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">300.000đ</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ghi chú lấy từ cột special_note/specialNote -->
+        <div class="p-3 border rounded-3 bg-white mb-0">
+            <span class="text-muted text-uppercase d-block mb-1" style="font-size: 8px; letter-spacing: 0.5px;">Yêu cầu/Ghi chú đơn hàng</span>
+            <p class="text-espresso italic mb-0 small" style="font-style: italic;" th:text="${order.status != null ? 'Đơn hàng đang ở trạng thái: ' + order.status : 'Không có ghi chú'}">...</p>
+        </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer border-top bg-white py-3 px-4 justify-content-between align-items-center">
+        <div class="d-flex flex-column text-start">
+            <span class="text-muted small text-uppercase" style="font-size: 8px; letter-spacing: 0.5px;">Tổng tiền thanh toán</span>
+            <!-- Đổi thành totalAmount -->
+            <strong class="h4 text-gold font-mono mb-0" th:text="${order.totalAmount != null ? #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">450.000đ</strong>
+        </div>
+        <button type="button" class="btn btn-espresso px-4 py-2 rounded-3 fw-bold small text-white text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;" data-bs-dismiss="modal">Đóng cửa sổ</button>
+    </div>
+</div>

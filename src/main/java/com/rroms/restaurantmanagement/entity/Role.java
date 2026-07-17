@@ -1,5 +1,6 @@
 package com.rroms.restaurantmanagement.entity;
 
+import com.rroms.restaurantmanagement.entity.constant.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,11 +21,12 @@ public class Role {
     @Column(name = "role_id")
     private Long roleId;
 
-    @Column(length = 500)
+    @Column(length = 500, columnDefinition = "NVARCHAR(255)")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role_name", nullable = false)
-    private String roleName;
+    private RoleName roleName;
 
     @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<>();
