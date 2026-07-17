@@ -1,0 +1,340 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #fcf9f4;
+}
+
+.annam-header {
+  background-color: rgba(252, 249, 244, 0.85); /* Ivory phủ mờ */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(44, 26, 14, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  top: 0;
+  z-index: 100;
+  color: #2c1a0e;
+  overflow:hidden;
+  left:240px;
+      right:0;
+      height:80px;
+
+}
+
+/* Header Left */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex:1;
+  min-width:0;
+}
+
+.mobile-menu-btn {
+  background: none;
+  border: 1px solid rgba(44, 26, 14, 0.15);
+  color: #2c1a0e;
+  padding: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-btn:hover {
+  background-color: rgba(44, 26, 14, 0.05);
+  border-color: #2c1a0e;
+}
+
+
+.breadcrumbs{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    flex:1;
+    min-width:0;
+
+    overflow:hidden;
+}
+
+.breadcrumb-item {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(44, 26, 14, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space:nowrap;
+}
+
+.breadcrumb-item.active {
+  color: #2c1a0e;
+  font-weight: 700;
+    overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.breadcrumb-sep {
+  font-size: 16px;
+  color: rgba(44, 26, 14, 0.6);
+}
+
+/* Header Right */
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+
+    flex-shrink:0;
+}
+
+/* Real-time Clock */
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.realtime-clock {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c1a0e;
+  letter-spacing: -0.02em;
+}
+
+.clock-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #c9a84c;
+  letter-spacing: 0.1em;
+}
+
+.header-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(44, 26, 14, 0.1);
+}
+
+/* Actions & Profile */
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notification-btn {
+  background: none;
+  border: none;
+  color: #2c1a0e;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-btn:hover {
+  background-color: rgba(44, 26, 14, 0.05);
+  color: #c9a84c;
+}
+
+.notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #fcf9f4;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.user-profile:hover {
+  background-color: rgba(44, 26, 14, 0.04);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-espresso);
+}
+
+.user-role {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(44, 26, 14, 0.6);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-cover: cover;
+  border: 2px solid #c9a84c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .annam-header {
+    padding: 0 16px;
+  }
+  .user-info {
+    display: none;
+  }
+  .clock-container {
+    display: none;
+  }
+}
+
+
+/* Style cho phần chữ User Info hiện tại */
+.user-profile {
+    position: relative; /* Quan trọng: làm điểm tựa cho dropdown định vị absolute */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.user-role {
+    font-size: 12px;
+    color: #777;
+}
+
+/* KHỐI DROPDOWN BOX */
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 12px); /* Đẩy xuống dưới thanh header một chút */
+    right: 0;
+    width: 240px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #eee;
+    z-index: 1000;
+
+    /* Trạng thái ẩn mặc định */
+    display: none;
+    flex-direction: column;
+}
+
+/* Class kích hoạt hiển thị bằng JS */
+.account-dropdown.show {
+    display: flex;
+}
+
+/* Chi tiết các phần bên trong */
+.dropdown-header {
+    padding: 16px;
+}
+.dropdown-name {
+    font-weight: 600;
+    color: #222;
+    margin: 0;
+}
+.dropdown-email {
+    font-size: 12px;
+    color: #666;
+    margin: 4px 0 0 0;
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 0;
+}
+
+.dropdown-list {
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.dropdown-list li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: #444;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.dropdown-list li a:hover {
+    background-color: #f5f5f5;
+    color: #bfa15f; /* Bạn có thể đổi theo màu vàng thương hiệu AN NAM của bạn */
+}
+
+.dropdown-list .material-symbols-outlined,
+.logout-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.dropdown-footer {
+    padding: 8px;
+}
+
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    color: #dc3545; /* Màu đỏ cảnh báo nút logout */
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #fff5f5;
+}

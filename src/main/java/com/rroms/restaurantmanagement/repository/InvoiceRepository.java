@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 

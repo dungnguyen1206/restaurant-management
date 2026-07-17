@@ -2,28 +2,41 @@ package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.DtoMapper.DtoMapper;
 import com.rroms.restaurantmanagement.dto.request.CategoryDto;
+import com.rroms.restaurantmanagement.dto.response.CategoryResponseForManager;
 import com.rroms.restaurantmanagement.entity.Category;
 import com.rroms.restaurantmanagement.repository.CategoryRepository;
 import com.rroms.restaurantmanagement.service.CategoryService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final DtoMapper dtoMapper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, DtoMapper dtoMapper)
-    {
-        this.categoryRepository = categoryRepository;
-        this.dtoMapper = dtoMapper;
+
+    @Override
+    public List<CategoryResponseForManager> findAll() {
+        return  toCategoryResponseForManagers(categoryRepository.findAll());
+    }
+
+    private CategoryResponseForManager toCategoryResponseForManager(Category category) {
+        return CategoryResponseForManager.builder().id(category.getCategoryId()).categoryName(category.getCategoryName()).build();
+    }
+
+    private List<CategoryResponseForManager> toCategoryResponseForManagers(List<Category> categories) {
+        return categories.stream().map(this::toCategoryResponseForManager).toList();
     }
 
     @Override
-    public List<CategoryDto> findAll() {
+    public List<CategoryDto> findAllForCustomer() {
 
         List<Category> categories = categoryRepository.findAll();
 
@@ -34,4 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         return dtos;
     }
+
+
 }

@@ -76,7 +76,7 @@ public class HomeController {
 
 
         model.addAttribute("menuItems", result.getContent());
-        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("categories", categoryService.findAllForCustomer());
 
         model.addAttribute("currentPage", currentPage);
 

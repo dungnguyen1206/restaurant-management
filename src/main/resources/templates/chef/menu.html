@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{chef/layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Thực Đơn</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" th:href="@{/chef/css/menuItem.css}" />
+    </th:block>
+</head>
+<body>
+
+<main layout:fragment="content" class="content p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Danh sách thực đơn</h4>
+            <p class="text-muted small mb-0">Cập nhật tồn kho để hệ thống tự xác định món còn phục vụ hay đã hết.</p>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show menu-alert" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}">Cập nhật thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show menu-alert" role="alert">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <span th:text="${errorMessage}">Không thể cập nhật tồn kho.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
+
+    <!-- Thanh tìm kiếm -->
+    <div class="card shadow-sm border-0 p-3 mb-4 bg-white">
+        <form th:action="@{/chef/menu}" method="get" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 menu-search-input" name="search"
+                           th:value="${search}" placeholder="Nhập tên món ăn...">
+                </div>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" name="categoryId" style="border-radius: 8px; min-width: 200px; padding: 6px 12px; outline: none; border: 1px solid #ced4da;">
+                    <option value="">-- Tất cả phân loại --</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:text="${cat.categoryName}"
+                            th:selected="${cat.id == categoryId}">Danh mục</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-chef-primary px-4">Tìm kiếm</button>
+            </div>
+            <div class="col-auto" th:if="${not #strings.isEmpty(search) or categoryId != null}">
+                <a th:href="@{/chef/menu}" class="btn btn-outline-secondary px-3" style="border-radius: 8px;">Xóa bộ lọc</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bảng danh sách món ăn -->
+    <div class="card shadow-sm border-0 menu-table-card bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr class="text-muted small text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
+                        <th class="ps-4">STT</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên món</th>
+                        <th>Phân loại</th>
+                        <th>Đơn giá</th>
+                        <th class="text-center">Tồn kho (ảo)</th>
+                        <th>Trạng thái</th>
+                        <th class="pe-4 text-end">Cập nhật</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, index : ${menuItems}">
+                        <td class="ps-4 fw-bold text-secondary" th:text="${index.count}">1</td>
+                        <td>
+                            <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" class="menu-item-img" alt="Dish image">
+                            <div th:if="${#strings.isEmpty(item.imageUrl)}" class="menu-item-fallback-img">
+                                <i class="bi bi-egg-fried fs-3"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <strong class="text-dark d-block" th:text="${item.itemName}">Phở Bò</strong>
+                            <small class="text-muted" th:text="${item.description}">Mô tả ngắn của món ăn</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border px-2.5 py-1.5"
+                                  th:text="${item.category != null ? item.category.categoryName : 'Chưa phân loại'}">
+                                Category
+                            </span>
+                        </td>
+                        <td class="fw-bold text-dark"
+                            th:text="${item.price != null ? #numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT') + 'đ' : '0đ'}">
+                            100.000đ
+                        </td>
+                        <td class="text-center">
+                            <form th:action="@{/chef/menu/{id}/stock(id=${item.itemId})}"
+                                  th:id="|stock-form-${item.itemId}|"
+                                  method="post"
+                                  class="stock-update-form">
+                                <input type="hidden" name="search" th:value="${search}">
+                                <input type="hidden" name="categoryId" th:value="${categoryId}">
+                                <input type="hidden" name="page" th:value="${currentPage}">
+                                <input type="hidden" name="size" th:value="${pageSize}">
+                                <div class="stock-input-group">
+                                    <button type="button" class="stock-step-button" data-stock-action="decrease" aria-label="Giảm tồn kho">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </button>
+                                    <input type="number"
+                                           name="virtualInStock"
+                                           class="stock-input"
+                                           min="0"
+                                           step="1"
+                                           required
+                                           inputmode="numeric"
+                                           th:value="${item.virtualInStock != null ? item.virtualInStock : 0}"
+                                           th:aria-label="|Tồn kho của ${item.itemName}|">
+                                    <button type="button" class="stock-step-button" data-stock-action="increase" aria-label="Tăng tồn kho">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                        <td>
+                            <span class="badge-status"
+                                  th:with="soldOut=${item.virtualInStock == null or item.virtualInStock == 0}"
+                                  th:classappend="${soldOut} ? 'status-soldout' : 'status-available'"
+                                  th:text="${soldOut} ? 'Hết món' : 'Còn món'">
+                                Còn món
+                            </span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <button type="submit" class="btn btn-save-stock" th:form="|stock-form-${item.itemId}|">
+                                <i class="bi bi-check2 me-1"></i>Lưu
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(menuItems)}">
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            <span>Không tìm thấy món ăn nào.</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Phân trang thực đơn -->
+    <nav aria-label="Page navigation" th:if="${menuItemPage != null and menuItemPage.totalPages > 1}">
+        <ul class="pagination justify-content-center mt-4">
+            <li class="page-item" th:classappend="${!menuItemPage.hasPrevious()} ? 'disabled'">
+                <a class="page-link" th:href="@{/chef/menu(page=${currentPage - 1}, search=${search}, categoryId=${categoryId})}">Trước</a>
+            </li>
+            <li class="page-item"
+                th:each="pageNumber : ${#numbers.sequence(0, menuItemPage.totalPages > 0 ? menuItemPage.totalPages - 1 : 0)}"
+                th:classappend="${pageNumber == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/chef/menu(page=${pageNumber}, search=${search}, categoryId=${categoryId})}"
+                   th:text="${pageNumber + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${!menuItemPage.hasNext()} ? 'disabled'">
+                <a class="page-link" th:href="@{/chef/menu(page=${currentPage + 1}, search=${search}, categoryId=${categoryId})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
+</main>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.stock-update-form').forEach(form => {
+                const input = form.querySelector('.stock-input');
+                form.querySelectorAll('[data-stock-action]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const currentValue = Number.parseInt(input.value, 10) || 0;
+                        input.value = button.dataset.stockAction === 'increase'
+                            ? currentValue + 1
+                            : Math.max(0, currentValue - 1);
+                    });
+                });
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

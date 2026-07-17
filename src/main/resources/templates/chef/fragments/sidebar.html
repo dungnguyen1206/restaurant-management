@@ -1,0 +1,46 @@
+<aside class="annam-sidebar" id="kds-sidebar" th:fragment="sidebar" xmlns:th="http://www.thymeleaf.org">
+    <!-- Header Logo -->
+    <div class="sidebar-brand">
+        <div class="brand-text">
+            <h1 class="brand-title">Phúc Viên</h1>
+        </div>
+        <!-- Nút đóng trên mobile -->
+        <button class="sidebar-close-btn" id="sidebar-close-trigger" aria-label="Close Sidebar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a th:href="@{/chef/dashboard}"
+                   th:classappend="${activePage == 'dashboard' ? 'active' : ''}"
+                   class="nav-link" data-view="home">
+                    <span class="nav-label">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/chef/orders}"
+                   th:classappend="${activePage == 'orders' ? 'active' : ''}"
+                   class="nav-link" data-view="live">
+                    <span class="nav-label">Đơn Hàng</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/chef/history}"
+                   th:classappend="${activePage == 'order-history' ? 'active' : ''}"
+                   class="nav-link" data-view="history">
+                    <span class="nav-label">Lịch Sử Đơn</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/chef/menu}"
+                   th:classappend="${activePage == 'menu' ? 'active' : ''}"
+                   class="nav-link" data-view="menu">
+                    <span class="nav-label">Menu</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</aside>
