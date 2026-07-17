@@ -1,119 +1,148 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{chef/layout/layout}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <link rel="stylesheet" th:href="@{/chef/css/fragments/header.css}" />
-    <link rel="stylesheet" th:href="@{/chef/css/fragments/sidebar.css}" />
-    <link rel="stylesheet" th:href="@{/chef/css/fragments/footer.css}" />
-    <link rel="stylesheet" th:href="@{/chef/css/dashboard.css}" />
+    <title>Dashboard Đầu Bếp</title>
+    <th:block layout:fragment="css">
+        <!-- Nhúng Bootstrap Icons CDN để hiển thị các biểu tượng trong card -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" th:href="@{/chef/css/dashboard.css}" />
+    </th:block>
 </head>
 <body>
-<div class="app-container">
 
-    <aside th:replace="~{chef/fragments/sidebar :: sidebar}"></aside>
+<main layout:fragment="content" class="content p-4">
 
-    <div class="main-workspace">
-
-        <header th:replace="~{chef/fragments/header :: header}"></header>
-
-        <main class="content p-4">
-
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="card p-3 border shadow-sm h-100">
-                        <span class="text-muted fw-bold small">Đang chờ</span>
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <span class="display-5 fw-bold text-warning">8</span>
-                            <i class="bi bi-clipboard"></i> </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 border shadow-sm h-100">
-                        <span class="text-muted fw-bold small">Đang làm</span>
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <span class="display-5 fw-bold text-dark">5</span>
-                            <i class="bi bi-egg-fried"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 border shadow-sm h-100">
-                        <span class="text-muted fw-bold small">Đã hoàn thành hôm nay</span>
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <span class="display-5 fw-bold text-dark">42</span>
-                            <i class="bi bi-check-circle text-success"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 border shadow-sm h-100">
-                        <span class="text-muted fw-bold small">Thời gian nấu trung bình</span>
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <span class="display-5 fw-bold text-dark">12:45</span>
-                            <i class="bi bi-clock"></i>
-                        </div>
-                    </div>
+    <!-- Thống kê tổng quan -->
+    <div class="row g-3 mb-4">
+        <!-- Đang chờ -->
+        <div class="col-md-3">
+            <div class="card p-3 border-0 shadow-sm h-100 bg-white">
+                <span class="text-muted fw-bold small text-uppercase">Đang chờ</span>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                    <span class="display-5 fw-bold text-warning" th:text="${dashboard.pendingCount}">0</span>
+                    <span class="fs-3 text-warning"><i class="bi bi-clipboard"></i></span>
                 </div>
             </div>
-
-
-            <div class="row main content">
-                <div class="col-md-5 row" style="display: flex; flex-wrap: no-wrap">
-                    <div class="col-md-6 card" style="width: 18rem;">
-                        <img src="..." class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
-                        </div>
-                    </div>
-                    <div class="col-md-5 card" style="width: 18rem;">
-                        <img src="..." class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <ol class="list-group list-group-numbered">
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">Subheading</div>
-                                Cras justo odio
-                            </div>
-                            <span class="badge bg-primary rounded-pill">14</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">Subheading</div>
-                                Cras justo odio
-                            </div>
-                            <span class="badge bg-primary rounded-pill">14</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">Subheading</div>
-                                Cras justo odio
-                            </div>
-                            <span class="badge bg-primary rounded-pill">14</span>
-                        </li>
-                    </ol>
+        </div>
+        <!-- Đang làm -->
+        <div class="col-md-3">
+            <div class="card p-3 border-0 shadow-sm h-100 bg-white">
+                <span class="text-muted fw-bold small text-uppercase">Đang làm</span>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                    <span class="display-5 fw-bold text-primary" th:text="${dashboard.preparingCount}">0</span>
+                    <span class="fs-3 text-primary"><i class="bi bi-egg-fried"></i></span>
                 </div>
             </div>
-
-        </main>
-        <footer th:replace="~{chef/fragments/footer :: footer}"></footer>
-
+        </div>
+        <!-- Đã hoàn thành hôm nay -->
+        <div class="col-md-3">
+            <div class="card p-3 border-0 shadow-sm h-100 bg-white">
+                <span class="text-muted fw-bold small text-uppercase">Đã hoàn thành hôm nay</span>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                    <span class="display-5 fw-bold text-success" th:text="${dashboard.completedCountToday}">0</span>
+                    <span class="fs-3 text-success"><i class="bi bi-check-circle"></i></span>
+                </div>
+            </div>
+        </div>
+        <!-- Thời gian nấu trung bình -->
+        <div class="col-md-3">
+            <div class="card p-3 border-0 shadow-sm h-100 bg-white">
+                <span class="text-muted fw-bold small text-uppercase">Thời gian nấu trung bình</span>
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                    <span class="display-5 fw-bold text-dark" th:text="${dashboard.avgCookingTimeToday}">00:00</span>
+                    <span class="fs-3 text-secondary"><i class="bi bi-clock"></i></span>
+                </div>
+            </div>
+        </div>
     </div>
 
-</div>
-<script th:src="@{/chef/js/header.js}" src="../static/js/header.js"></script>
+    <!-- Hàng nội dung chi tiết -->
+    <div class="row g-4">
+        <!-- Món ăn yêu thích hôm nay -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-header bg-white border-0 pt-3 pb-0">
+                    <h5 class="card-title fw-bold text-dark mb-0">Món ăn yêu thích hôm nay</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(dashboard.popularItems)}">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small text-uppercase" style="font-size: 11px;">
+                                    <th>Món ăn</th>
+                                    <th class="text-center">Số lượng đặt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${dashboard.popularItems}">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;" alt="Image">
+                                            <div th:if="${#strings.isEmpty(item.imageUrl)}" class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                                <i class="bi bi-egg-fried text-muted"></i>
+                                            </div>
+                                            <span class="fw-bold text-dark" th:text="${item.itemName}">Món ăn</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center fw-bold text-espresso fs-5" th:text="${item.totalOrdered}">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div th:if="${#lists.isEmpty(dashboard.popularItems)}" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        <span>Chưa có món ăn nào được đặt hôm nay.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đơn hàng mới nhất -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-header bg-white border-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0">Đơn hàng mới nhất</h5>
+                    <a th:href="@{/chef/orders}" class="btn btn-sm btn-outline-primary fw-bold px-3">Chi tiết</a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush" th:if="${not #lists.isEmpty(dashboard.latestOrders)}">
+                        <div th:each="order : ${dashboard.latestOrders}" class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-bottom">
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="fw-bold text-dark" th:text="'#' + ${order.orderId}">#1</span>
+                                    <span class="badge bg-light text-dark border" th:text="${order.table != null ? 'Bàn ' + order.table.tableId : 'Mang về'}">Bàn 1</span>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    <span th:text="${#temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'HH:mm:ss')}">10:00:00</span>
+                                </small>
+                            </div>
+                            <div>
+                                <span class="badge rounded-pill px-3 py-2 text-uppercase" 
+                                      th:text="${order.status}"
+                                      th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning text-dark' :
+                                                       (order.status.name() == 'PREPARING' ? 'bg-primary text-white' :
+                                                       (order.status.name() == 'COMPLETED' ? 'bg-success text-white' : 
+                                                       (order.status.name() == 'SERVED' ? 'bg-info text-white' : 'bg-secondary text-white')))}">
+                                    Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(dashboard.latestOrders)}" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        <span>Không có đơn hàng nào hôm nay.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
 
 </body>
 </html>

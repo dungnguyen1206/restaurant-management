@@ -22,6 +22,38 @@
 body {
   font-family: var(--font-sans);
   background-color: var(--color-ivory);
+  overflow-x: hidden;
+}
+
+/* Bố cục chung: sidebar đã fixed nên workspace chỉ cần chừa đúng 240px. */
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  width: calc(100% - 240px);
+  margin-left: 240px;
+  padding-top: 80px;
+}
+
+.main-workspace > .content {
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
+  margin-left: 0;
+}
+
+.main-workspace > .annam-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 240px;
+  width: auto;
 }
 
 /* Footer Container */
@@ -34,6 +66,10 @@ body {
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  margin: auto 0 0;
+  flex-shrink: 0;
+  overflow-wrap: anywhere;
 }
 
 /* Footer Top Row */
@@ -163,5 +199,17 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+  }
+}
+
+/* Sidebar được ẩn dưới 1024px, workspace trở lại toàn chiều rộng. */
+@media (max-width: 1024px) {
+  .main-workspace {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .main-workspace > .annam-header {
+    left: 0;
   }
 }

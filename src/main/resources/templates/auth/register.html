@@ -40,6 +40,15 @@
             border-color: #C9A84C;
             box-shadow: 0 0 0 0.2rem rgba(201, 168, 76, 0.25);
         }
+        .btn-google {
+            background-color: #ffffff;
+            color: #3c4043;
+            border: 1px solid #dadce0;
+        }
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            color: #202124;
+        }
     </style>
 </head>
 <body class="d-flex flex-column align-items-center justify-content-center min-vh-100 p-4">
@@ -110,6 +119,16 @@
                 Đăng kí
             </button>
         </form>
+
+        <div class="d-flex align-items-center gap-3 my-4">
+            <hr class="flex-grow-1 m-0">
+            <span class="text-secondary text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Hoặc</span>
+            <hr class="flex-grow-1 m-0">
+        </div>
+        <a th:href="@{/oauth2/authorization/google}"
+           class="btn btn-google w-100 py-2 fw-semibold">
+            Đăng ký bằng Google
+        </a>
     </div>
 
     <!-- Footer link -->

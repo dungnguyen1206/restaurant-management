@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public String handleException(RuntimeException exception, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        exception.printStackTrace(); // 👈 thêm dòng này tạm thời để xem lỗi thật trong console
         redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ?  referer : "/customer/home");
