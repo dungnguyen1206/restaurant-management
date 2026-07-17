@@ -1,15 +1,23 @@
 package com.rroms.restaurantmanagement.service;
 
+import com.rroms.restaurantmanagement.dto.response.OrderHistoryDTO;
 import com.rroms.restaurantmanagement.entity.Order;
+import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import com.rroms.restaurantmanagement.dto.response.ChefDashboardDTO;
+
 public interface OrderService {
-    public List<Order> getOrders();
+    Page<Order> getKitchenOrders(String orderId, String status, Pageable pageable);
+    void confirmKitchenOrder(Long orderId);
+    void handleUpdateStatusOrder(Long orderId, OrderStatus orderStatus);
+    Page<OrderHistoryDTO> searchChefOrderHistory(String keyword, LocalDate startDate, LocalDate endDate, String status, int page, int size);
 
-    public Order getOrderById(long id);
+    Order findById(Long orderId);
 
-    public Boolean addOrder(Order order);
-
-    public Boolean updateOrder(Order order);
+    ChefDashboardDTO getChefDashboardData();
 }

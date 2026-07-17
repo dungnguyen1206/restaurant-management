@@ -1,0 +1,215 @@
+
+:root {
+  --color-ivory: #fcf9f4;
+  --color-espresso: #2c1a0e;
+  --color-gold: #c9a84c;
+  --color-gold-hover: #b8973b;
+  --color-text-dim: rgba(44, 26, 14, 0.6);
+  --color-border: rgba(44, 26, 14, 0.1);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset nhỏ để hiển thị độc lập */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-ivory);
+  overflow-x: hidden;
+}
+
+/* Bố cục chung: sidebar đã fixed nên workspace chỉ cần chừa đúng 240px. */
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  width: calc(100% - 240px);
+  margin-left: 240px;
+  padding-top: 80px;
+}
+
+.main-workspace > .content {
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
+  margin-left: 0;
+}
+
+.main-workspace > .annam-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 240px;
+  width: auto;
+}
+
+/* Footer Container */
+.annam-footer {
+  background-color: #f3ede3; /* Tone kem sẫm ấm cúng */
+  border-top: 1px solid var(--color-border);
+  padding: 32px 40px;
+  color: var(--color-espresso);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: auto 0 0;
+  flex-shrink: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Footer Top Row */
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-bottom: 1px solid rgba(44, 26, 14, 0.08);
+  pb-block: 20px;
+  padding-bottom: 20px;
+}
+
+.footer-quote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 500px;
+}
+
+.quote-icon {
+  color: var(--color-gold);
+  font-size: 24px;
+}
+
+.quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(44, 26, 14, 0.85);
+  line-height: 1.4;
+}
+
+.footer-meta {
+  display: flex;
+  gap: 24px;
+}
+
+.meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-text-dim);
+}
+
+.meta-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-espresso);
+}
+
+.meta-value.font-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Footer Bottom Row */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.copyright-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.copyright-section p {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(44, 26, 14, 0.75);
+}
+
+.sub-copyright {
+  font-size: 10px;
+  color: var(--color-text-dim);
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-gold);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.footer-link:hover {
+  color: var(--color-gold-hover);
+  text-decoration: underline;
+}
+
+.link-divider {
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-text-dim);
+  border-radius: 50%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .annam-footer {
+    padding: 24px 20px;
+  }
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}
+
+/* Sidebar được ẩn dưới 1024px, workspace trở lại toàn chiều rộng. */
+@media (max-width: 1024px) {
+  .main-workspace {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .main-workspace > .annam-header {
+    left: 0;
+  }
+}

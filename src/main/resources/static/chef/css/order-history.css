@@ -1,0 +1,57 @@
+/* ==========================================================================
+   CSS MÀU SẮC CHỦ ĐẠO PHONG CÁCH AN NAM KDS
+   ========================================================================== */
+.bg-espresso { background-color: #362217 !important; }
+.text-espresso { color: #362217 !important; }
+.btn-espresso {
+    background-color: #362217 !important;
+    color: #fcf9f4 !important;
+    transition: all 0.2s ease-in-out;
+}
+.btn-espresso:hover { background-color: #4a3123 !important; color: #ffffff !important; }
+.bg-gold { background-color: #C5A059 !important; color: #ffffff !important; }
+.text-gold { color: #C5A059 !important; }
+
+/* Phông chữ & padding table nội bộ của modal */
+.font-serif { font-family: 'Playfair Display', Georgia, serif !important; }
+.font-mono { font-family: 'Courier New', Courier, monospace !important; font-weight: 600; }
+
+#orderDetailModal .table th,
+#orderDetailModal .table td {
+    padding: 12px 8px;
+}
+
+/* ==========================================================================
+   ÉP MODAL CĂN GIỮA KHU VỰC WORKSPACE (TỌA ĐỘ LEFT KHỚP CHUẨN HEADER 240PX)
+   ========================================================================== */
+#orderDetailModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 240px !important; /* Dịch sang phải đúng bằng khoảng trống sidebar của workspace gốc */
+    width: calc(100vw - 240px) !important; /* Chiếm trọn không gian làm việc bên phải */
+    height: 100vh !important;
+    padding-left: 0 !important;
+    z-index: 1060 !important;
+}
+
+#orderDetailModal .modal-dialog {
+    margin: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: calc(100vh - 60px) !important;
+    width: 100% !important;
+    max-width: 800px !important;
+}
+
+.btn-chef-primary {
+    background-color: #8B4A1E !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+    transition: background-color 0.15s ease-in-out !important;
+}
+.btn-chef-primary:hover {
+    background-color: #7C3A14 !important;
+    color: #ffffff !important;
+}
