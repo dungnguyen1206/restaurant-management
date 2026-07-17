@@ -26,26 +26,27 @@ public class Payment {
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "payment_method", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PaymentMethod paymentMethod;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(nullable = false)
+    @Column(name = "paid_at", nullable = false)
     private LocalDateTime paidAt;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
+    @Column(name = "payment_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private PaymentType paymentType;
 
     @ManyToOne(fetch = FetchType.LAZY)

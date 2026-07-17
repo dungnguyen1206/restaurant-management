@@ -106,13 +106,12 @@
                                 <i class="fa-regular fa-eye"></i>
                             </a>
 
-                            <form th:action="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}" method="post">
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-secondary"
-                                        th:disabled="${order.status == 'COMPLETED' or order.status == 'CANCELLED'}">
-                                    <i class="fa-solid fa-cash-register"></i>
-                                </button>
-                            </form>
+                            <a class="btn btn-sm btn-outline-secondary"
+                               th:href="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}"
+                               th:classappend="${order.status != 'SERVED'} ? ' disabled'"
+                               th:attr="aria-disabled=${order.status != 'SERVED'}">
+                                <i class="fa-solid fa-cash-register"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>

@@ -13,11 +13,12 @@ import com.rroms.restaurantmanagement.repository.projection.ReservationProjectio
 import com.rroms.restaurantmanagement.service.ReservationService;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
 @RequiredArgsConstructor
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -80,11 +81,36 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public void createWalkIn(WalkInRequest request) {
-        RestaurantTable table = tableRepository.findById(request.getTableId())
-                .orElseThrow(() -> new RuntimeException("Table không tồn tại"));
+        if (request.getTableIds() == null || request.getTableIds().isEmpty()) {
+            throw new RuntimeException("Vui lòng chọn ít nhất một bàn");
+        }
 
-        if (table.getStatus() != TableStatus.AVAILABLE) {
-            throw new RuntimeException("Chỉ có thể check in bàn đang trống");
+        if (request.getNumberOfGuests() == null || request.getNumberOfGuests() <= 0) {
+            throw new RuntimeException("Số lượng khách phải lớn hơn 0");
+        }
+
+        Set<Long> uniqueTableIds = new LinkedHashSet<>(request.getTableIds());
+        if (uniqueTableIds.size() != request.getTableIds().size()) {
+            throw new RuntimeException("Không được chọn trùng bàn");
+        }
+
+        List<RestaurantTable> tables = tableRepository.findAllById(uniqueTableIds);
+
+        if (tables.size() != request.getTableIds().size()) {
+            throw new RuntimeException("Một hoặc nhiều bàn không tồn tại");
+        }
+
+        int totalCapacity = 0;
+        for (RestaurantTable table : tables) {
+            if (table.getStatus() != TableStatus.AVAILABLE) {
+                throw new RuntimeException("Chỉ có thể chọn bàn đang trống");
+            }
+
+            totalCapacity += table.getCapacity();
+        }
+
+        if (totalCapacity < request.getNumberOfGuests()) {
+            throw new RuntimeException("Tổng sức chứa của các bàn đã chọn không đủ số lượng khách");
         }
 
         String fullName = buildFullName(
@@ -95,7 +121,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation reservation = Reservation.builder()
                 .fullName(fullName)
-                .phone(request.getPhone())
                 .numberOfGuests(request.getNumberOfGuests())
                 .note(request.getNote())
                 .reservationTime(LocalDateTime.now())
@@ -104,15 +129,18 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        ReservationTable reservationTable = ReservationTable.builder()
-                .reservation(savedReservation)
-                .table(table)
-                .build();
+        for (RestaurantTable table : tables) {
+            ReservationTable reservationTable = ReservationTable.builder()
+                    .reservation(savedReservation)
+                    .table(table)
+                    .build();
 
-        reservationTableRepository.save(reservationTable);
+            reservationTableRepository.save(reservationTable);
 
-        table.setStatus(TableStatus.OCCUPIED);
-        tableRepository.save(table);
+            table.setStatus(TableStatus.OCCUPIED);
+        }
+
+        tableRepository.saveAll(tables);
     }
 
     private String normalizeKeyword(String keyword){
