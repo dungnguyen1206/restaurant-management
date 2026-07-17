@@ -1,0 +1,164 @@
+/* Custom Chef Menu Styles */
+
+.menu-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.menu-search-input {
+    max-width: 320px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 8px 16px;
+    outline: none;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.menu-search-input:focus {
+    border-color: #8B4A1E;
+    box-shadow: 0 0 0 0.2rem rgba(139, 74, 30, 0.15);
+}
+
+.btn-search,
+.btn-chef-primary {
+    background-color: #8B4A1E !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 20px !important;
+    font-weight: bold !important;
+    transition: background-color 0.15s ease-in-out !important;
+}
+
+.btn-search:hover,
+.btn-chef-primary:hover {
+    background-color: #7C3A14 !important;
+    color: #ffffff !important;
+}
+
+.menu-table-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.menu-alert {
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(33, 37, 41, 0.08);
+}
+
+.menu-item-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.menu-item-fallback-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    border: 1px solid #dee2e6;
+}
+
+.badge-status {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.status-available {
+    background-color: #E6F4EA;
+    color: #137333;
+}
+
+.status-soldout {
+    background-color: #FCE8E6;
+    color: #C5221F;
+}
+
+.stock-update-form {
+    display: inline-flex;
+    justify-content: center;
+}
+
+.stock-input-group {
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #d8dee4;
+    border-radius: 9px;
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stock-input-group:focus-within {
+    border-color: #8B4A1E;
+    box-shadow: 0 0 0 3px rgba(139, 74, 30, 0.12);
+}
+
+.stock-input {
+    width: 58px;
+    height: 36px;
+    padding: 0 4px;
+    border: 0;
+    outline: 0;
+    color: #212529;
+    font-weight: 700;
+    text-align: center;
+    appearance: textfield;
+}
+
+.stock-input::-webkit-inner-spin-button,
+.stock-input::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+}
+
+.stock-step-button {
+    width: 34px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: #f7f4f1;
+    color: #8B4A1E;
+    transition: background-color 0.15s ease;
+}
+
+.stock-step-button:hover {
+    background: #eee4dc;
+}
+
+.btn-save-stock {
+    min-width: 76px;
+    border: 1px solid #8B4A1E;
+    border-radius: 8px;
+    background: #8B4A1E;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.btn-save-stock:hover,
+.btn-save-stock:focus {
+    border-color: #713a17;
+    background: #713a17;
+    color: #fff;
+}
+
+@media (max-width: 767.98px) {
+    .content {
+        padding: 16px !important;
+    }
+}
