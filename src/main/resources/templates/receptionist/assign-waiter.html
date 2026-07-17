@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Assign Waiter</title>
+    <title>Phân công phục vụ</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/roomlist.css}" rel="stylesheet">
@@ -17,11 +17,11 @@
     <div class="mb-4">
         <a th:href="@{/receptionist/tables}" class="text-decoration-none back-link">
             <i class="fa-solid fa-arrow-left me-2"></i>
-            Back to Tables
+            Quay lại danh sách bàn
         </a>
 
-        <h1 class="page-title mt-3">Assign Waiter</h1>
-        <p class="page-subtitle">Choose a waiter for this table</p>
+        <h1 class="page-title mt-3">Phân công phục vụ</h1>
+        <p class="page-subtitle">Chọn nhân viên phục vụ cho bàn này</p>
     </div>
 
     <div class="card border-0 shadow-sm">
@@ -32,7 +32,7 @@
                 -
                 <span th:text="${table.status}">OCCUPIED</span>
                 -
-                <span th:text="${table.capacity + ' seats'}">4 seats</span>
+                <span th:text="${table.capacity + ' chỗ'}">4 chỗ</span>
             </div>
 
             <form th:action="@{/receptionist/tables/{id}/assign-waiter(id=${table.tableId})}"
@@ -45,33 +45,33 @@
                        th:value="${_csrf.token}">
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Waiter</label>
+                    <label class="form-label fw-semibold">Nhân viên phục vụ</label>
 
                     <select th:field="*{waiterId}" class="form-select" required>
-                        <option value="">Choose waiter</option>
+                        <option value="">Chọn nhân viên phục vụ</option>
                         <option th:each="waiter : ${waiters}"
                                 th:value="${waiter.userId}"
                                 th:text="|${waiter.firstName} ${waiter.middleName} ${waiter.lastName}|">
-                            Waiter Name
+                            Tên nhân viên phục vụ
                         </option>
                     </select>
                 </div>
 
                 <div th:if="${waiters == null or #lists.isEmpty(waiters)}"
                      class="alert alert-danger">
-                    No waiter available.
+                    Không có nhân viên phục vụ khả dụng.
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
                     <a th:href="@{/receptionist/tables}" class="btn btn-light">
-                        Cancel
+                        Hủy
                     </a>
 
                     <button type="submit"
                             class="btn btn-warning fw-semibold"
                             th:disabled="${waiters == null or #lists.isEmpty(waiters)}">
                         <i class="fa-solid fa-check me-2"></i>
-                        Assign
+                        Phân công
                     </button>
                 </div>
 

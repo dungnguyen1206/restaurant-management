@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Dashboard</title>
+    <title>Bảng điều khiển</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/dashboard.css}" rel="stylesheet">
@@ -20,22 +20,22 @@
             <div class="dashboard-panel">
                 <div class="panel-header">
                     <div>
-                        <h5>Reservations</h5>
-                        <span>Pending, confirmed, checked-in</span>
+                        <h5>Đặt bàn</h5>
+                        <span>Đang chờ, đã xác nhận, đã nhận bàn</span>
                     </div>
 
                     <a th:href="@{/receptionist/reservations}" class="btn btn-sm btn-light">
-                        View
+                        Xem
                     </a>
                 </div>
 
                 <div class="dashboard-list">
                     <div th:each="reservation : ${reservations}" class="dashboard-item">
                         <div>
-                            <div class="fw-semibold" th:text="${reservation.fullName}">Guest name</div>
+                            <div class="fw-semibold" th:text="${reservation.fullName}">Tên khách</div>
                             <div class="text-muted small"
-                                 th:text="|${reservation.numberOfGuests} guests|">
-                                2 guests
+                                 th:text="|${reservation.numberOfGuests} khách|">
+                                2 khách
                             </div>
                         </div>
 
@@ -50,7 +50,7 @@
 
                     <div th:if="${reservations == null or #lists.isEmpty(reservations)}"
                          class="empty-text">
-                        No reservations need action.
+                        Không có đặt bàn cần xử lý.
                     </div>
                 </div>
             </div>
@@ -61,12 +61,12 @@
             <div class="dashboard-panel">
                 <div class="panel-header">
                     <div>
-                        <h5>Tables</h5>
-                        <span>Current table status</span>
+                        <h5>Bàn</h5>
+                        <span>Trạng thái bàn hiện tại</span>
                     </div>
 
                     <a th:href="@{/receptionist/tables}" class="btn btn-sm btn-light">
-                        View
+                        Xem
                     </a>
                 </div>
 
@@ -75,30 +75,30 @@
                         <div>
                             <div class="fw-semibold" th:text="${table.tableNumber}">T-01</div>
                             <div class="text-muted small"
-                                 th:text="|${table.capacity} seats - ${table.area}|">
-                                4 seats
+                                 th:text="|${table.capacity} chỗ - ${table.area}|">
+                                4 chỗ
                             </div>
                         </div>
 
                         <div class="text-end">
                             <span class="status-pill" th:text="${table.status}">AVAILABLE</span>
                             <div class="small text-muted"
-                                 th:text="${table.assignedWaiterName != null ? table.assignedWaiterName : 'No waiter'}">
-                                No waiter
+                                 th:text="${table.assignedWaiterName != null ? table.assignedWaiterName : 'Chưa có phục vụ'}">
+                                Chưa có phục vụ
                             </div>
                         </div>
                     </div>
 
                     <div th:if="${tables == null or #lists.isEmpty(tables)}"
                          class="empty-text">
-                        No tables found.
+                        Không tìm thấy bàn.
                     </div>
                 </div>
 
                 <a th:href="@{/receptionist/reservations/walk-in}"
                    class="btn btn-warning fw-semibold w-100 mt-3">
                     <i class="fa-solid fa-person-walking-arrow-right me-2"></i>
-                    Walk-in
+                    Khách vãng lai
                 </a>
             </div>
         </div>
@@ -108,12 +108,12 @@
             <div class="dashboard-panel">
                 <div class="panel-header">
                     <div>
-                        <h5>Orders</h5>
-                        <span>Pending, preparing, served</span>
+                        <h5>Đơn hàng</h5>
+                        <span>Đang chờ, đang chuẩn bị, đã phục vụ</span>
                     </div>
 
                     <a th:href="@{/receptionist/orders}" class="btn btn-sm btn-light">
-                        View
+                        Xem
                     </a>
                 </div>
 
@@ -122,8 +122,8 @@
                         <div>
                             <div class="fw-semibold" th:text="|#LH-${order.orderId}|">#LH-1</div>
                             <div class="text-muted small"
-                                 th:text="|${order.tableNumber} - ${order.totalItems} items|">
-                                T-01 - 2 items
+                                 th:text="|${order.tableNumber} - ${order.totalItems} món|">
+                                T-01 - 2 món
                             </div>
                         </div>
 
@@ -133,14 +133,14 @@
                             <a th:if="${order.status == 'SERVED'}"
                                th:href="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}"
                                class="btn btn-sm btn-warning mt-2">
-                                Checkout
+                                Thanh toán
                             </a>
                         </div>
                     </div>
 
                     <div th:if="${orders == null or #lists.isEmpty(orders)}"
                          class="empty-text">
-                        No active orders.
+                        Không có đơn đang hoạt động.
                     </div>
                 </div>
             </div>

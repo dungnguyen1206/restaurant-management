@@ -5,8 +5,8 @@
 
 <aside th:fragment="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <span class="brand-title">Fine Dining<br>Management Suite</span>
-        <span class="brand-sub">L'HÉRITAGE</span>
+        <span class="brand-title">Phúc Viên<br>Quản lý nhà hàng</span>
+        <span class="brand-sub">NHÀ HÀNG</span>
     </div>
 
     <nav class="sidebar-nav">
@@ -14,28 +14,28 @@
            th:classappend="${currentPage == 'dashboard'} ? 'active'"
            class="nav-link">
             <i class="fa-solid fa-table-cells-large"></i>
-            Dashboard
+            Bảng điều khiển
         </a>
 
         <a th:href="@{/receptionist/reservations}"
            th:classappend="${currentPage == 'reservations'} ? 'active'"
            class="nav-link">
             <i class="fa-regular fa-calendar"></i>
-            Reservations
+            Đặt bàn
         </a>
 
         <a th:href="@{/receptionist/tables}"
            th:classappend="${currentPage == 'tables'} ? 'active'"
            class="nav-link">
             <i class="fa-solid fa-utensils"></i>
-            Tables
+            Bàn
         </a>
 
         <a th:href="@{/receptionist/orders}"
            th:classappend="${currentPage == 'orders'} ? 'active'"
            class="nav-link">
             <i class="fa-regular fa-money-bill-1"></i>
-            Orders
+            Đơn hàng
         </a>
 
     </nav>
@@ -45,7 +45,7 @@
 
         <div class="user-info">
             <span class="user-name" sec:authentication="name">Linh Nguyen</span>
-            <span class="user-role">Lead Receptionist</span>
+            <span class="user-role">Lễ tân chính</span>
         </div>
     </div>
 </aside>

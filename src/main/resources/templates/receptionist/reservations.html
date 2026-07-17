@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Reservations</title>
+    <title>Đặt bàn</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/reservations.css}" rel="stylesheet">
@@ -14,13 +14,6 @@
 <body>
 <div layout:fragment="content">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <a th:href="@{/receptionist/reservations/new}" class="btn btn-warning fw-semibold">
-            <i class="fa-solid fa-plus me-2"></i>
-            New Reservation
-        </a>
-    </div>
 
     <form th:action="@{/receptionist/reservations}" method="get" class="row g-2 mb-4">
         <div class="col-md-7">
@@ -33,23 +26,23 @@
                        name="keyword"
                        th:value="${keyword}"
                        class="form-control"
-                       placeholder="Search guest, phone, reservation ID...">
+                       placeholder="Tìm khách, số điện thoại, mã đặt bàn...">
             </div>
         </div>
 
         <div class="col-md-3">
             <select name="status" class="form-select">
-                <option value="" th:selected="${status == null or status == ''}">All statuses</option>
-                <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Confirmed</option>
-                <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
-                <option value="CHECKED_IN" th:selected="${status == 'CHECKED_IN'}">Checked In</option>
-                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                <option value="" th:selected="${status == null or status == ''}">Tất cả trạng thái</option>
+                <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Đã xác nhận</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Đang chờ</option>
+                <option value="CHECKED_IN" th:selected="${status == 'CHECKED_IN'}">Đã nhận bàn</option>
+                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Đã hủy</option>
             </select>
         </div>
 
         <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-dark">
-                Filter
+                Lọc
             </button>
         </div>
     </form>
@@ -60,13 +53,13 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                     <tr>
-                        <th>Reservation ID</th>
-                        <th>Guest Name</th>
-                        <th>Phone</th>
-                        <th>Date & Time</th>
-                        <th>Guests</th>
-                        <th>Status</th>
-                        <th class="text-center">Actions</th>
+                        <th>Mã đặt bàn</th>
+                        <th>Tên khách</th>
+                        <th>Số điện thoại</th>
+                        <th>Ngày giờ</th>
+                        <th>Số khách</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
                     </tr>
                     </thead>
 
@@ -79,7 +72,7 @@
                         </td>
 
                         <td>
-                            <strong th:text="${r.fullName}">Nguyen Minh Hieu</strong>
+                            <strong th:text="${r.fullName}">Nguyễn Minh Hiếu</strong>
                         </td>
 
                         <td th:text="${r.phone}">0902334112</td>
@@ -118,7 +111,6 @@
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
                                 </form>
-
                             </div>
                         </td>
                     </tr>
@@ -126,7 +118,7 @@
                     <tr th:if="${reservations == null or #lists.isEmpty(reservations)}">
                         <td colspan="7" class="text-center py-5 text-muted">
                             <i class="fa-regular fa-calendar-xmark fs-3 d-block mb-2"></i>
-                            No reservations found.
+                            Không tìm thấy đặt bàn.
                         </td>
                     </tr>
                     </tbody>
