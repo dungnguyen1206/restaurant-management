@@ -123,7 +123,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .itemName(menuItem.getItemName())
                 .itemDescription(menuItem.getDescription())
                 .itemPrice(menuItem.getPrice())
-                .image(menuItem.getImageUrl()).build();
+                .image(menuItem.getImageUrl()).build();}
     @Override
     @Transactional
     public void updateVirtualStock(Long itemId, Integer virtualInStock) {
