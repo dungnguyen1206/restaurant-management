@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.rroms.restaurantmanagement.entity.constant.PaymentMethod;
+import com.rroms.restaurantmanagement.service.CheckoutService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/receptionist/orders")
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReceptionistOrderController {
 
     private final OrderService orderService;
-
+    private final CheckoutService checkoutService;
     @GetMapping
     public String listOrders(
             @RequestParam(required = false) String keyword,
@@ -35,8 +38,38 @@ public class ReceptionistOrderController {
         return "receptionist/orders";
     }
 
-    @PostMapping("/{id}/checkout")
-    public String checkoutOrder(@PathVariable Long id) {
-        return "redirect:/receptionist/orders";
+    @GetMapping("/{id}/checkout")
+    public String checkoutPage(@PathVariable Long id, Model model) {
+        model.addAttribute("checkout", checkoutService.getCheckoutView(id));
+        model.addAttribute("pageTitle", "Checkout");
+        model.addAttribute("currentPage", "orders");
+
+        return "receptionist/checkout";
+    }
+
+    @PostMapping("/{id}/checkout/vietqr")
+    public String confirmVietQrPaid(@PathVariable Long id,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            checkoutService.confirmPaid(id, PaymentMethod.BANK_TRANSFER);
+            redirectAttributes.addFlashAttribute("success", "Checkout VietQR thành công");
+            return "redirect:/receptionist/tables";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/receptionist/orders/" + id + "/checkout";
+        }
+    }
+
+    @PostMapping("/{id}/checkout/cash")
+    public String confirmCashPaid(@PathVariable Long id,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            checkoutService.confirmPaid(id, PaymentMethod.CASH);
+            redirectAttributes.addFlashAttribute("success", "Checkout tiền mặt thành công");
+            return "redirect:/receptionist/tables";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/receptionist/orders/" + id + "/checkout";
+        }
     }
 }

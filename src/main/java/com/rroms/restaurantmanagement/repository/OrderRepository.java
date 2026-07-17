@@ -46,75 +46,6 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             @Param("status") OrderStatus status,
             Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT o FROM Order o " +
-                   "LEFT JOIN FETCH o.orderItems oi " +
-                   "LEFT JOIN FETCH oi.menuItem mi " +
-                   "LEFT JOIN FETCH o.table t " +
-                   "WHERE o.status IN :statuses " +
-                   "AND o.createdAt BETWEEN :start AND :end " +
-                   "AND o.orderId = :orderId",
-           countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
-                        "WHERE o.status IN :statuses " +
-                        "AND o.createdAt BETWEEN :start AND :end " +
-                        "AND o.orderId = :orderId")
-    Page<Order> getKitchenOrdersWithId(
-            @Param("statuses") List<OrderStatus> statuses,
-            @Param("start") Instant start,
-            @Param("end") Instant end,
-            @Param("orderId") Long orderId,
-            Pageable pageable
-    );
-
-    @Query(value = "SELECT DISTINCT o FROM Order o " +
-                   "LEFT JOIN FETCH o.orderItems oi " +
-                   "LEFT JOIN FETCH oi.menuItem mi " +
-                   "LEFT JOIN FETCH o.table t " +
-                   "WHERE o.status IN :statuses " +
-                   "AND o.createdAt BETWEEN :start AND :end",
-           countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
-                        "WHERE o.status IN :statuses " +
-                        "AND o.createdAt BETWEEN :start AND :end")
-    Page<Order> getKitchenOrdersWithoutId(
-            @Param("statuses") List<OrderStatus> statuses,
-            @Param("start") Instant start,
-            @Param("end") Instant end,
-            Pageable pageable
-    );
-
-    @Query("SELECT o FROM Order o " +
-            "LEFT JOIN FETCH o.orderItems oi " +
-            "LEFT JOIN FETCH oi.menuItem mi " +
-            "WHERE o.orderId = :id"
-            )
-    Optional<Order> findByIdWithItems(@Param("id") Long id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT o FROM Order o WHERE o.orderId = :id")
-    Optional<Order> findByIdForUpdate(@Param("id") Long id);
-
-    long countByStatusAndCreatedAtBetween(OrderStatus status, Instant start, Instant end);
-
-    List<Order> findByStatusAndCreatedAtBetween(OrderStatus status, Instant start, Instant end);
-
-    @Query("SELECT oi.menuItem.itemName, SUM(oi.quantity), oi.menuItem.imageUrl " +
-           "FROM Order o JOIN o.orderItems oi " +
-           "WHERE o.status <> :excludedStatus AND o.createdAt BETWEEN :start AND :end " +
-           "GROUP BY oi.menuItem.itemName, oi.menuItem.imageUrl " +
-           "ORDER BY SUM(oi.quantity) DESC")
-    List<Object[]> getTopMenuItemsToday(
-            @Param("excludedStatus") OrderStatus excludedStatus,
-            @Param("start") Instant start,
-            @Param("end") Instant end,
-            Pageable pageable
-    );
-
-    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :start AND :end ORDER BY o.createdAt DESC")
-    List<Order> findLatestOrdersToday(
-            @Param("start") Instant start,
-            @Param("end") Instant end,
-            Pageable pageable
-    );
-
 
     @Query(
             value = """
@@ -228,4 +159,73 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             Pageable pageable
     );
 
+
+    @Query(value = "SELECT DISTINCT o FROM Order o " +
+                   "LEFT JOIN FETCH o.orderItems oi " +
+                   "LEFT JOIN FETCH oi.menuItem mi " +
+                   "LEFT JOIN FETCH o.table t " +
+                   "WHERE o.status IN :statuses " +
+                   "AND o.createdAt BETWEEN :start AND :end " +
+                   "AND o.orderId = :orderId",
+           countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
+                        "WHERE o.status IN :statuses " +
+                        "AND o.createdAt BETWEEN :start AND :end " +
+                        "AND o.orderId = :orderId")
+    Page<Order> getKitchenOrdersWithId(
+            @Param("statuses") List<OrderStatus> statuses,
+            @Param("start") Instant start,
+            @Param("end") Instant end,
+            @Param("orderId") Long orderId,
+            Pageable pageable
+    );
+
+    @Query(value = "SELECT DISTINCT o FROM Order o " +
+                   "LEFT JOIN FETCH o.orderItems oi " +
+                   "LEFT JOIN FETCH oi.menuItem mi " +
+                   "LEFT JOIN FETCH o.table t " +
+                   "WHERE o.status IN :statuses " +
+                   "AND o.createdAt BETWEEN :start AND :end",
+           countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
+                        "WHERE o.status IN :statuses " +
+                        "AND o.createdAt BETWEEN :start AND :end")
+    Page<Order> getKitchenOrdersWithoutId(
+            @Param("statuses") List<OrderStatus> statuses,
+            @Param("start") Instant start,
+            @Param("end") Instant end,
+            Pageable pageable
+    );
+
+    @Query("SELECT o FROM Order o " +
+            "LEFT JOIN FETCH o.orderItems oi " +
+            "LEFT JOIN FETCH oi.menuItem mi " +
+            "WHERE o.orderId = :id"
+            )
+    Optional<Order> findByIdWithItems(@Param("id") Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Order o WHERE o.orderId = :id")
+    Optional<Order> findByIdForUpdate(@Param("id") Long id);
+
+    long countByStatusAndCreatedAtBetween(OrderStatus status, Instant start, Instant end);
+
+    List<Order> findByStatusAndCreatedAtBetween(OrderStatus status, Instant start, Instant end);
+
+    @Query("SELECT oi.menuItem.itemName, SUM(oi.quantity), oi.menuItem.imageUrl " +
+           "FROM Order o JOIN o.orderItems oi " +
+           "WHERE o.status <> :excludedStatus AND o.createdAt BETWEEN :start AND :end " +
+           "GROUP BY oi.menuItem.itemName, oi.menuItem.imageUrl " +
+           "ORDER BY SUM(oi.quantity) DESC")
+    List<Object[]> getTopMenuItemsToday(
+            @Param("excludedStatus") OrderStatus excludedStatus,
+            @Param("start") Instant start,
+            @Param("end") Instant end,
+            Pageable pageable
+    );
+
+    @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :start AND :end ORDER BY o.createdAt DESC")
+    List<Order> findLatestOrdersToday(
+            @Param("start") Instant start,
+            @Param("end") Instant end,
+            Pageable pageable
+    );
 }

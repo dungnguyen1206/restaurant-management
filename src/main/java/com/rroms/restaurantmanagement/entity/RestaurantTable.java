@@ -50,4 +50,8 @@ public class RestaurantTable {
 
     @OneToMany(mappedBy = "table")
     private List<ReservationTable> reservationTables;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_waiter_id")
+    private User assignedWaiter;
 }

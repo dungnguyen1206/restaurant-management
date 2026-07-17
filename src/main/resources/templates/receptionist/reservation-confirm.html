@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Confirm Reservation</title>
+    <title>Xác nhận đặt bàn</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/reservations.css}" rel="stylesheet">
@@ -17,11 +17,11 @@
     <div class="mb-4">
         <a th:href="@{/receptionist/reservations}" class="text-decoration-none back-link">
             <i class="fa-solid fa-arrow-left me-2"></i>
-            Back to Reservations
+            Quay lại danh sách đặt bàn
         </a>
 
-        <h1 class="page-title mt-3">Confirm Reservation</h1>
-        <p class="page-subtitle">Select an available table for this reservation</p>
+        <h1 class="page-title mt-3">Xác nhận đặt bàn</h1>
+        <p class="page-subtitle">Chọn bàn còn trống cho đặt bàn này</p>
     </div>
 
     <div class="card border-0 shadow-sm">
@@ -29,16 +29,16 @@
 
             <div class="alert alert-warning mb-4">
                 <div>
-                    <strong th:text="${reservation.fullName}">Guest Name</strong>
+                    <strong th:text="${reservation.fullName}">Tên khách</strong>
                     -
-                    <span th:text="${reservation.phone}">Phone</span>
+                    <span th:text="${reservation.phone}">Số điện thoại</span>
                 </div>
                 <div>
-                    Guests:
+                    Số khách:
                     <strong th:text="${reservation.numberOfGuests}">4</strong>
                 </div>
                 <div>
-                    Time:
+                    Thời gian:
                     <strong th:text="${#temporals.format(reservation.reservationTime, 'dd/MM/yyyy HH:mm')}">
                         13/07/2026 19:00
                     </strong>
@@ -55,33 +55,33 @@
                        th:value="${_csrf.token}">
 
                 <div class="mb-4">
-                    <label class="form-label fw-semibold">Available Table</label>
+                    <label class="form-label fw-semibold">Bàn còn trống</label>
 
                     <select th:field="*{tableId}" class="form-select" required>
-                        <option value="">Choose table</option>
+                        <option value="">Chọn bàn</option>
                         <option th:each="table : ${tables}"
                                 th:value="${table.tableId}"
-                                th:text="|${table.tableNumber} - ${table.capacity} seats - ${table.area}|">
-                            T-01 - 4 seats
+                                th:text="|${table.tableNumber} - ${table.capacity} chỗ - ${table.area}|">
+                            T-01 - 4 chỗ
                         </option>
                     </select>
                 </div>
 
                 <div th:if="${tables == null or #lists.isEmpty(tables)}"
                      class="alert alert-danger">
-                    No available table has enough capacity.
+                    Không có bàn trống đủ sức chứa.
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
                     <a th:href="@{/receptionist/reservations}" class="btn btn-light">
-                        Cancel
+                        Hủy
                     </a>
 
                     <button type="submit"
                             class="btn btn-warning fw-semibold"
                             th:disabled="${tables == null or #lists.isEmpty(tables)}">
                         <i class="fa-solid fa-check me-2"></i>
-                        Confirm
+                        Xác nhận
                     </button>
                 </div>
 

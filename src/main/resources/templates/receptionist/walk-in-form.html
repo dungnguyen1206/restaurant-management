@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Walk-in</title>
+    <title>Khách vãng lai</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/reservations.css}" rel="stylesheet">
@@ -17,27 +17,21 @@
     <div class="mb-4">
         <a th:href="@{/receptionist/tables}" class="text-decoration-none back-link">
             <i class="fa-solid fa-arrow-left me-2"></i>
-            Back to Tables
+            Quay lại danh sách bàn
         </a>
 
-        <h1 class="page-title mt-3">Walk-in Guest</h1>
+        <h1 class="page-title mt-3">Khách vãng lai</h1>
         <p class="page-subtitle">
-            Create a checked-in reservation for the selected table
+            Tạo đặt bàn đã nhận khách và chọn bàn còn trống
         </p>
+    </div>
+
+    <div class="alert alert-danger" th:if="${error != null}" th:text="${error}">
+        Thông báo lỗi
     </div>
 
     <div class="card form-card border-0 shadow-sm">
         <div class="card-body p-4">
-
-            <div class="alert alert-warning d-flex align-items-center gap-2 mb-4">
-                <i class="fa-solid fa-chair"></i>
-                <div>
-                    Table
-                    <strong th:text="${table.tableNumber}">T-01</strong>
-                    -
-                    <span th:text="${table.capacity + ' seats'}">4 seats</span>
-                </div>
-            </div>
 
             <form th:action="@{/receptionist/reservations/walk-in}" method="post" th:object="${walkIn}">
 
@@ -46,53 +40,112 @@
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
 
-                <input type="hidden" th:field="*{tableId}">
-
                 <div class="row g-4">
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">First Name</label>
+                        <label class="form-label fw-semibold">Họ</label>
                         <input type="text" th:field="*{firstName}" class="form-control">
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('firstName')}"
+                             th:errors="*{firstName}">
+                            Lỗi họ
+                        </div>
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Middle Name</label>
+                        <label class="form-label fw-semibold">Tên đệm</label>
                         <input type="text" th:field="*{middleName}" class="form-control">
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('middleName')}"
+                             th:errors="*{middleName}">
+                            Lỗi tên đệm
+                        </div>
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Last Name</label>
+                        <label class="form-label fw-semibold">Tên</label>
                         <input type="text" th:field="*{lastName}" class="form-control" required>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('lastName')}"
+                             th:errors="*{lastName}">
+                            Lỗi tên
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Phone</label>
-                        <input type="text" th:field="*{phone}" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Number of Guests</label>
+                        <label class="form-label fw-semibold">Số lượng khách</label>
                         <input type="number"
                                th:field="*{numberOfGuests}"
                                class="form-control"
                                min="1"
-                               th:max="${table.capacity}"
                                required>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('numberOfGuests')}"
+                             th:errors="*{numberOfGuests}">
+                            Lỗi số lượng khách
+                        </div>
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label fw-semibold">Note</label>
+                        <label class="form-label fw-semibold">Bàn còn trống</label>
+                        <div class="text-danger small mb-2"
+                             th:if="${#fields.hasErrors('tableIds')}"
+                             th:errors="*{tableIds}">
+                            Lỗi chọn bàn
+                        </div>
+
+                        <div class="row g-3" th:if="${availableTables != null and !#lists.isEmpty(availableTables)}">
+                            <div class="col-md-4" th:each="table : ${availableTables}">
+                                <label class="card border-0 shadow-sm h-100">
+                                    <div class="card-body d-flex gap-3 align-items-start">
+                                        <input class="form-check-input mt-1"
+                                               type="checkbox"
+                                               th:field="*{tableIds}"
+                                               th:value="${table.tableId}">
+
+                                        <div>
+                                            <div class="fw-bold">
+                                                <i class="fa-solid fa-chair me-2 text-warning"></i>
+                                                <span th:text="${table.tableNumber}">T-01</span>
+                                            </div>
+
+                                            <div class="text-muted small mt-1">
+                                                <span th:text="${table.capacity + ' chỗ'}">4 chỗ</span>
+                                                -
+                                                <span th:text="${table.area}">INDOOR</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning mt-3"
+                             th:if="${availableTables == null or #lists.isEmpty(availableTables)}">
+                            Không có bàn trống.
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Ghi chú</label>
                         <textarea th:field="*{note}" class="form-control" rows="4"></textarea>
+                        <div class="text-danger small mt-1"
+                             th:if="${#fields.hasErrors('note')}"
+                             th:errors="*{note}">
+                            Lỗi ghi chú
+                        </div>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
                     <a th:href="@{/receptionist/tables}" class="btn btn-light">
-                        Cancel
+                        Hủy
                     </a>
 
-                    <button type="submit" class="btn btn-warning fw-semibold">
+                    <button type="submit"
+                            class="btn btn-warning fw-semibold"
+                            th:disabled="${availableTables == null or #lists.isEmpty(availableTables)}">
                         <i class="fa-solid fa-check me-2"></i>
-                        Check In
+                        Nhận bàn
                     </button>
                 </div>
             </form>

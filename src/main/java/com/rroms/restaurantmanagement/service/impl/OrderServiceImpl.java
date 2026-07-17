@@ -132,7 +132,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Transactional
     public void handleUpdateStatusOrder(Long orderId, OrderStatus orderStatus) {
         Optional<Order> orderOpt = this.orderRepository.findById(orderId);
         if(orderOpt.isPresent()) {
@@ -174,15 +173,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Page<OrderListProjection> getReceptionistOrderList(String keyword, String status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        String searchKeyword = null;
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            searchKeyword = keyword.trim();
-        }
-    @Override
     public Order findById(Long orderId) {
         return this.orderRepository.findByIdWithItems(orderId).orElse(null);
     }
@@ -202,14 +192,6 @@ public class OrderServiceImpl implements OrderService {
         List<Order> completedOrders = orderRepository.findByStatusAndCreatedAtBetween(OrderStatus.COMPLETED, start, end);
         long completedCountToday = completedOrders.size();
 
-        String orderStatus = null;
-        if (status != null && !status.trim().isEmpty()) {
-            orderStatus = status.trim();
-        }
-
-        return orderRepository.getReceptionistOrderList(searchKeyword, orderStatus, pageable);
-    }
-
         long totalSeconds = 0;
         int validDurationCount = 0;
         for (Order o : completedOrders) {
@@ -218,6 +200,7 @@ public class OrderServiceImpl implements OrderService {
                 validDurationCount++;
             }
         }
+
         String avgTimeStr = "00:00";
         if (validDurationCount > 0) {
             long avgSeconds = totalSeconds / validDurationCount;
@@ -254,4 +237,23 @@ public class OrderServiceImpl implements OrderService {
                 .latestOrders(latestOrders)
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderListProjection> getReceptionistOrderList(String keyword, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String searchKeyword = null;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            searchKeyword = keyword.trim();
+        }
+
+        String orderStatus = null;
+        if (status != null && !status.trim().isEmpty()) {
+            orderStatus = status.trim();
+        }
+
+        return orderRepository.getReceptionistOrderList(searchKeyword, orderStatus, pageable);
+    }
 }
+
+

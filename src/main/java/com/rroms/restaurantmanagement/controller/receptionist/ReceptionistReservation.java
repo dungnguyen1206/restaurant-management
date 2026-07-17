@@ -5,8 +5,10 @@ import com.rroms.restaurantmanagement.dto.request.ReservationRequest;
 import com.rroms.restaurantmanagement.entity.Reservation;
 import com.rroms.restaurantmanagement.entity.constant.TableStatus;
 import com.rroms.restaurantmanagement.service.ReservationService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -47,34 +49,34 @@ public class ReceptionistReservation {
         return "redirect:/receptionist/reservations";
     }
 
-    @GetMapping("/new")
-    public String showNewReservationPage(Model model) {
-        model.addAttribute("reservation", new ReservationRequest());
-
-        return "receptionist/reservation-form";
-    }
-
     @GetMapping("/walk-in")
-    public String showWalkInPage(@RequestParam Long tableId, Model model) {
-        RestaurantTable table = tableRepository.findById(tableId)
-                .orElseThrow(() -> new RuntimeException("Table không tồn tại"));
-
+    public String showWalkInPage(Model model) {
         WalkInRequest request = new WalkInRequest();
-        request.setTableId(tableId);
-        request.setNumberOfGuests(table.getCapacity());
 
-        model.addAttribute("walkIn", request);
-        model.addAttribute("table", table);
-        model.addAttribute("pageTitle", "Walk-in");
-        model.addAttribute("currentPage", "tables");
+        addWalkInFormAttributes(model, request);
 
         return "receptionist/walk-in-form";
     }
 
     @PostMapping("/walk-in")
-    public String createWalkIn(@ModelAttribute("walkIn") WalkInRequest request) {
-        reservationService.createWalkIn(request);
-        return "redirect:/receptionist/tables";
+    public String createWalkIn(
+            @Valid @ModelAttribute("walkIn") WalkInRequest request,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            addWalkInFormAttributes(model, request);
+            return "receptionist/walk-in-form";
+        }
+
+        try {
+            reservationService.createWalkIn(request);
+            return "redirect:/receptionist/tables";
+        } catch (RuntimeException ex) {
+            addWalkInFormAttributes(model, request);
+            model.addAttribute("error", ex.getMessage());
+            return "receptionist/walk-in-form";
+        }
     }
 
     @GetMapping("/{id}/confirm")
@@ -105,5 +107,12 @@ public class ReceptionistReservation {
     ) {
         reservationService.confirm(id, request.getTableId());
         return "redirect:/receptionist/reservations";
+    }
+    private void addWalkInFormAttributes(Model model, WalkInRequest request) {
+        model.addAttribute("walkIn", request);
+        model.addAttribute("availableTables",
+                tableRepository.findByStatusOrderByTableNumberAsc(TableStatus.AVAILABLE));
+        model.addAttribute("pageTitle", "Walk-in");
+        model.addAttribute("currentPage", "tables");
     }
 }

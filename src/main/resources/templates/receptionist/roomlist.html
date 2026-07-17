@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{receptionist/layout/layout}">
 <head>
-    <title>Tables</title>
+    <title>Bàn</title>
 
     <th:block layout:fragment="css">
         <link th:href="@{/receptionist/roomlist.css}" rel="stylesheet">
@@ -14,7 +14,17 @@
 <body>
 <div layout:fragment="content">
 
+    <div class="alert alert-success"
+         th:if="${success != null}"
+         th:text="${success}">
+    </div>
 
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a th:href="@{/receptionist/reservations/walk-in}" class="btn btn-warning fw-semibold">
+            <i class="fa-solid fa-person-walking-arrow-right me-2"></i>
+            Khách vãng lai
+        </a>
+    </div>
 
     <form th:action="@{/receptionist/tables}" method="get" class="row g-2 mb-4">
         <div class="col-md-5">
@@ -27,35 +37,33 @@
                        name="keyword"
                        th:value="${keyword}"
                        class="form-control"
-                       placeholder="Search tables...">
+                       placeholder="Tìm bàn...">
             </div>
         </div>
 
         <div class="col-md-3">
             <select name="area" class="form-select filter-select">
-                <option value="" th:selected="${area == null or area == ''}">All areas</option>
-                <option value="INDOOR" th:selected="${area == 'INDOOR'}">Indoor</option>
-                <option value="OUTDOOR" th:selected="${area == 'OUTDOOR'}">Outdoor</option>
-                <option value="VIPROOM" th:selected="${area == 'VIPROOM'}">VIP Room</option>
+                <option value="" th:selected="${area == null or area == ''}">Tất cả khu vực</option>
+                <option value="INDOOR" th:selected="${area == 'INDOOR'}">Trong nhà</option>
+                <option value="OUTDOOR" th:selected="${area == 'OUTDOOR'}">Ngoài trời</option>
+                <option value="VIPROOM" th:selected="${area == 'VIPROOM'}">Phòng VIP</option>
             </select>
         </div>
 
         <div class="col-md-2">
             <select name="capacity" class="form-select filter-select">
-                <option value="" th:selected="${capacity == null or capacity == ''}">All capacity</option>
-                <option value="2" th:selected="${capacity == '2'}">2 seats</option>
-                <option value="4" th:selected="${capacity == '4'}">4 seats</option>
-                <option value="6" th:selected="${capacity == '6'}">6 seats</option>
-                <option value="8" th:selected="${capacity == '8'}">8 seats</option>
+                <option value="" th:selected="${capacity == null or capacity == ''}">Tất cả sức chứa</option>
+                <option value="2" th:selected="${capacity == '2'}">2 chỗ</option>
+                <option value="4" th:selected="${capacity == '4'}">4 chỗ</option>
+                <option value="6" th:selected="${capacity == '6'}">6 chỗ</option>
+                <option value="8" th:selected="${capacity == '8'}">8 chỗ</option>
             </select>
         </div>
-
-
 
         <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-dark">
                 <i class="fa-solid fa-filter me-2"></i>
-                Filter
+                Lọc
             </button>
         </div>
     </form>
@@ -72,45 +80,58 @@
 
                         <span th:if="${table.status.name() == 'AVAILABLE'}"
                               class="badge rounded-pill text-bg-success">
-                            Available
+                            Trống
                         </span>
 
                         <span th:if="${table.status.name() == 'OCCUPIED'}"
                               class="badge rounded-pill text-bg-primary">
-                            Occupied
+                            Đang sử dụng
                         </span>
 
                         <span th:if="${table.status.name() == 'RESERVED'}"
                               class="badge rounded-pill text-bg-warning">
-                            Reserved
+                            Đã đặt
                         </span>
 
                         <span th:if="${table.status.name() == 'OUT_OF_SERVICE'}"
                               class="badge rounded-pill text-bg-danger">
-                            Out of service
+                            Ngừng phục vụ
                         </span>
                     </div>
 
                     <p class="card-text mb-2">
                         <i class="fa-solid fa-location-dot me-2 text-danger"></i>
 
-                        <span th:if="${table.area.name() == 'INDOOR'}">Indoor</span>
-                        <span th:if="${table.area.name() == 'OUTDOOR'}">Outdoor</span>
-                        <span th:if="${table.area.name() == 'VIPROOM'}">VIP Room</span>
+                        <span th:if="${table.area.name() == 'INDOOR'}">Trong nhà</span>
+                        <span th:if="${table.area.name() == 'OUTDOOR'}">Ngoài trời</span>
+                        <span th:if="${table.area.name() == 'VIPROOM'}">Phòng VIP</span>
                     </p>
 
                     <p class="card-text mb-0">
                         <i class="fa-solid fa-users me-2 text-secondary"></i>
-                        <span th:text="${table.capacity + ' seats'}">4 seats</span>
+                        <span th:text="${table.capacity + ' chỗ'}">4 chỗ</span>
                     </p>
 
-                    <div class="mt-3" th:if="${table.status.name() == 'AVAILABLE'}">
-                        <a class="btn btn-sm btn-warning fw-semibold w-100"
-                           th:href="@{/receptionist/reservations/walk-in(tableId=${table.tableId})}">
-                            <i class="fa-solid fa-person-walking-arrow-right me-2"></i>
-                            Walk-in
+                    <p class="card-text mb-0 mt-2">
+                        <i class="fa-regular fa-user me-2 text-secondary"></i>
+                        <span th:if="${table.assignedWaiterName != null}"
+                              th:text="|Phục vụ: ${table.assignedWaiterName}|">
+                            Phục vụ: Nguyễn Văn A
+                        </span>
+                        <span th:if="${table.assignedWaiterName == null}">
+                            Chưa phân công phục vụ
+                        </span>
+                    </p>
+
+                    <div class="mt-2"
+                         th:if="${table.status.name() == 'RESERVED' or table.status.name() == 'OCCUPIED'}">
+                        <a class="btn btn-sm btn-outline-dark fw-semibold w-100"
+                           th:href="@{/receptionist/tables/{id}/assign-waiter(id=${table.tableId})}">
+                            <i class="fa-regular fa-user me-2"></i>
+                            Phân công phục vụ
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -119,7 +140,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-5 text-muted">
                     <i class="fa-solid fa-table-cells-large fs-1 d-block mb-3"></i>
-                    No tables found.
+                    Không tìm thấy bàn.
                 </div>
             </div>
         </div>
