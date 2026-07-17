@@ -1,18 +1,77 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+.nav-underline .nav-link {
+    color: #755B00 !important;
+    bottom: 2px;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+}
 
-    .nav-underline .nav-link{
-        color: #755B00 !important;
-        bottom: 2px;
-        border-bottom: 2px solid transparent;
-        padding-bottom: 4px;
-    }
-    .nav-underline .nav-link.active{
-        color: #755B00; !important;
-        border-bottom: 2px solid #C9A84C !important;
-        font-weight: 600;
+.nav-underline .nav-link.active {
+    color: #755B00;
+!important;
+    border-bottom: 2px solid #C9A84C !important;
+    font-weight: 600;
 
-    }
+}
 
-    .nav-underline .nav-link:hover{
-        border-bottom-color: #755B00;
-        color: #C9A84C;
-    }
+.nav-underline .nav-link:hover {
+    border-bottom-color: #755B00;
+    color: #C9A84C;
+}
+
+/*
+        Menu item card
+*/
+.menu-edit-button {
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    color: #ffff;
+    padding: 6px 12px;
+    background: #C9A84C;
+    border-color: #C9A84C;
+    border-radius: 5px;
+    margin-bottom: 10px;
+
+}
+.card-img-top{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+/*
+
+Paging
+
+*/
+
+.paging{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap
+}
+.pager-button {
+    min-width: 35px;
+    text-decoration: none;
+    font-size: 15px;
+    height: 30px;
+    border: 1px solid #C9A84C;
+    border-radius: 8px;
+    background: #F6F3EE;
+    color: #475569;
+    padding: 0 10px;
+    font-weight: 500;
+    align-content: center;
+}
+.pager-button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}

@@ -7,6 +7,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "invoices")
@@ -38,4 +40,7 @@ public class Invoice {
     @OneToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @OneToMany(mappedBy = "invoice")
+    private List<Payment> payments = new ArrayList<>();
 }

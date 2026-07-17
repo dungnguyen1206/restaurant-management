@@ -19,9 +19,9 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     @Override
     public String uploadImage(MultipartFile file) {
         try{
-            Map uploadImage= cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "RROMS",
+            Map<String,Object>uploadImage= cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "RROMS",
                     "resource_type", "image"));
-            return uploadImage.get("secret_url").toString();
+            return uploadImage.get("secure_url").toString();
         }
         catch (Exception ex){
             throw new RuntimeException("Tải ảnh lên thất bại " +ex.getMessage());
@@ -30,8 +30,15 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Override
     public void deleteImage(String imageId) {
+
+        if(imageId == null || !imageId.contains("cloudinary.com")){
+            return;
+        }
+
         try{
-            cloudinary.uploader().destroy(imageId,ObjectUtils.emptyMap());
+           String filename = imageId.substring(imageId.lastIndexOf("/")+1);
+           String publicId = imageId.substring(0,filename.lastIndexOf("."));
+           cloudinary.uploader().destroy(publicId,ObjectUtils.emptyMap());
         }
         catch (Exception ex){
             throw  new  RuntimeException("Xóa ảnh thất bại" +ex.getMessage());

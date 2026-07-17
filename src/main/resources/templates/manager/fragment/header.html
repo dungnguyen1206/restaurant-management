@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="header">
+    <header style="display: flex; justify-content: flex-end; width: 100%;">
+        <div class="container-fluid" style="background: #FAF7F2; padding: 15px 0;">
+
+            <div class="d-flex align-items-center ms-auto" style="gap: 12px; padding: 0 20px; width: max-content;">
+
+                <div style="width: 36px;
+                height: 36px;
+                min-width: 36px;
+                border-radius: 50%;
+                background: #C9A84C;
+                color: white;
+                font-size: 13px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;">
+                    HM
+                </div>
+
+                <div style="color: #7A6248; font-size: 14px; line-height: 1.3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                    <strong style="display: block;">Quản lý nhà hàng</strong>
+                    <span style="color: #7A6248; font-size: 12px;">manager@hms.vn</span>
+                </div>
+
+                <div>
+                    <a th:href="@{/login}" style="color: #7A6248; font-size: 20px; cursor: pointer;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+</div>
+</body>
+</html>

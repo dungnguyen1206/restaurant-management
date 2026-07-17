@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/fragment/layout}" th:with="activeMenu='menu'">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+    <link rel="stylesheet" th:href="@{/manager/manager-menu.css}">
+    <link rel="stylesheet" th:href="@{/manager/manager-dashboard.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<div class="container-fluid p-0 h-100" layout:fragment="content">
+    <div class="row g-0 d-flex align-items-stretch h-100" style="background: #FAF7F2">
+        <div class="col-md-12  py-4 ps-5 pe-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <a th:href="@{/manager/menu/list}"><i class="bi bi-arrow-left"
+                                                          style="font-size: 20px ;color: #2C1A0E"></i></a>
+                    <span style="font-family: Playfair Display;font-weight: 600;color: #1C1209;font-size: 28px" th:if="${isUpdateMode}">Chỉnh sửa món ăn</span>
+                    <span style="font-family: Playfair Display;font-weight: 600;color: #1C1209;font-size: 28px" th:unless="${isUpdateMode}">Thêm món mới</span>
+                </div>
+                <hr style="color: #C9A84C; width: 90%; margin-top: 15px">
+
+                <div class="col-md-12" th:if="${successMessage!=null}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Thành công!</strong> Dữ liệu đã được cập nhật.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+
+                <div class="col-md-12" th:if="${errorMessage!=null}">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Thất bại!</strong>
+                        <span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+
+            <form th:action="@{${formAction}}"
+                  method="post"
+                  th:object="${createMenuItemsRequest}"
+                  id="menuForm"
+                  enctype="multipart/form-data">
+                <input type="hidden" th:field="*{itemId}" th:if="${isUpdateMode}">
+                <div class="row mt-2">
+
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <label style="color: #7A6248; font-weight: 600">THÔNG TIN MÓN</label>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label style="color: #1C1209;font-family:Arial; font-weight: 600">Tên món
+                                            ăn</label>
+                                        <input type="text" class="form-control mb-3 mt-2" th:readonly="${isUpdateMode}" th:field="*{itemName}"
+                                               placeholder="Ví dụ: Bò áp chảo" style="border-color: #C9A84C" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label style="color: #1C1209;font-family:Arial; font-weight: 600;margin-bottom: 8px">Thể
+                                            loại</label>
+                                        <select class="form-select form-select-lg mb-3" th:field="*{categoryId}"
+                                                aria-label=".form-select-lg example"
+                                                style="border-color: #C9A84C;font-size: 15px">
+                                            <option th:each="category : ${categoryResponseForManagers}"
+                                                    th:value="${category.id}"
+                                                    th:text="${category.categoryName}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label style="color: #1C1209;font-family:Arial; font-weight: 600">Giá
+                                            (VND)</label>
+                                        <input type="number" step="1" class="form-control mb-3 mt-2"
+                                               placeholder="600,000 VND"
+                                               th:field="*{itemPrice}"
+                                               style="border-color: #C9A84C" required>
+                                        <div th:if="${#fields.hasErrors('itemPrice')}"
+                                             th:errors="*{itemPrice}"
+                                             class="text-danger mt-1"></div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label style="color: #1C1209;font-family:Arial; font-weight: 600">Mô tả món
+                                            ăn</label>
+                                        <textarea class="form-control mb-3 mt-2"
+                                                  placeholder="Món ăn cao cấp được làm từ bò nhập khẩu từ úc"
+                                                  style="border-color: #C9A84C"
+                                                  th:field="*{itemDescription}"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <label style="color: #7A6248; font-weight: 600">ẢNH</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body d-flex justify-content-center align-items-center"
+                                         style="height: 250px;">
+                                        <div class="upload-box d-flex flex-column align-items-center justify-content-center"
+                                             style="width: 100%; height: 100%;  background: #F6F3EE;   border: 2px dashed #E8DFD0;  position: relative; overflow: hidden;">
+
+                                            <!-- Nội dung mặc định khi chưa chọn ảnh -->
+                                            <div id="uploadPlaceholder" class="text-center">
+                                                <i class="bi bi-cloud-arrow-up"
+                                                   style="font-size: 30px; color: #C9A84C;"></i>
+
+                                                <p class="mb-0 mt-2"
+                                                   style="color: #C9A84C;     font-size: 18px;  font-weight: 400;">
+                                                    Tải ảnh món ăn lên
+                                                </p>
+                                            </div>
+
+                                            <img th:if="${createMenuItemsRequest.itemImageUrl != null and createMenuItemsRequest.itemImageUrl != ''}"
+                                                 th:src="${createMenuItemsRequest.itemImageUrl}"
+                                                 alt="Avatar"
+                                                 class="d-none"
+                                                 style="width: 100%; height: 100%;object-fit: cover; position: absolute; inset: 0; z-index: 1;"/>
+
+                                            <!-- Ảnh preview -->
+                                            <img id="imagePreview"
+                                                 alt="Ảnh xem trước"
+                                                 class="d-none"
+                                                 style="width: 100%; height: 100%;object-fit: cover; position: absolute; inset: 0; z-index: 1;">
+
+                                            <!-- Input phủ lên toàn bộ upload box -->
+                                            <input type="file"
+                                                   id="imageUploader"
+                                                   name="itemImage"
+                                                   accept="image/jpeg,image/png,image/webp"
+                                                   style="position: absolute;inset: 0; width: 100%; height: 100%;opacity: 0; cursor: pointer; z-index: 2;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3 d-flex">
+                            <div class="col-md-12 d-flex justify-content-center align-items-center">
+                                <a th:href="@{/manager/menu/list}" style="text-decoration: none;
+                                 padding: 6px 20px;background: #F3EDE3 ; border: 1px solid #C9A84C; color: #C9A84C; border-radius: 5px; margin-right: 20px ">Quay
+                                    lại</a>
+                                <button class="btn btn-outline-primary" type="submit"
+                                        style="color: #1C1209;background: #C9A84C;border-color: #C9A84C;">Lưu món
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+    <script th:inline="javascript">
+        const imageUploader = document.getElementById("imageUploader");
+        const imagePreview = document.getElementById("imagePreview");
+        const uploadPlaceholder = document.getElementById("uploadPlaceholder");
+
+        let currentPreviewUrl = null;
+
+        imageUploader.addEventListener("change", function () {
+            const selectedFile = this.files[0];
+
+            if (!selectedFile) {
+                resetImagePreview();
+                return;
+            }
+
+            if (!selectedFile.type.startsWith("image/")) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Tệp không hợp lệ",
+                    text: "Vui lòng chọn một tệp hình ảnh."
+                });
+
+                this.value = "";
+                resetImagePreview();
+                return;
+            }
+
+            // Xóa URL tạm cũ để tránh giữ bộ nhớ
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
+            }
+
+            currentPreviewUrl = URL.createObjectURL(selectedFile);
+            imagePreview.src = currentPreviewUrl;
+
+            uploadPlaceholder.classList.add("d-none");
+            imagePreview.classList.remove("d-none");
+        });
+
+        function resetImagePreview() {
+            if (currentPreviewUrl) {
+                URL.revokeObjectURL(currentPreviewUrl);
+                currentPreviewUrl = null;
+            }
+
+            imagePreview.removeAttribute("src");
+            imagePreview.classList.add("d-none");
+            uploadPlaceholder.classList.remove("d-none");
+        }
+
+
+        const menuForm = document.getElementById("menuForm");
+        menuForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: "Xác nhận sự thay đổi ?",
+                text: "Thông tin món ăn sẽ được lưu vào hệ thống",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                cancelButtonColor: "#DD6B55",
+                confirmButtonText: "Xác nhận",
+                cancelButtonText: "Hủy"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    menuForm.submit();
+                }
+            })
+        })
+    </script>
+
+
+</div>
+</body>
+</html>

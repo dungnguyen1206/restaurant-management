@@ -23,4 +23,11 @@ public class GlobalExceptionHandler {
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ?  referer : "/customer/home");
     }
+
+    @ExceptionHandler(DataConflictException.class)
+    public String handleException(DataConflictException exception, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ?  referer : "/manager/dashboard");
+    }
 }
