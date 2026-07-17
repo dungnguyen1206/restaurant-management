@@ -5,6 +5,13 @@ import com.rroms.restaurantmanagement.repository.projection.ReservationProjectio
 import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
 import java.util.List;
 
+import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface ReservationService {
     List<ReservationProjection> getReservationList(String keyword, String status);
 
@@ -19,6 +26,11 @@ public interface ReservationService {
 
 
     void confirm(Long reservationId, Long tableId);
+    Long countTodayReservation( LocalDateTime startDate, LocalDateTime endDate);
+
+
+
+    Page<ReservationResponseForManager> getAllTodayReservationsForManager(LocalDateTime startDate, LocalDateTime endDate, Integer pageNumber, Integer pageSize);
 }
 
 

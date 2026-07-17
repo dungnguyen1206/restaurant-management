@@ -26,13 +26,13 @@ public class Reservation extends BaseEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Column(length = 500, columnDefinition = "NVARCHAR(50)")
+    @Column(length = 500)
     private String note;
 
     @Column(name = "reservation_time", nullable = false)
     private LocalDateTime reservationTime;
 
-    @Column(name = "full_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(50)")
+    @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
     @Column(nullable = false, length = 20)
