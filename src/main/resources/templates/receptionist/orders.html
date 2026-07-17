@@ -22,7 +22,17 @@
 
         <a th:href="@{/receptionist/orders(status='PENDING', keyword=${keyword})}"
            th:classappend="${status == 'PENDING'} ? 'active'">
-            Đang xử lý
+            Đang chờ
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='PREPARING', keyword=${keyword})}"
+           th:classappend="${status == 'PREPARING'} ? 'active'">
+            Đang chuẩn bị
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='SERVED', keyword=${keyword})}"
+           th:classappend="${status == 'SERVED'} ? 'active'">
+            Đã phục vụ
         </a>
 
         <a th:href="@{/receptionist/orders(status='COMPLETED', keyword=${keyword})}"
@@ -100,10 +110,6 @@
 
                     <td>
                         <div class="d-flex gap-2">
-                            <a class="btn btn-sm btn-outline-secondary"
-                               th:href="@{/receptionist/orders/{id}(id=${order.orderId})}">
-                                <i class="fa-regular fa-eye"></i>
-                            </a>
 
                             <a class="btn btn-sm btn-outline-secondary"
                                th:href="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}"

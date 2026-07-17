@@ -99,15 +99,27 @@
                             <div class="d-flex justify-content-center gap-2">
                                 <a th:if="${r.status.name() == 'PENDING'}"
                                    th:href="@{/receptionist/reservations/{id}/confirm(id=${r.reservationId})}"
-                                   class="btn btn-sm btn-outline-primary">
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Xác nhận đặt bàn">
                                     <i class="fa-solid fa-check"></i>
                                 </a>
 
-                                <form th:action="@{/receptionist/reservations/{id}/cancel(id=${r.reservationId})}"
+                                <form th:if="${r.status.name() == 'CONFIRMED'}"
+                                      th:action="@{/receptionist/reservations/{id}/check-in(id=${r.reservationId})}"
+                                      method="post">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-success"
+                                            title="Nhận bàn">
+                                        <i class="fa-solid fa-door-open"></i>
+                                    </button>
+                                </form>
+
+                                <form th:if="${r.status.name() == 'PENDING' or r.status.name() == 'CONFIRMED'}"
+                                      th:action="@{/receptionist/reservations/{id}/cancel(id=${r.reservationId})}"
                                       method="post">
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger"
-                                            th:disabled="${r.status.name() == 'CHECKED_IN' or r.status.name() == 'CANCELLED'}">
+                                            title="Hủy đặt bàn">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
                                 </form>

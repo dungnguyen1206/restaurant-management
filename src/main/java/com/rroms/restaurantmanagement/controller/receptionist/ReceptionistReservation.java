@@ -49,13 +49,6 @@ public class ReceptionistReservation {
         return "redirect:/receptionist/reservations";
     }
 
-    @GetMapping("/new")
-    public String showNewReservationPage(Model model) {
-        model.addAttribute("reservation", new ReservationRequest());
-
-        return "receptionist/reservation-form";
-    }
-
     @GetMapping("/walk-in")
     public String showWalkInPage(Model model) {
         WalkInRequest request = new WalkInRequest();

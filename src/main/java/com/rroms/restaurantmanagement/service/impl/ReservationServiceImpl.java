@@ -65,17 +65,28 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     @Override
+    @Transactional
     public void cancel(Long id) {
         Reservation reservation = getReservationById(id);
 
-        if(reservation.getStatus() == ReservationStatus.CHECKED_IN){
-            throw new RuntimeException("Không the check in reservation đã hủy");
+        if (reservation.getStatus() == ReservationStatus.CHECKED_IN) {
+            throw new RuntimeException("Không thể hủy đặt bàn đã nhận khách");
+        }
+
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            return;
+        }
+
+        for (ReservationTable reservationTable : reservation.getReservationTables()) {
+            RestaurantTable table = reservationTable.getTable();
+
+            if (table != null && table.getStatus() == TableStatus.RESERVED) {
+                table.setStatus(TableStatus.AVAILABLE);
+            }
         }
 
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
-
-
     }
 
     @Override
