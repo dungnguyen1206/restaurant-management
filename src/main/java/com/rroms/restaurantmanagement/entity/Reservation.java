@@ -32,6 +32,9 @@ public class Reservation extends BaseEntity {
     @Column(name = "reservation_time", nullable = false)
     private LocalDateTime reservationTime;
 
+    @Column(name = "slot")
+    private Integer slot;
+
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 

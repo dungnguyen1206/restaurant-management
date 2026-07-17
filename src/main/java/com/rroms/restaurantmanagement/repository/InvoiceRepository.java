@@ -10,12 +10,6 @@ import java.util.List;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-    Invoice findInvoiceById(Integer invoiceId);
-
-    List<Invoice> findByStatus(String status);
-
-    List<Invoice> findByCustomerId(Long customerId);
-
 
 
 

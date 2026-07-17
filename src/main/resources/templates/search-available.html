@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RROMS - Find a Table</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link rel="stylesheet" th:href="@{/css/search-available.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="container my-5 py-4">
+
+    <div class="text-center mb-5">
+        <h1 class="font-serif fw-bold mb-2">Find a Table</h1>
+        <p class="font-sans text-secondary-custom">Select your preferred date, time, and party size</p>
+    </div>
+
+    <section class="card custom-card p-4 shadow-sm mb-5">
+        <form th:action="@{/reservations/search}" method="get">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-3">
+                    <label class="form-label font-sans small fw-bold text-secondary-custom">Date</label>
+                    <input type="date" name="date"
+                           th:value="${searchCriteria != null ? searchCriteria.date : ''}"
+                           class="form-control filter-input" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label font-sans small fw-bold text-secondary-custom">Time</label>
+                    <select name="timeSlot" class="form-select filter-input" required>
+                        <option value="" disabled th:selected="${searchCriteria == null}">Select time...</option>
+                        <option value="1">8:00 - 10:00</option>
+                        <option value="2">10:00 - 12:00</option>
+                        <option value="3">12:00 - 14:00</option>
+                        <option value="4">17:00 - 19:00</option>
+                        <option value="5">19:00 - 21:00</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label font-sans small fw-bold text-secondary-custom">Guests</label>
+                    <select name="guests" class="form-select filter-input" required>
+                        <option value="2">2 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="6">6 Guests</option>
+                        <option value="8">8 Guests</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-gold-filled w-100 filter-input fw-bold">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Search Availability
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+
+    <section>
+        <form th:action="@{/reservations/book}" method="post" id="multiBookingForm">
+
+            <input type="hidden" name="date" th:value="${date}">
+            <input type="hidden" name="timeSlot" th:value="${timeSlot}">
+            <input type="hidden" name="guests" th:value="${guests}">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="font-serif fw-bold mb-0">Available tables</h3>
+                    <span class="font-sans text-secondary-custom small" th:if="${date != null}">
+                    Showing results for <strong th:text="${date}">2026-06-28</strong>
+                    at slot <strong th:text="${timeSlot}">1</strong>
+                    for <strong th:text="${guests}">2</strong> guests
+                </span>
+                </div>
+
+                <div th:if="${availableTables != null && !availableTables.isEmpty()}">
+                    <button type="submit" class="btn btn-gold-filled font-sans py-2 px-4 fw-medium shadow-sm">
+                        <i class="fa-solid fa-calendar-check me-2"></i>Book Selected Tables
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${availableTables != null && availableTables.isEmpty()}" class="text-center py-5">
+                <i class="fa-regular fa-calendar-times display-4 text-muted mb-3"></i>
+                <p class="font-sans text-secondary-custom fs-5">No tables available for your selection. Please try another time or date.</p>
+            </div>
+
+            <div class="row g-4 row-cols-1 row-cols-md-3" th:if="${availableTables != null}">
+
+                <div class="col" th:each="table : ${availableTables}">
+                    <label th:for="${'table-' + table.tableId}" class="w-100 h-100 m-0" style="cursor: pointer;">
+
+                        <div class="card custom-card table-card h-100 p-4 d-flex flex-column position-relative border">
+
+                            <div class="position-absolute top-0 end-0 mt-3 me-3">
+                                <input type="checkbox" name="tableIds" th:value="${table.tableId}"
+                                       th:id="${'table-' + table.tableId}" class="form-check-input table-select-checkbox" style="transform: scale(1.3);">
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-start mb-3 pe-4">
+                                <div>
+                                    <h5 class="font-serif fw-bold mb-1" th:text="${'Table ' + table.tableNumber}">Table 12</h5>
+                                    <span class="zone-badge" th:text="${table.area}">ZONE A</span>
+                                </div>
+                                <span class="font-sans text-secondary-custom small text-end">
+                                <i class="fa-solid fa-user-group me-1"></i> Max <span th:text="${table.capacity}">4</span>
+                            </span>
+                            </div>
+
+                            <p class="font-sans text-secondary-custom small mb-0">
+                                Located in the <span th:text="${table.area}">Area</span> area. Suitable for your party size.
+                            </p>
+
+                        </div>
+                    </label>
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

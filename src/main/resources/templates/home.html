@@ -1,10 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>RROMS - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Link file CSS riêng biệt -->
+    <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
 <body>
 
+<!-- 1. HEADER FRAGMENT (Tự động nhận User Avatar đã bind bên trong) -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main>
+
+    <!-- 2. HERO SECTION (ĐÃ BIND TÊN USER) -->
+    <section class="py-5" style="background-color: #FAF7F2;">
+        <div class="container py-5 text-center">
+            <!-- BINDING: Thay thế text bằng tên đầy đủ của User từ database -->
+            <h1 class="font-serif display-5 mb-2 fw-bold">
+                Welcome back, <span th:text="${currentUser != null ? currentUser.fullName : 'Guest'}">Nguyen Van A</span>
+            </h1>
+            <p class="font-sans text-secondary-custom fs-5 mb-4">Your table is always ready.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a th:href="@{/search}" class="btn btn-gold-filled px-4 py-2">Make a Reservation</a>
+                <a th:href="@{/menu}" class="btn btn-gold-ghost px-4 py-2">View Our Menu</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- 3. MENU HIGHLIGHTS SECTION (ĐÃ DÙNG VÒNG LẶP THYMELEAF ĐỂ BIND DB) -->
+    <section class="container my-5 py-3">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h2 class="font-serif fw-bold mb-0">Today's specials</h2>
+            <a th:href="@{/menu}" class="text-gold font-sans text-decoration-none fw-bold">See full menu →</a>
+        </div>
+
+        <!-- row-cols-md-3: Tự động chia làm 3 cột đều nhau trên màn hình máy tính -->
+        <div class="row g-4 row-cols-1 row-cols-md-3">
+
+            <!-- BINDING VÒNG LẶP: Lặp qua danh sách các món ăn lấy từ Database -->
+            <div class="col" th:each="menuItem : ${menuItems}">
+                <div class="card custom-card overflow-hidden h-100">
+
+                    <!-- Ảnh món ăn (sử dụng th:src nếu có link ảnh từ DB, hoặc giữ thẻ div placeholder) -->
+                    <div th:if="${menuItem.imageUrl == null || menuItem.imageUrl.isEmpty()}" class="dish-img-placeholder d-flex align-items-center justify-content-center text-muted">
+                        <i class="fa-regular fa-image fs-3"></i>
+                    </div>
+                    <img th:if="${menuItem.imageUrl != null && !menuItem.imageUrl.isEmpty()}" th:src="${menuItem.imageUrl}" alt="Dish Image" class="w-100" style="height: 180px; object-fit: cover;">
+
+                    <!-- Chi tiết món ăn lấy từ Object -->
+                    <div class="card-body p-3 d-flex flex-column">
+                        <!-- Danh mục món ăn -->
+                        <span class="badge mb-2 font-sans align-self-start" style="background-color: #FAF7F2; color: #7A6248;" th:text="${menuItem.category}">
+                                Mains
+                            </span>
+                        <!-- Tên món ăn -->
+                        <h5 class="font-serif fw-bold mb-2" th:text="${menuItem.name}">
+                            Phở Bò Wagyu đặc biệt
+                        </h5>
+                        <!-- Giá món ăn định dạng theo tiền Việt -->
+                        <p class="font-mono text-gold fw-bold mb-0 mt-auto" th:text="${#numbers.formatDecimal(menuItem.price, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                            250,000 ₫
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <th:block th:remove="all-but-first">
+                <div class="col">
+                    <div class="card custom-card overflow-hidden"><div class="dish-img-placeholder d-flex align-items-center justify-content-center text-muted"><i class="fa-regular fa-image fs-3"></i></div><div class="card-body p-3"><span class="badge mb-2 font-sans" style="background-color: #FAF7F2; color: #7A6248;">Starters</span><h5 class="font-serif fw-bold mb-1">Gỏi Cuốn Tôm Thịt Hoàng Gia</h5><p class="font-mono text-gold fw-bold mb-0">120,000 ₫</p></div></div>
+                </div>
+                <div class="col">
+                    <div class="card custom-card overflow-hidden"><div class="dish-img-placeholder d-flex align-items-center justify-content-center text-muted"><i class="fa-regular fa-image fs-3"></i></div><div class="card-body p-3"><span class="badge mb-2 font-sans" style="background-color: #FAF7F2; color: #7A6248;">Desserts</span><h5 class="font-serif fw-bold mb-1">Chè Sen Nhãn Nhục Cung Đình</h5><p class="font-mono text-gold fw-bold mb-0">85,000 ₫</p></div></div>
+                </div>
+            </th:block>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- 4. FOOTER FRAGMENT -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
