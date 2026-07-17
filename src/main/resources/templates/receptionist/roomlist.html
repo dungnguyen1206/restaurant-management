@@ -102,9 +102,9 @@
                     <p class="card-text mb-2">
                         <i class="fa-solid fa-location-dot me-2 text-danger"></i>
 
-                        <span th:if="${table.area.name() == 'INDOOR'}">Trong nhà</span>
-                        <span th:if="${table.area.name() == 'OUTDOOR'}">Ngoài trời</span>
-                        <span th:if="${table.area.name() == 'VIPROOM'}">Phòng VIP</span>
+                        <span th:if="${table.area == 'INDOOR'}">Trong nhà</span>
+                        <span th:if="${table.area == 'OUTDOOR'}">Ngoài trời</span>
+                        <span th:if="${table.area == 'VIPROOM'}">Phòng VIP</span>
                     </p>
 
                     <p class="card-text mb-0">
