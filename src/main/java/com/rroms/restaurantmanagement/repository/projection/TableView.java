@@ -13,4 +13,8 @@ public interface TableView {
     TableArea getArea();
 
     Integer getCapacity();
+
+    Long getAssignedWaiterId();
+
+    String getAssignedWaiterName();
 }

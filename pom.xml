@@ -8,7 +8,7 @@
 		<version>3.5.15</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.rroms </groupId>
+	<groupId>com.rroms</groupId>
 	<artifactId>restaurant-management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>

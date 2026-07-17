@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import com.rroms.restaurantmanagement.entity.constant.RoleName;
+import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
@@ -28,4 +30,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
+
+    @Query("""
+    SELECT u
+    FROM User u
+    JOIN FETCH u.role
+    WHERE u.role.roleName = :roleName
+    ORDER BY u.firstName, u.middleName, u.lastName
+    """)
+    List<User> findByRoleName(@Param("roleName") RoleName roleName);
 }

@@ -1,0 +1,93 @@
+.page-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.order-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #dfd1c4;
+    margin-bottom: 20px;
+}
+
+.order-tabs a {
+    padding: 13px 22px;
+    color: #6d6258;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.order-tabs a.active {
+    background: #ffd86b;
+    color: #2d2118;
+    border-radius: 6px 6px 0 0;
+}
+
+.order-card {
+    background: #fff;
+    border: 1px solid #eadfd4;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(42, 22, 11, 0.08);
+    overflow: hidden;
+}
+
+.table th {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #6d6258;
+    padding: 16px;
+}
+
+.table td {
+    padding: 16px;
+    font-weight: 600;
+}
+
+.order-id {
+    color: #9b7a18;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-pending,
+.status-preparing,
+.status-served {
+    background: #d8ebff;
+    color: #24669e;
+}
+
+.status-completed {
+    background: #d9f2df;
+    color: #25834d;
+}
+
+.status-cancelled {
+    background: #ffe0dd;
+    color: #d5392f;
+}
+
+.table-footer {
+    padding: 14px 16px;
+    border-top: 1px solid #eadfd4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #6d6258;
+    font-weight: 600;
+}
+
+.pagination .page-link {
+    color: #6d6258;
+}
+
+.pagination .active .page-link {
+    background: #ffd86b;
+    border-color: #ffd86b;
+    color: #2d2118;
+}

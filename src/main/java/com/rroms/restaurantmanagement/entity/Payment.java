@@ -30,6 +30,7 @@ public class Payment {
     @Column(name = "payment_method", nullable = false, columnDefinition = "varchar(255) default 'CASH'")
     private PaymentMethod paymentMethod;
 
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(255) default 'PENDING'")
     private PaymentStatus status;

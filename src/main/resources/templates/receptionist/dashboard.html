@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{receptionist/layout/layout}">
+<head>
+    <title>Dashboard</title>
+
+    <th:block layout:fragment="css">
+        <link th:href="@{/receptionist/dashboard.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+            <div class="dashboard-panel">
+                <div class="panel-header">
+                    <div>
+                        <h5>Reservations</h5>
+                        <span>Pending, confirmed, checked-in</span>
+                    </div>
+
+                    <a th:href="@{/receptionist/reservations}" class="btn btn-sm btn-light">
+                        View
+                    </a>
+                </div>
+
+                <div class="dashboard-list">
+                    <div th:each="reservation : ${reservations}" class="dashboard-item">
+                        <div>
+                            <div class="fw-semibold" th:text="${reservation.fullName}">Guest name</div>
+                            <div class="text-muted small"
+                                 th:text="|${reservation.numberOfGuests} guests|">
+                                2 guests
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <span class="status-pill" th:text="${reservation.status}">PENDING</span>
+                            <div class="small text-muted"
+                                 th:text="${#temporals.format(reservation.reservationTime, 'dd/MM HH:mm')}">
+                                13/07 18:30
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${reservations == null or #lists.isEmpty(reservations)}"
+                         class="empty-text">
+                        No reservations need action.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-4">
+            <div class="dashboard-panel">
+                <div class="panel-header">
+                    <div>
+                        <h5>Tables</h5>
+                        <span>Current table status</span>
+                    </div>
+
+                    <a th:href="@{/receptionist/tables}" class="btn btn-sm btn-light">
+                        View
+                    </a>
+                </div>
+
+                <div class="dashboard-list">
+                    <div th:each="table : ${tables}" class="dashboard-item">
+                        <div>
+                            <div class="fw-semibold" th:text="${table.tableNumber}">T-01</div>
+                            <div class="text-muted small"
+                                 th:text="|${table.capacity} seats - ${table.area}|">
+                                4 seats
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <span class="status-pill" th:text="${table.status}">AVAILABLE</span>
+                            <div class="small text-muted"
+                                 th:text="${table.assignedWaiterName != null ? table.assignedWaiterName : 'No waiter'}">
+                                No waiter
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${tables == null or #lists.isEmpty(tables)}"
+                         class="empty-text">
+                        No tables found.
+                    </div>
+                </div>
+
+                <a th:href="@{/receptionist/reservations/walk-in}"
+                   class="btn btn-warning fw-semibold w-100 mt-3">
+                    <i class="fa-solid fa-person-walking-arrow-right me-2"></i>
+                    Walk-in
+                </a>
+            </div>
+        </div>
+
+
+        <div class="col-lg-4">
+            <div class="dashboard-panel">
+                <div class="panel-header">
+                    <div>
+                        <h5>Orders</h5>
+                        <span>Pending, preparing, served</span>
+                    </div>
+
+                    <a th:href="@{/receptionist/orders}" class="btn btn-sm btn-light">
+                        View
+                    </a>
+                </div>
+
+                <div class="dashboard-list">
+                    <div th:each="order : ${orders}" class="dashboard-item">
+                        <div>
+                            <div class="fw-semibold" th:text="|#LH-${order.orderId}|">#LH-1</div>
+                            <div class="text-muted small"
+                                 th:text="|${order.tableNumber} - ${order.totalItems} items|">
+                                T-01 - 2 items
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <span class="status-pill" th:text="${order.status}">SERVED</span>
+
+                            <a th:if="${order.status == 'SERVED'}"
+                               th:href="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}"
+                               class="btn btn-sm btn-warning mt-2">
+                                Checkout
+                            </a>
+                        </div>
+                    </div>
+
+                    <div th:if="${orders == null or #lists.isEmpty(orders)}"
+                         class="empty-text">
+                        No active orders.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

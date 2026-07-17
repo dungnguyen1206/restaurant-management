@@ -9,6 +9,7 @@ import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.MenuItemRepository;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
+import com.rroms.restaurantmanagement.repository.projection.OrderListProjection;
 import com.rroms.restaurantmanagement.service.OrderService;
 import com.rroms.restaurantmanagement.dto.response.ChefDashboardDTO;
 import com.rroms.restaurantmanagement.dto.response.PopularMenuItemDTO;
@@ -131,7 +132,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Transactional
     public void handleUpdateStatusOrder(Long orderId, OrderStatus orderStatus) {
         Optional<Order> orderOpt = this.orderRepository.findById(orderId);
         if(orderOpt.isPresent()) {
@@ -237,4 +237,23 @@ public class OrderServiceImpl implements OrderService {
                 .latestOrders(latestOrders)
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderListProjection> getReceptionistOrderList(String keyword, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String searchKeyword = null;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            searchKeyword = keyword.trim();
+        }
+
+        String orderStatus = null;
+        if (status != null && !status.trim().isEmpty()) {
+            orderStatus = status.trim();
+        }
+
+        return orderRepository.getReceptionistOrderList(searchKeyword, orderStatus, pageable);
+    }
 }
+
+
