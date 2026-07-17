@@ -1,69 +1,57 @@
-.app-container {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
+/* ==========================================================================
+   CSS MÀU SẮC CHỦ ĐẠO PHONG CÁCH AN NAM KDS
+   ========================================================================== */
+.bg-espresso { background-color: #362217 !important; }
+.text-espresso { color: #362217 !important; }
+.btn-espresso {
+    background-color: #362217 !important;
+    color: #fcf9f4 !important;
+    transition: all 0.2s ease-in-out;
 }
-.main-workspace{
-    margin-left:280px;
-    padding-top:0;
-}
-.annam-header{
-    position:fixed;
-    top:0;
-    left:240px;
-    right:0;
-    height:80px;
-}
-.content {
-    flex: 1;
-    padding: 24px;
-    width: 100%;
-}
-.annam-footer{
-    flex-shrink:0;
-    margin-top: 80px;
-}
-.main-workspace{
-    margin-left:240px;
-    padding-top:72px;
-    flex-grow: 1;
+.btn-espresso:hover { background-color: #4a3123 !important; color: #ffffff !important; }
+.bg-gold { background-color: #C5A059 !important; color: #ffffff !important; }
+.text-gold { color: #C5A059 !important; }
+
+/* Phông chữ & padding table nội bộ của modal */
+.font-serif { font-family: 'Playfair Display', Georgia, serif !important; }
+.font-mono { font-family: 'Courier New', Courier, monospace !important; font-weight: 600; }
+
+#orderDetailModal .table th,
+#orderDetailModal .table td {
+    padding: 12px 8px;
 }
 
-.status-badge {
-  display: inline-block;
-  width: 100px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 16px;
-  border: 1px solid transparent;
-  text-align: center;
+/* ==========================================================================
+   ÉP MODAL CĂN GIỮA KHU VỰC WORKSPACE (TỌA ĐỘ LEFT KHỚP CHUẨN HEADER 240PX)
+   ========================================================================== */
+#orderDetailModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 240px !important; /* Dịch sang phải đúng bằng khoảng trống sidebar của workspace gốc */
+    width: calc(100vw - 240px) !important; /* Chiếm trọn không gian làm việc bên phải */
+    height: 100vh !important;
+    padding-left: 0 !important;
+    z-index: 1060 !important;
 }
 
-.status-preparing {
-  color: #d97706;
-  background-color: #fef3c7;
-  border-color: #fcd34d;
+#orderDetailModal .modal-dialog {
+    margin: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: calc(100vh - 60px) !important;
+    width: 100% !important;
+    max-width: 800px !important;
 }
 
-.status-completed {
-  color: #15803d;
-  background-color: #dcfce7;
-  border-color: #bbf7d0;
+.btn-chef-primary {
+    background-color: #8B4A1E !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+    transition: background-color 0.15s ease-in-out !important;
 }
-
-.status-served {
-  color: #1d4ed8;
-  background-color: #dbeafe;
-  border-color: #bfdbfe;
-}
-
-.status-cancelled {
-  color: #b91c1c;
-  background-color: #fee2e2;
-  border-color: #fecaca;
-}
-
-.text-center {
-    text-align: center; /* Căn giữa nội dung bên trong ô td */
+.btn-chef-primary:hover {
+    background-color: #7C3A14 !important;
+    color: #ffffff !important;
 }

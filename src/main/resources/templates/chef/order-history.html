@@ -2,17 +2,22 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{chef/layout/layout}"> <head>
+      layout:decorate="~{chef/layout/layout}">
+<head>
     <title>Lịch Sử Đơn Hàng</title>
 
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/chef/css/order-history.css}" />
-    </th:block>
+        <link rel="stylesheet" th:href="@{/chef/css/order-history.css}"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    </th:block> <!-- THÊM THẺ ĐÓNG BỊ THIẾU Ở ĐÂY -->
 </head>
 <body>
 
-<div layout:fragment="content">
+<main layout:fragment="content" class="content p-4">
+    <!-- ĐÃ BỎ THẺ DIV CỦA MAIN-CONTENT-WRAPPER TẠI ĐÂY -->
 
+    <!-- Bộ lọc tìm kiếm -->
     <div class="card shadow-sm border-0 p-3 mb-4">
         <form th:action="@{/chef/history}" method="get" class="row g-3 align-items-end">
             <div class="col-md-3">
@@ -47,11 +52,12 @@
             </div>
 
             <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                <button type="submit" class="btn btn-chef-primary w-100">Tìm kiếm</button>
             </div>
         </form>
     </div>
 
+    <!-- Bảng hiển thị danh sách -->
     <div class="card shadow-sm border-0 p-3 mb-4">
         <table class="table table-hover align-middle">
             <thead>
@@ -62,6 +68,7 @@
                 <th scope="col">Số món</th>
                 <th scope="col">Nhận</th>
                 <th scope="col">Trạng thái</th>
+                <th scope="col">Thao tác</th>
             </tr>
             </thead>
             <tbody>
@@ -70,40 +77,77 @@
                 <td th:text="|Đơn - ${order.orderId}|" class="fw-bold">Đơn - 1</td>
                 <td th:text="|Bàn - ${order.tableNumber}|">Bàn - 1</td>
                 <td th:text="|${order.totalItems} món|">0 món</td>
-                <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">12:30</td>
+                <td th:text="${order.createdAt != null ? #temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'dd/MM/yyyy HH:mm') : '--:--'}">12:30</td>
                 <td>
-                            <span th:text="${order.orderStatus}"
-                                  th:class="|status-badge status-${#strings.toLowerCase(order.orderStatus)}|">
-                            </span>
+                <span th:text="${order.orderStatus}"
+                      th:class="|status-badge status-${#strings.toLowerCase(order.orderStatus)}|">
+                </span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-primary btn-view-detail"
+                            th:data-order-id="${order.orderId}">
+                        Xem
+                    </button>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Phân trang -->
     <nav aria-label="Page navigation" th:if="${orderPage != null and orderPage.totalPages > 1}">
         <ul class="pagination justify-content-center">
-
             <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
-                <a class="page-link" th:href="@{/chef/history(page=${currentPage - 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
+                <a class="page-link"
+                   th:href="@{/chef/history(page=${currentPage - 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
             </li>
-
             <li class="page-item"
-                th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages > 0 ? orderPage.totalPages - 1 : 0)}"
                 th:classappend="${pageNumber == currentPage} ? 'active'">
                 <a class="page-link"
                    th:href="@{/chef/history(page=${pageNumber}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}"
                    th:text="${pageNumber + 1}">1</a>
             </li>
-
             <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
-                <a class="page-link" th:href="@{/chef/history(page=${currentPage + 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Sau</a>
+                <a class="page-link"
+                   th:href="@{/chef/history(page=${currentPage + 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Sau</a>
             </li>
-
         </ul>
     </nav>
 
-</div>
+    <!-- Khung chứa Modal -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(4px);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div id="modal-content-holder"></div>
+        </div>
+    </div>
+</main> <!-- ĐÓNG CHUẨN XÁC KHỐI CONTENT FRAGMENT -->
 
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const orderModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+            const contentHolder = document.getElementById('modal-content-holder');
+
+            document.querySelectorAll('.btn-view-detail').forEach(button => {
+                button.addEventListener('click', function () {
+                    const orderId = this.getAttribute('data-order-id');
+                    if (!orderId) return;
+
+                    fetch(`/chef/history-detail/${orderId}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error("Không thể tải dữ liệu fragment");
+                            return response.text();
+                        })
+                        .then(html => {
+                            contentHolder.innerHTML = html;
+                            orderModal.show();
+                        })
+                        .catch(err => alert("Không thể tải chi tiết đơn hàng!"));
+                });
+            });
+        });
+    </script>
+</th:block>
 </body>
 </html>

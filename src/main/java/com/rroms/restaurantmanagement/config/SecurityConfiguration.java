@@ -1,6 +1,7 @@
 package com.rroms.restaurantmanagement.config;
 
 import com.rroms.restaurantmanagement.security.CustomUserDetailsService;
+import com.rroms.restaurantmanagement.security.CustomOidcUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfiguration {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOidcUserService oidcUserService;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -42,14 +44,16 @@ public class SecurityConfiguration {
                 redirectUrl = "/admin/dashboard";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
                 redirectUrl = "/manager/dashboard";
-            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_RECEPTIONIST"))) {
+            } else if (authentication.getAuthorities().stream().anyMatch(a ->
+                    a.getAuthority().equals("ROLE_RECEPTIONIST")
+                            || a.getAuthority().equals("ROLE_RECEPTIONLIST"))) {
                 redirectUrl = "/receptionist/dashboard";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CHEF"))) {
                 redirectUrl = "/chef/dashboard";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WAITER"))) {
                 redirectUrl = "/waiter/dashboard";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))) {
-                redirectUrl = "/";
+                redirectUrl = "/customer/home";
             }
             response.sendRedirect(request.getContextPath() + redirectUrl);
         };
@@ -65,13 +69,15 @@ public class SecurityConfiguration {
 
                         .requestMatchers(
                                 "/auths/**",
+                                "/oauth2/**",
+                                "/login/oauth2/**",
                                 "/register",
                                 "/css/**",
                                 "/js/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers("/receptionist/**").hasRole("RECEPTIONIST")
+                        .requestMatchers("/receptionist/**").hasAnyRole("RECEPTIONIST", "RECEPTIONLIST")
                         .requestMatchers("/chef/**").hasRole("CHEF")
                         .requestMatchers("/waiter/**").hasRole("WAITER")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
@@ -83,9 +89,20 @@ public class SecurityConfiguration {
                         .successHandler(customSuccessHandler())
                         .permitAll()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auths/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(oidcUserService::loadUser)
+                        )
+                        .successHandler(customSuccessHandler())
+                        .failureUrl("/auths/login?oauthError")
+                )
+                .sessionManagement(session -> session
+                        .sessionFixation(fixation -> fixation.migrateSession())
+                )
                 .logout(logout -> logout
                         .logoutUrl("/auths/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/auths/login?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

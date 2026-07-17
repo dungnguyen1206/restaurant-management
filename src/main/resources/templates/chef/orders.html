@@ -8,39 +8,56 @@
 
     <!-- Nhúng CSS riêng của trang orders vào đây (sẽ tự động đẩy vào layout) -->
     <th:block layout:fragment="css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" th:href="@{/chef/css/orders.css}"/>
     </th:block>
 </head>
 <body>
 
 <!-- Tất cả nội dung chính bọc trong layout:fragment="content" -->
-<main layout:fragment="content">
-    <form th:action="@{/chef/orders}" method="get" class="kds-filter-bar d-flex mb-5">
-        <div class="kds-search">
-            <i class="ti ti-search"></i>
-            <input type="text" name="orderId" id="searchInput"
-                   placeholder="Tìm theo ID...."
-                   th:value="${param.orderId}">
-        </div>
+<main layout:fragment="content" class="content p-4">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}">Xác nhận đơn hàng thành công.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}">Không thể xác nhận đơn hàng.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+    </div>
 
-        <div class="kds-divider"></div>
+    <!-- Bộ lọc tìm kiếm đồng bộ -->
+    <div class="card shadow-sm border-0 p-3 mb-4 bg-white">
+        <form th:action="@{/chef/orders}" method="get" class="row g-3 align-items-end">
+            <!-- Tìm kiếm theo ID -->
+            <div class="col-md-4">
+                <label for="orderId" class="form-label fw-bold small text-muted">Mã đơn hàng</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-start-0" id="orderId" name="orderId"
+                           th:value="${currentOrderId}" placeholder="Nhập mã đơn hàng...">
+                </div>
+            </div>
 
-        <button type="submit" name="status" value=""
-                class="btn btn-filter"
-                th:classappend="${param.status == null or param.status == ''} ? 'active' : ''">
-            Tất cả
-        </button>
-        <button type="submit" name="status" value="PENDING"
-                class="btn btn-filter"
-                th:classappend="${param.status == 'PENDING'} ? 'active' : ''">
-            Chờ xác nhận
-        </button>
-        <button type="submit" name="status" value="PREPARING"
-                class="btn btn-filter"
-                th:classappend="${param.status == 'PREPARING'} ? 'active' : ''">
-            Đang làm
-        </button>
-    </form>
+            <!-- Trạng thái đơn -->
+            <div class="col-md-4">
+                <label for="status" class="form-label fw-bold small text-muted">Trạng thái đơn</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="" th:selected="${currentStatus == ''}">-- Tất cả đơn hoạt động --</option>
+                    <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Chờ xác nhận (PENDING)</option>
+                    <option value="PREPARING" th:selected="${currentStatus == 'PREPARING'}">Đang chế biến (PREPARING)</option>
+                </select>
+            </div>
+
+            <!-- Nút bấm -->
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-chef-primary w-100 fw-bold py-2" style="border-radius: 8px;">Tìm kiếm</button>
+                <a th:if="${not #strings.isEmpty(currentOrderId) or not #strings.isEmpty(currentStatus)}"
+                   th:href="@{/chef/orders}" class="btn btn-outline-secondary w-50 fw-bold py-2" style="border-radius: 8px;">Xóa lọc</a>
+            </div>
+        </form>
+    </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
         <div class="col" th:each="order : ${orders}">
@@ -57,7 +74,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="time-container d-flex align-items-center gap-2">
                                     <span class="time-text fw-bold"
-                                          th:text="${#temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'HH:mm')}">
+                                          th:text="${order.createdAt != null ? #temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'HH:mm') : '--:--'}">
                                         08:13
                                     </span>
                             </div>
@@ -67,8 +84,14 @@
                             <div class="kds-item-row d-flex justify-content-between align-items-start mb-3"
                                  th:each="item : ${order.orderItems}">
                                 <div class="item-info">
-                                    <p class="item-name fw-bold m-0" th:text="${item.menuItem.itemName}">Phở Bò (Wagyu)</p>
+                                    <p class="item-name fw-bold m-0" th:text="${item.menuItem != null ? item.menuItem.itemName : 'Món ăn không tồn tại'}">Phở Bò (Wagyu)</p>
                                     <small class="item-note text-muted italic" th:if="${item.specialNote}" th:text="${item.specialNote}">— Medium Rare, Extra Broth</small>
+                                    <small th:if="${item.menuItem != null}"
+                                           class="d-block mt-1 fw-bold"
+                                           th:classappend="${item.menuItem.virtualInStock == null or item.menuItem.virtualInStock < item.quantity} ? 'text-danger' : 'text-success'"
+                                           th:text="|Kho hiện tại: ${item.menuItem.virtualInStock != null ? item.menuItem.virtualInStock : 0}|">
+                                        Kho hiện tại: 0
+                                    </small>
                                 </div>
                                 <span class="item-quantity fw-bold" th:text="${item.quantity} + 'x'">2x</span>
                             </div>
@@ -114,17 +137,17 @@
     <nav aria-label="Page navigation" th:if="${orderPage != null and orderPage.totalPages > 1}" >
         <ul class="pagination justify-content-center mt-5">
             <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
-                <a class="page-link" th:href="@{/chef/orders(page=${currentPage - 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Trước</a>
+                <a class="page-link" th:href="@{/chef/orders(page=${currentPage - 1}, orderId=${currentOrderId}, status=${currentStatus})}">Trước</a>
             </li>
             <li class="page-item"
-                th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages > 0 ? orderPage.totalPages - 1 : 0)}"
                 th:classappend="${pageNumber == currentPage} ? 'active'">
                 <a class="page-link"
-                   th:href="@{/chef/orders(page=${pageNumber}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}"
+                   th:href="@{/chef/orders(page=${pageNumber}, orderId=${currentOrderId}, status=${currentStatus})}"
                    th:text="${pageNumber + 1}">1</a>
             </li>
             <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
-                <a class="page-link" th:href="@{/chef/history(page=${currentPage + 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">Sau</a>
+                <a class="page-link" th:href="@{/chef/orders(page=${currentPage + 1}, orderId=${currentOrderId}, status=${currentStatus})}">Sau</a>
             </li>
         </ul>
     </nav>

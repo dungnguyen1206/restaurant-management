@@ -4,6 +4,11 @@ import com.rroms.restaurantmanagement.dto.response.OrderHistoryDTO;
 import com.rroms.restaurantmanagement.entity.Order;
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.service.OrderService;
+import com.rroms.restaurantmanagement.dto.response.ChefDashboardDTO;
+import com.rroms.restaurantmanagement.service.MenuItemService;
+import com.rroms.restaurantmanagement.entity.MenuItem;
+import com.rroms.restaurantmanagement.service.CategoryService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -22,9 +29,13 @@ import java.time.LocalDate;
 public class ChefController {
 
     private final OrderService orderService;
+    private final MenuItemService menuItemService;
+    private final CategoryService categoryService;
 
     @GetMapping("/dashboard")
     public String dashboardChef(Model model){
+        ChefDashboardDTO dashboardData = orderService.getChefDashboardData();
+        model.addAttribute("dashboard", dashboardData);
         model.addAttribute("activePage", "dashboard");
         return "chef/dashboard";
     }
@@ -51,9 +62,14 @@ public class ChefController {
 
     @PostMapping("/orders/{id}/confirm")
     public String chefOrderConfirm(
-            @PathVariable Long id
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
     ) {
-        this.orderService.handleUpdateStatusOrder(id, OrderStatus.PREPARING);
+        this.orderService.confirmKitchenOrder(id);
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Đã xác nhận đơn hàng #" + id + " và cập nhật tồn kho."
+        );
         return "redirect:/chef/orders";
     }
 
@@ -94,5 +110,62 @@ public class ChefController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         return "chef/order-history";
+    }
+    @GetMapping("/history-detail/{id}")
+    @Transactional(readOnly = true)
+    public String getOrderDetailFragment(@PathVariable("id") Long id, Model model) {
+        Order order = orderService.findById(id);
+        model.addAttribute("order", order);
+        return "chef/order-detail :: orderDetail";
+    }
+
+    @GetMapping("/menu")
+    public String chefMenu(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<MenuItem> menuItemPage = menuItemService.getAllMenuItems(search, categoryId, pageable);
+        model.addAttribute("menuItems", menuItemPage.getContent());
+        model.addAttribute("menuItemPage", menuItemPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categories", categoryService.findAll());
+        model.addAttribute("activePage", "menu");
+        return "chef/menu";
+    }
+
+    @PostMapping("/menu/{id}/stock")
+    public String updateVirtualStock(
+            @PathVariable Long id,
+            @RequestParam Integer virtualInStock,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            RedirectAttributes redirectAttributes
+    ) {
+        menuItemService.updateVirtualStock(id, virtualInStock);
+
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                virtualInStock == 0
+                        ? "Đã cập nhật tồn kho về 0 và chuyển món sang trạng thái Hết món."
+                        : "Đã cập nhật tồn kho và chuyển món sang trạng thái Còn món."
+        );
+        redirectAttributes.addAttribute("page", page);
+        redirectAttributes.addAttribute("size", size);
+        if (search != null && !search.trim().isEmpty()) {
+            redirectAttributes.addAttribute("search", search.trim());
+        }
+        if (categoryId != null) {
+            redirectAttributes.addAttribute("categoryId", categoryId);
+        }
+        return "redirect:/chef/menu";
     }
 }
