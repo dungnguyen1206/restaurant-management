@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{receptionist/layout/layout}">
+<head>
+    <title>Đặt bàn</title>
+
+    <th:block layout:fragment="css">
+        <link th:href="@{/receptionist/reservations.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+
+    <form th:action="@{/receptionist/reservations}" method="get" class="row g-2 mb-4">
+        <div class="col-md-7">
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+
+                <input type="text"
+                       name="keyword"
+                       th:value="${keyword}"
+                       class="form-control"
+                       placeholder="Tìm khách, số điện thoại, mã đặt bàn...">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="" th:selected="${status == null or status == ''}">Tất cả trạng thái</option>
+                <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Đã xác nhận</option>
+                <option value="PENDING" th:selected="${status == 'PENDING'}">Đang chờ</option>
+                <option value="CHECKED_IN" th:selected="${status == 'CHECKED_IN'}">Đã nhận bàn</option>
+                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Đã hủy</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-dark">
+                Lọc
+            </button>
+        </div>
+    </form>
+
+    <div class="card reservation-card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>Mã đặt bàn</th>
+                        <th>Tên khách</th>
+                        <th>Số điện thoại</th>
+                        <th>Ngày giờ</th>
+                        <th>Số khách</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="r : ${reservations}">
+                        <td>
+                            <span class="reservation-id" th:text="${'#RS-' + r.reservationId}">
+                                #RS-1
+                            </span>
+                        </td>
+
+                        <td>
+                            <strong th:text="${r.fullName}">Nguyễn Minh Hiếu</strong>
+                        </td>
+
+                        <td th:text="${r.phone}">0902334112</td>
+
+                        <td th:text="${#temporals.format(r.reservationTime, 'dd/MM/yyyy HH:mm')}">
+                            24/10/2023 19:30
+                        </td>
+
+                        <td th:text="${r.numberOfGuests}">4</td>
+
+                        <td>
+                            <span class="badge rounded-pill px-3 py-2"
+                                  th:classappend="
+                                  ${r.status.name() == 'CONFIRMED'} ? ' bg-success-subtle text-success-emphasis' :
+                                  (${r.status.name() == 'PENDING'} ? ' bg-warning-subtle text-warning-emphasis' :
+                                  (${r.status.name() == 'CHECKED_IN'} ? ' bg-info-subtle text-info-emphasis' :
+                                  ' bg-danger-subtle text-danger-emphasis'))"
+                                  th:text="${#strings.replace(r.status.name(), '_', ' ')}">
+                                CONFIRMED
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a th:if="${r.status.name() == 'PENDING'}"
+                                   th:href="@{/receptionist/reservations/{id}/confirm(id=${r.reservationId})}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Xác nhận đặt bàn">
+                                    <i class="fa-solid fa-check"></i>
+                                </a>
+
+                                <form th:if="${r.status.name() == 'CONFIRMED'}"
+                                      th:action="@{/receptionist/reservations/{id}/check-in(id=${r.reservationId})}"
+                                      method="post">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-success"
+                                            title="Nhận bàn">
+                                        <i class="fa-solid fa-door-open"></i>
+                                    </button>
+                                </form>
+
+                                <form th:if="${r.status.name() == 'PENDING' or r.status.name() == 'CONFIRMED'}"
+                                      th:action="@{/receptionist/reservations/{id}/cancel(id=${r.reservationId})}"
+                                      method="post">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            title="Hủy đặt bàn">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${reservations == null or #lists.isEmpty(reservations)}">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fa-regular fa-calendar-xmark fs-3 d-block mb-2"></i>
+                            Không tìm thấy đặt bàn.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

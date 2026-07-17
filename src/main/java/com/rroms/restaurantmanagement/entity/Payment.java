@@ -27,28 +27,49 @@ public class Payment {
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_method", nullable = false, columnDefinition = "varchar(255) default 'CASH'")
     private PaymentMethod paymentMethod;
 
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'PENDING'")
     private PaymentStatus status;
 
-    @Column(nullable = false)
+    @Column(name = "paid_at", nullable = false, columnDefinition = "datetime2(6) default sysdatetime()")
     private LocalDateTime paidAt;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false, columnDefinition = "datetime2(6) default sysdatetime()")
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id", nullable = false)
+    @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_type", nullable = false, columnDefinition = "varchar(255) default 'FINAL_PAYMENT'")
     private PaymentType paymentType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        if (paidAt == null) {
+            paidAt = now;
+        }
+        if (status == null) {
+            status = PaymentStatus.PENDING;
+        }
+        if (paymentMethod == null) {
+            paymentMethod = PaymentMethod.CASH;
+        }
+        if (paymentType == null) {
+            paymentType = PaymentType.FINAL_PAYMENT;
+        }
+    }
 }

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{receptionist/layout/layout}">
+<head>
+    <title th:text="${reservation.reservationId == null ? 'Tạo đặt bàn' : 'Sửa đặt bàn'}">
+        Form đặt bàn
+    </title>
+
+    <th:block layout:fragment="css">
+        <link th:href="@{/receptionist/reservations.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="mb-4">
+        <a th:href="@{/receptionist/reservations}"
+           class="text-decoration-none back-link">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Quay lại danh sách đặt bàn
+        </a>
+
+        <h1 class="page-title mt-3"
+            th:text="${reservation.reservationId == null ? 'Tạo đặt bàn' : 'Sửa đặt bàn'}">
+            Tạo đặt bàn
+        </h1>
+
+        <p class="page-subtitle">
+            Nhập thông tin đặt bàn của khách
+        </p>
+    </div>
+
+    <div class="card form-card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <form th:action="${reservation.reservationId == null}
+                            ? @{/receptionist/reservations}
+                            : @{/receptionist/reservations/{id}/update(id=${reservation.reservationId})}"
+                  method="post">
+
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="hidden"
+                       name="reservationId"
+                       th:value="${reservation.reservationId}">
+
+                <div class="row g-4">
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Tên khách</label>
+                        <input type="text"
+                               name="fullName"
+                               class="form-control"
+                               placeholder="Nhập tên khách"
+                               th:value="${reservation.fullName}"
+                               required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Số điện thoại</label>
+                        <input type="text"
+                               name="phone"
+                               class="form-control"
+                               placeholder="Nhập số điện thoại"
+                               th:value="${reservation.phone}"
+                               required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Mã người dùng</label>
+                        <input type="number"
+                               name="userId"
+                               class="form-control"
+                               placeholder="Nhập mã người dùng"
+                               th:value="${reservation.userId}">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Ngày đặt bàn</label>
+                        <input type="date"
+                               name="reservationDate"
+                               class="form-control"
+                               th:value="${reservation.reservationTime != null
+                               ? #temporals.format(reservation.reservationTime, 'yyyy-MM-dd')
+                               : ''}"
+                               required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Giờ đặt bàn</label>
+                        <input type="time"
+                               name="reservationTimeValue"
+                               class="form-control"
+                               th:value="${reservation.reservationTime != null
+                               ? #temporals.format(reservation.reservationTime, 'HH:mm')
+                               : ''}"
+                               required>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select name="status" class="form-select">
+                            <option value="PENDING"
+                                    th:selected="${reservation.status == null or reservation.status == 'PENDING'}">
+                                Đang chờ
+                            </option>
+
+                            <option value="CONFIRMED"
+                                    th:selected="${reservation.status == 'CONFIRMED'}">
+                                Đã xác nhận
+                            </option>
+
+                            <option value="CHECKED_IN"
+                                    th:selected="${reservation.status == 'CHECKED_IN'}">
+                                Đã nhận bàn
+                            </option>
+
+                            <option value="CANCELLED"
+                                    th:selected="${reservation.status == 'CANCELLED'}">
+                                Đã hủy
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Ghi chú</label>
+                        <textarea name="note"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Yêu cầu của khách, ưu tiên bàn..."
+                                  th:text="${reservation.note}"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a th:href="@{/receptionist/reservations}" class="btn btn-light">
+                        Hủy
+                    </a>
+
+                    <button type="submit" class="btn btn-warning fw-semibold">
+                        <i class="fa-regular fa-floppy-disk me-2"></i>
+                        Lưu đặt bàn
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

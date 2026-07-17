@@ -1,0 +1,29 @@
+.page-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.table-card {
+    border-radius: 8px;
+    transition: 0.15s ease;
+}
+
+.table-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-title {
+    color: #2d2118;
+}
+
+.form-control,
+.form-select,
+.input-group-text {
+    border-color: #e4d8ca;
+}
+
+.btn-dark {
+    background: #2b1a0e;
+    border-color: #2b1a0e;
+}

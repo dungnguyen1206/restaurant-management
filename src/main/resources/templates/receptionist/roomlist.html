@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{receptionist/layout/layout}">
+<head>
+    <title>Bàn</title>
+
+    <th:block layout:fragment="css">
+        <link th:href="@{/receptionist/roomlist.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="alert alert-success"
+         th:if="${success != null}"
+         th:text="${success}">
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a th:href="@{/receptionist/reservations/walk-in}" class="btn btn-warning fw-semibold">
+            <i class="fa-solid fa-person-walking-arrow-right me-2"></i>
+            Khách vãng lai
+        </a>
+    </div>
+
+    <form th:action="@{/receptionist/tables}" method="get" class="row g-2 mb-4">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+
+                <input type="text"
+                       name="keyword"
+                       th:value="${keyword}"
+                       class="form-control"
+                       placeholder="Tìm bàn...">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <select name="area" class="form-select filter-select">
+                <option value="" th:selected="${area == null or area == ''}">Tất cả khu vực</option>
+                <option value="INDOOR" th:selected="${area == 'INDOOR'}">Trong nhà</option>
+                <option value="OUTDOOR" th:selected="${area == 'OUTDOOR'}">Ngoài trời</option>
+                <option value="VIPROOM" th:selected="${area == 'VIPROOM'}">Phòng VIP</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="capacity" class="form-select filter-select">
+                <option value="" th:selected="${capacity == null or capacity == ''}">Tất cả sức chứa</option>
+                <option value="2" th:selected="${capacity == '2'}">2 chỗ</option>
+                <option value="4" th:selected="${capacity == '4'}">4 chỗ</option>
+                <option value="6" th:selected="${capacity == '6'}">6 chỗ</option>
+                <option value="8" th:selected="${capacity == '8'}">8 chỗ</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-dark">
+                <i class="fa-solid fa-filter me-2"></i>
+                Lọc
+            </button>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        <div th:each="table : ${tables}" class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="card table-card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title fw-bold mb-0">
+                            <i class="fa-solid fa-chair me-2 text-warning"></i>
+                            <span th:text="${table.tableNumber}">T-01</span>
+                        </h5>
+
+                        <span th:if="${table.status.name() == 'AVAILABLE'}"
+                              class="badge rounded-pill text-bg-success">
+                            Trống
+                        </span>
+
+                        <span th:if="${table.status.name() == 'OCCUPIED'}"
+                              class="badge rounded-pill text-bg-primary">
+                            Đang sử dụng
+                        </span>
+
+                        <span th:if="${table.status.name() == 'RESERVED'}"
+                              class="badge rounded-pill text-bg-warning">
+                            Đã đặt
+                        </span>
+
+                        <span th:if="${table.status.name() == 'OUT_OF_SERVICE'}"
+                              class="badge rounded-pill text-bg-danger">
+                            Ngừng phục vụ
+                        </span>
+                    </div>
+
+                    <p class="card-text mb-2">
+                        <i class="fa-solid fa-location-dot me-2 text-danger"></i>
+
+                        <span th:if="${table.area.name() == 'INDOOR'}">Trong nhà</span>
+                        <span th:if="${table.area.name() == 'OUTDOOR'}">Ngoài trời</span>
+                        <span th:if="${table.area.name() == 'VIPROOM'}">Phòng VIP</span>
+                    </p>
+
+                    <p class="card-text mb-0">
+                        <i class="fa-solid fa-users me-2 text-secondary"></i>
+                        <span th:text="${table.capacity + ' chỗ'}">4 chỗ</span>
+                    </p>
+
+                    <p class="card-text mb-0 mt-2">
+                        <i class="fa-regular fa-user me-2 text-secondary"></i>
+                        <span th:if="${table.assignedWaiterName != null}"
+                              th:text="|Phục vụ: ${table.assignedWaiterName}|">
+                            Phục vụ: Nguyễn Văn A
+                        </span>
+                        <span th:if="${table.assignedWaiterName == null}">
+                            Chưa phân công phục vụ
+                        </span>
+                    </p>
+
+                    <div class="mt-2"
+                         th:if="${table.status.name() == 'RESERVED' or table.status.name() == 'OCCUPIED'}">
+                        <a class="btn btn-sm btn-outline-dark fw-semibold w-100"
+                           th:href="@{/receptionist/tables/{id}/assign-waiter(id=${table.tableId})}">
+                            <i class="fa-regular fa-user me-2"></i>
+                            Phân công phục vụ
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${tables == null or #lists.isEmpty(tables)}" class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5 text-muted">
+                    <i class="fa-solid fa-table-cells-large fs-1 d-block mb-3"></i>
+                    Không tìm thấy bàn.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        document.querySelectorAll('.filter-select').forEach(function (selectElement) {
+            selectElement.addEventListener('change', function () {
+                this.closest('form').submit();
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>
