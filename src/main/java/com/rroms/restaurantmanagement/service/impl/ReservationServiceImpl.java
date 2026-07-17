@@ -1,6 +1,7 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
+import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
 import com.rroms.restaurantmanagement.entity.Reservation;
 import com.rroms.restaurantmanagement.entity.ReservationTable;
 import com.rroms.restaurantmanagement.entity.RestaurantTable;
@@ -16,7 +17,12 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
@@ -248,29 +254,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reservation);
         tableRepository.save(table);
     }
-
-import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
-import com.rroms.restaurantmanagement.entity.Reservation;
-import com.rroms.restaurantmanagement.entity.ReservationTable;
-import com.rroms.restaurantmanagement.repository.ReservationRepository;
-import com.rroms.restaurantmanagement.service.ReservationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Service
-@RequiredArgsConstructor
-
-public class ReservationServiceImpl implements ReservationService {
-
-
-    private final ReservationRepository reservationRepository;
 
     @Override
     public Long countTodayReservation(LocalDateTime startDate, LocalDateTime endDate) {
