@@ -31,10 +31,13 @@ public class MenuItem extends BaseEntity {
     @Column(columnDefinition = "NVARCHAR(500)")
     private String description;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "is_sold_out")
     private Boolean isSoldOut;
 
+    @Column(name = "virtual_in_stock")
     private Integer virtualInStock;
 
 

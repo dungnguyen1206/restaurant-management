@@ -7,6 +7,13 @@ import com.rroms.restaurantmanagement.entity.MenuItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.rroms.restaurantmanagement.criteria.MenuItemCriteria;
+import com.rroms.restaurantmanagement.dto.request.MenuItemDto;
+import com.rroms.restaurantmanagement.entity.MenuItem;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
 public interface MenuItemService {
     Page<MenuItemResponseForManager> findAllMenuItems4Manager(Long categoryId, String filterKey , int page, int size);
     CreateMenuItemsRequest addNewMenuItem(CreateMenuItemsRequest createMenuItemsRequest);
@@ -16,4 +23,13 @@ public interface MenuItemService {
     CreateMenuItemsRequest updateMenuItem(CreateMenuItemsRequest createMenuItemsRequest);
     Page<MenuItem> getAllMenuItems(String name, Long categoryId, Pageable pageable);
     void updateVirtualStock(Long itemId, Integer virtualInStock);
+    List<MenuItem> findMostPopular(int limit);
+
+    Page<MenuItemDto> searchMenu(
+            MenuItemCriteria criteriaMenuItem,
+
+            int page,
+
+            int size
+    );
 }

@@ -1,18 +1,31 @@
 package com.rroms.restaurantmanagement.service;
 
-import com.rroms.restaurantmanagement.entity.Reservation;
-import com.rroms.restaurantmanagement.repository.projection.ReservationProjection;
+import com.rroms.restaurantmanagement.dto.request.ReservationPaymentDTO;
 import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
-import java.util.List;
-
 import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
+import com.rroms.restaurantmanagement.entity.Reservation;
+import com.rroms.restaurantmanagement.entity.RestaurantTable;
+import com.rroms.restaurantmanagement.entity.User;
+import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
+import com.rroms.restaurantmanagement.repository.projection.ReservationProjection;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationService {
+    List<RestaurantTable> getSelectedAvailableTables(LocalDate date, List<Long> tableIds);
+
+    Reservation createPaidReservation(User user, ReservationPaymentDTO request);
+
+    Page<Reservation> findMyReservations(User user, ReservationStatus status, int page, int size);
+
+    void cancelPendingReservation(Long reservationId, User user);
+
+    void deleteCancelledReservation(Long reservationId, User user);
+
     List<ReservationProjection> getReservationList(String keyword, String status);
 
     Reservation getReservationById(Long id);
@@ -26,7 +39,7 @@ public interface ReservationService {
 
 
     void confirm(Long reservationId, Long tableId);
-    Long countTodayReservation( LocalDateTime startDate, LocalDateTime endDate);
+    Long countTodayReservation(LocalDateTime startDate, LocalDateTime endDate);
 
 
 
