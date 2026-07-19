@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Phúc Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+
+    <style>
+        body {
+            font-family: Georgia, serif;
+            color: #2c1a0e;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="Waiter/layout/Header :: header" ></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2 " style="color:#2C1A0E">
+            <div th:replace="Waiter/layout/Navbar :: navbar"></div>
+        </div>
+        <div class="col-10">
+            <div layout:fragment="content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- JS ở đây, trước </body> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

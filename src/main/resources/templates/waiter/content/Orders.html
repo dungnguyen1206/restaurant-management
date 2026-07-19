@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Waiter/layout/Layout}">
+<body>
+<div layout:fragment="content" class="container-fluid p-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="mb-1">Danh sach don hang</h4>
+            <div class="text-muted small">Theo doi cac order da tao va trang thai tung mon.</div>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/waiter/reservations}">Ve reservation</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Ban</th>
+                    <th>Khach hang</th>
+                    <th>Mon</th>
+                    <th class="text-end">Tong tien</th>
+                    <th class="text-center">Trang thai order</th>
+                    <th>Thao tac</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td class="fw-semibold" th:text="|#${order.orderId}|">#1</td>
+                    <td th:text="${order.table != null ? 'Ban ' + order.table.tableNumber : '-'}">Ban 1</td>
+                    <td>
+                        <div th:text="${order.reservation != null ? order.reservation.fullName : '-'}">Khach</div>
+                        <div class="text-muted small" th:text="${order.reservation != null ? order.reservation.phone : ''}">Phone</div>
+                    </td>
+                    <td>
+                        <div th:each="item : ${order.orderItems}" class="mb-1">
+                            <span th:text="${item.menuItem != null ? item.menuItem.itemName : 'Mon da xoa'}">Mon</span>
+                            <span class="text-muted" th:text="|x${item.quantity}|">x1</span>
+                            <span class="badge ms-1"
+                                  th:classappend="${item.status.name() == 'PENDING' ? ' bg-warning text-dark' :
+                                                  (item.status.name() == 'PREPARING' ? ' bg-primary' :
+                                                  (item.status.name() == 'READY' ? ' bg-success' :
+                                                  (item.status.name() == 'SERVED' ? ' bg-info text-dark' : ' bg-secondary')))}"
+                                  th:text="${item.status}">PENDING</span>
+                        </div>
+                    </td>
+                    <td class="text-end" th:text="${order.totalAmount != null ? #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') : '0'}">0</td>
+                    <td class="text-center">
+                        <span class="badge"
+                              th:classappend="${order.status.name() == 'PENDING' ? ' bg-warning text-dark' :
+                                              (order.status.name() == 'PREPARING' ? ' bg-primary' :
+                                              (order.status.name() == 'SERVED' ? ' bg-info text-dark' :
+                                              (order.status.name() == 'COMPLETED' ? ' bg-success' : ' bg-secondary')))}"
+                              th:text="${order.status}">PENDING</span>
+                        <span class="badge bg-secondary"
+                              th:if="${order.submittedToKitchen != true}">
+                            Gio hang
+                        </span>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary"
+                           th:if="${order.reservation != null}"
+                           th:href="@{/waiter/order/create/{id}(id=${order.reservation.reservationId})}">
+                            Mo order
+                        </a>
+                        <form th:if="${order.status.name() == 'PREPARING'}"
+                              th:action="@{/waiter/orders/{id}/serve(id=${order.orderId})}"
+                              method="post"
+                              class="d-inline">
+                            <button class="btn btn-sm btn-success" type="submit">
+                                Phuc vu mon
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                    <td colspan="7" class="text-center text-muted p-3">Chua co don hang nao</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <nav class="mt-3" th:if="${orderPage.totalPages > 1}">
+        <ul class="pagination justify-content-end mb-0">
+            <li class="page-item" th:classappend="${orderPage.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/waiter/orders(page=${orderPage.number - 1}, size=${orderPage.size})}">Truoc</a>
+            </li>
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                th:classappend="${i == orderPage.number} ? 'active'">
+                <a class="page-link" th:text="${i + 1}" th:href="@{/waiter/orders(page=${i}, size=${orderPage.size})}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${orderPage.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/waiter/orders(page=${orderPage.number + 1}, size=${orderPage.size})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+</body>
+</html>

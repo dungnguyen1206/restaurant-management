@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Waiter/layout/Layout}">
+
+<body>
+
+<div layout:fragment="content" class="container-fluid p-3">
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <h4 class="mb-3">Danh sách đặt bàn</h4>
+
+    <form class="row g-2 mb-3"
+          th:action="@{/waiter/reservations}"
+          method="get">
+
+        <div class="col-md-4">
+            <input type="text"
+                   class="form-control"
+                   name="keyword"
+                   placeholder="Tên khách / SĐT"
+                   th:value="${filter.keyword}">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date"
+                   class="form-control"
+                   name="reservationDate"
+                   th:value="${filter.reservationDate}">
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Tìm</button>
+        </div>
+
+    </form>
+
+    <div class="card">
+        <div class="card-body p-0">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="table-dark">
+                <tr>
+                    <th>Bàn</th>
+                    <th>Khách</th>
+                    <th>SĐT</th>
+                    <th>Giờ</th>
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="r : ${page.content}">
+
+                    <td>
+                        <span th:each="rt, iter : ${r.reservationTables}"
+                              th:remove="tag">
+                            <span th:text="${rt.table != null ? rt.table.tableNumber : '-'}">A1</span><span th:if="${!iter.last}">, </span>
+                        </span>
+                    </td>
+
+                    <td th:text="${r.fullName}">Nguyễn Văn A</td>
+
+                    <td th:text="${r.phone}">0900000000</td>
+
+                    <td th:text="${#temporals.format(r.reservationTime,'HH:mm dd/MM')}"></td>
+
+                    <td>
+                        <span class="badge bg-success"
+                              th:text="${r.status}">
+                        </span>
+                    </td>
+
+                    <td class="text-end">
+
+                        <a class="btn btn-sm btn-primary"
+                           th:href="@{/waiter/order/create/{id}(id=${r.reservationId})}">
+                            Gọi Món
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                <tr th:if="${page.empty}">
+                    <td colspan="6" class="text-center text-muted p-3">
+                        Không có reservation
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <nav class="mt-3" th:if="${page.totalPages > 1}" aria-label="Reservation pagination">
+        <ul class="pagination justify-content-end mb-0">
+            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/waiter/reservations(
+                        page=${page.number - 1},
+                        size=${page.size},
+                        keyword=${filter.keyword},
+                        reservationDate=${filter.reservationDate}
+                   )}">
+                    Trước
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                th:classappend="${i == page.number} ? 'active'">
+                <a class="page-link"
+                   th:text="${i + 1}"
+                   th:href="@{/waiter/reservations(
+                        page=${i},
+                        size=${page.size},
+                        keyword=${filter.keyword},
+                        reservationDate=${filter.reservationDate}
+                   )}">
+                    1
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/waiter/reservations(
+                        page=${page.number + 1},
+                        size=${page.size},
+                        keyword=${filter.keyword},
+                        reservationDate=${filter.reservationDate}
+                   )}">
+                    Sau
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+</body>
+</html>

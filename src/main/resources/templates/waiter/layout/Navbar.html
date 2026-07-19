@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+</head>
+<body>
+<nav th:fragment="navbar" style="
+    background: #f5efe6;
+    min-height: 100vh;
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    font-family: Georgia, serif;
+">
+    <div style="margin-bottom: 24px; padding: 0 4px;">
+        <div style="font-size: 16px; font-weight: 700; color: #2c1a0e;">Doi Ngu Phuc Vu</div>
+    </div>
+
+    <ul class="nav flex-column gap-1 flex-grow-1">
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
+               th:href="@{/waiter/reservations}"
+               style="background: #2c1a0e; color: #f5efe6;">
+                Dat Ban
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
+               th:href="@{/waiter/orders}" style="color: #4a3728;">
+                Danh sach don hang
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
+               th:href="@{/waiter/profile}" style="color: #4a3728;">
+                Ho so
+            </a>
+        </li>
+    </ul>
+
+    <hr style="border-color: #ddd0c0;">
+
+    <ul class="nav flex-column gap-1">
+        <li class="nav-item">
+            <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
+               th:href="@{/waiter/profile}">
+                <div style="width:30px; height:30px; border-radius:50%; background:#8b5e3c;
+                            display:flex; align-items:center; justify-content:center;
+                            color:#fff; font-size:12px; font-weight:600;"
+                     th:text="${#authentication.principal.user.firstName != null and !#authentication.principal.user.firstName.isBlank()
+                                ? #strings.substring(#authentication.principal.user.firstName, 0, 1)
+                                : #strings.substring(#authentication.principal.username, 0, 1)}">N</div>
+                <div>
+                    <div style="font-size:13px; font-weight:600; color:#2c1a0e;"
+                         th:text="${#authentication.principal.user.firstName + ' ' + #authentication.principal.user.lastName}">
+                        N. Nguyen
+                    </div>
+                    <div style="font-size:10px; color:#9c7a5a; text-transform:uppercase; letter-spacing:1px;">Waiter</div>
+                </div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form th:action="@{/auths/logout}" method="post" class="m-0">
+                <button type="submit"
+                        class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2 border-0 bg-transparent w-100 text-start"
+                        style="color: #4a3728;">
+                    Dang xuat
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>
