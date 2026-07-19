@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{receptionist/layout/layout}">
+<head>
+    <title>Quản lý đơn hàng</title>
+
+    <th:block layout:fragment="css">
+        <link th:href="@{/receptionist/orders.css}" rel="stylesheet">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" th:with="currentPage='orders'">
+
+    <div class="order-tabs">
+        <a th:href="@{/receptionist/orders(keyword=${keyword})}"
+           th:classappend="${status == null or status == ''} ? 'active'">
+            Tất cả
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='PENDING', keyword=${keyword})}"
+           th:classappend="${status == 'PENDING'} ? 'active'">
+            Đang chờ
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='PREPARING', keyword=${keyword})}"
+           th:classappend="${status == 'PREPARING'} ? 'active'">
+            Đang chuẩn bị
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='SERVED', keyword=${keyword})}"
+           th:classappend="${status == 'SERVED'} ? 'active'">
+            Đã phục vụ
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='COMPLETED', keyword=${keyword})}"
+           th:classappend="${status == 'COMPLETED'} ? 'active'">
+            Hoàn thành
+        </a>
+
+        <a th:href="@{/receptionist/orders(status='CANCELLED', keyword=${keyword})}"
+           th:classappend="${status == 'CANCELLED'} ? 'active'">
+            Đã hủy
+        </a>
+    </div>
+
+    <form th:action="@{/receptionist/orders}" method="get" class="row g-3 mb-4">
+        <input type="hidden" name="status" th:value="${status}">
+
+        <div class="col-md-10">
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+
+                <input type="text"
+                       name="keyword"
+                       class="form-control"
+                       placeholder="Tìm đơn hàng..."
+                       th:value="${keyword}">
+            </div>
+        </div>
+
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-light border">
+                Lọc
+            </button>
+        </div>
+    </form>
+
+    <div class="order-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Bàn</th>
+                    <th>Khách</th>
+                    <th>Món</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thời gian</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td class="order-id" th:text="|#LH-${order.orderId}|">#LH-8291</td>
+                    <td th:text="${order.tableNumber}">T-12</td>
+                    <td th:text="${order.username}">Tran Minh Hoang</td>
+                    <td th:text="|${order.totalItems} món|">4 món</td>
+
+                    <td th:text="|${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}đ|">
+                        2,450,000đ
+                    </td>
+
+                    <td>
+                        <span th:text="${order.status}"
+                              th:class="|status-badge status-${#strings.toLowerCase(order.status)}|">
+                            ACTIVE
+                        </span>
+                    </td>
+
+                    <td th:text="${order.createdDateTime}">
+                        12/07/2026 19:45
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2">
+
+                            <a class="btn btn-sm btn-outline-secondary"
+                               th:href="@{/receptionist/orders/{id}/checkout(id=${order.orderId})}"
+                               th:classappend="${order.status != 'SERVED'} ? ' disabled'"
+                               th:attr="aria-disabled=${order.status != 'SERVED'}">
+                                <i class="fa-solid fa-cash-register"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+                    <td colspan="8" class="text-center text-muted py-4">
+                        Không tìm thấy đơn hàng.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer" th:if="${orderPage != null}">
+            <span th:if="${orderPage.totalElements > 0}"
+                  th:text="|Hiển thị ${orderPage.number * orderPage.size + 1}-${orderPage.number * orderPage.size + orders.size()} trong ${orderPage.totalElements} đơn hàng|">
+                Hiển thị 1-4 trong 56 đơn hàng
+            </span>
+
+            <span th:if="${orderPage.totalElements == 0}">
+                Hiển thị 0 đơn hàng
+            </span>
+
+            <ul class="pagination mb-0" th:if="${orderPage.totalPages > 1}">
+                <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/receptionist/orders(page=${currentPage - 1}, keyword=${keyword}, status=${status})}">
+                        ←
+                    </a>
+                </li>
+
+                <li class="page-item"
+                    th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                    th:classappend="${pageNumber == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/receptionist/orders(page=${pageNumber}, keyword=${keyword}, status=${status})}"
+                       th:text="${pageNumber + 1}">
+                        1
+                    </a>
+                </li>
+
+                <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/receptionist/orders(page=${currentPage + 1}, keyword=${keyword}, status=${status})}">
+                        →
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

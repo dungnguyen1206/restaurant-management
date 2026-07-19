@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<aside th:fragment="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span class="brand-title">Phúc Viên<br>Quản lý nhà hàng</span>
+        <span class="brand-sub">NHÀ HÀNG</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a th:href="@{/receptionist/dashboard}"
+           th:classappend="${currentPage == 'dashboard'} ? 'active'"
+           class="nav-link">
+            <i class="fa-solid fa-table-cells-large"></i>
+            Bảng điều khiển
+        </a>
+
+        <a th:href="@{/receptionist/reservations}"
+           th:classappend="${currentPage == 'reservations'} ? 'active'"
+           class="nav-link">
+            <i class="fa-regular fa-calendar"></i>
+            Đặt bàn
+        </a>
+
+        <a th:href="@{/receptionist/tables}"
+           th:classappend="${currentPage == 'tables'} ? 'active'"
+           class="nav-link">
+            <i class="fa-solid fa-utensils"></i>
+            Bàn
+        </a>
+
+        <a th:href="@{/receptionist/orders}"
+           th:classappend="${currentPage == 'orders'} ? 'active'"
+           class="nav-link">
+            <i class="fa-regular fa-money-bill-1"></i>
+            Đơn hàng
+        </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-avatar">LN</div>
+
+        <div class="user-info">
+            <span class="user-name" sec:authentication="name">Linh Nguyen</span>
+            <span class="user-role">Lễ tân chính</span>
+        </div>
+    </div>
+</aside>
+
+</body>
+</html>

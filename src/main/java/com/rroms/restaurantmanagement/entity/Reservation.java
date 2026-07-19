@@ -35,8 +35,11 @@ public class Reservation extends BaseEntity {
     @Column(name = "full_name", nullable = false, length = 100, columnDefinition = "NVARCHAR(50)")
     private String fullName;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
+
+    @Column(name = "number_of_guests")
+    private Integer numberOfGuests;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

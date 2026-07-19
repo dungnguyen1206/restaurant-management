@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/fragment/layout}" th:with="activeMenu='revenue'">
+<head>
+    <meta charset="UTF-8">
+    <title>Revenue</title>
+    <link rel="stylesheet" th:href="@{/manager/manager-dashboard.css}">
+    <link rel="stylesheet" th:href="@{/manager/manager-menu.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container-fluid p-0 h-100" layout:fragment="content">
+    <div class="d-block w-100" style="background: #FAF7F2; min-height: 100vh;">
+        <div class="w-100 py-4 ps-5 pe-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <span style="font-size: 28px; font-family: Playfair Display;font-weight: 600;color: #1C1209">
+                        Revenue Analytics & Reporting
+                    </span>
+                </div>
+                <hr style="color: #C9A84C; width: 90%; margin-top: 15px">
+                <div th:if="${errorMessage!=null}">
+                    <span style="color: red" th:text="${errorMessage}"></span>
+                </div>
+            </div>
+
+            <div class="row align-items-end g-3">
+                <div class="col-md-9">
+                    <div class="d-flex align-items-end flex-wrap gap-3">
+                        <form class="d-flex align-items-end flex-wrap gap-2" th:action="@{/manager/revenue}"
+                              method="get">
+                            <input type="hidden" name="filterType" value="DATA_RANGE">
+                            <div>
+                                <label class="form-label mb-1" style="color: #7A6248;font-weight: 500">From</label>
+                                <input type="date" class="form-control" name="startDate"
+                                       th:value="${startDate}"
+                                       style="width: 160px;border-color: #E8DFD0;color: #1C1209">
+                            </div>
+                            <div>
+                                <label class="form-label mb-1" style="color: #7A6248;font-weight: 500">To</label>
+                                <input type="date" class="form-control" name="endDate"
+                                       th:value="${endDate}"
+                                       style="width: 160px;border-color: #E8DFD0;color: #1C1209">
+                            </div>
+                            <button type="submit" class="btn"
+                                    style="height: 38px;background: #F3EDE3;border: 1px solid #E8DFD0;color: #7A6248">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+
+                        <div class="d-flex align-items-center flex-wrap gap-2" style="padding-bottom: 0">
+                            <a class="btn"
+                               th:href="@{/manager/revenue(filterType='PRESET', filterCode='DAY')}"
+                               th:style="${filterType == 'PRESET' && filterCode == 'DAY'} ? 'height: 38px;background: #C9A84C;border-color: #C9A84C;color: #2C1A0E;font-weight: 600' : 'height: 38px;background: #FCF9F4;border: 1px solid #E8DFD0;color: #7A6248'">
+                                Hôm nay
+                            </a>
+                            <a class="btn"
+                               th:href="@{/manager/revenue(filterType='PRESET', filterCode='WEEK')}"
+                               th:style="${filterType == 'PRESET' && filterCode == 'WEEK'} ? 'height: 38px;background: #C9A84C;border-color: #C9A84C;color: #2C1A0E;font-weight: 600' : 'height: 38px;background: #FCF9F4;border: 1px solid #E8DFD0;color: #7A6248'">
+                                Tuần này
+                            </a>
+                            <a class="btn"
+                               th:href="@{/manager/revenue(filterType='PRESET', filterCode='MONTH')}"
+                               th:style="${filterType == 'PRESET' && filterCode == 'MONTH'} ? 'height: 38px;background: #C9A84C;border-color: #C9A84C;color: #2C1A0E;font-weight: 600' : 'height: 38px;background: #FCF9F4;border: 1px solid #E8DFD0;color: #7A6248'">
+                                Tháng này
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <button class="btn"
+                            style="background: #C9A84C;border-color: #C9A84C;color: #2C1A0E;font-weight: 600">
+                        <i class="bi bi-download"></i> Export Report
+                    </button>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card" style="width: 100%;border-color: #E8DFD0">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: #7A6248">Total Revenue</h6>
+                            <span style="font-family: JetBrains Mono;color: #C9A84C;font-weight: bold;font-size: 25px"
+                                  th:text="${#numbers.formatDecimal(summaryCard.totalAmount, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                0 đ
+                            </span>
+                            <p class="mb-0 mt-2" style="color: #A58B72">this period</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" style="width: 100%;border-color: #E8DFD0">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: #7A6248">Total Orders</h6>
+                            <span style="font-family: JetBrains Mono;color: #C9A84C;font-weight: bold;font-size: 25px"
+                                  th:text="${summaryCard.totalOrders}">
+                                0
+                            </span>
+                            <p class="mb-0 mt-2" style="color: #A58B72">completed transactions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card" style="width: 100%;border-color: #E8DFD0">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: #7A6248">Average Check Size</h6>
+                            <span style="font-family: JetBrains Mono;color: #C9A84C;font-weight: bold;font-size: 25px"
+                                  th:text="${#numbers.formatDecimal(summaryCard.averagePayment, 0, 'POINT', 0, 'COMMA') + ' đ'}">
+                                0 đ
+                            </span>
+                            <p class="mb-0 mt-2" style="color: #A58B72">per table</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card" style="border-color: #E8DFD0">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-0"
+                                        style="font-family: Playfair Display;font-weight: 600;color: #1C1209">
+                                        Revenue Trend
+                                    </h5>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="btn-group" role="group">
+                                        <a class="btn btn-sm"
+                                           th:href="@{/manager/revenue(filterType=${filterType},filterCode=${filterCode},startDate=${startDate},endDate=${endDate},trendRange='LAST_7_DAYS')}"
+                                           th:style="${trendRange == 'LAST_7_DAYS'} ? 'background: #C9A84C;color: #2C1A0E;border-color: #C9A84C' : 'background: #FCF9F4;color: #7A6248;border-color: #E8DFD0'">7 Days</a>
+                                        <a class="btn btn-sm"
+                                           th:href="@{/manager/revenue(filterType=${filterType},filterCode=${filterCode},startDate=${startDate},endDate=${endDate},trendRange='MONTH')}"
+                                           th:style="${trendRange == 'MONTH'} ? 'background: #C9A84C;color: #2C1A0E;border-color: #C9A84C' : 'background: #FCF9F4;color: #7A6248;border-color: #E8DFD0'">Month</a>
+                                        <a class="btn btn-sm"
+                                           th:href="@{/manager/revenue(filterType=${filterType},filterCode=${filterCode},startDate=${startDate},endDate=${endDate},trendRange='YEAR')}"
+                                           th:style="${trendRange == 'YEAR'} ? 'background: #C9A84C;color: #2C1A0E;border-color: #C9A84C' : 'background: #FCF9F4;color: #7A6248;border-color: #E8DFD0'">Year</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4" style="height: 260px;">
+                                <canvas id="revenueTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card" style="border-color: #E8DFD0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead style="background: #F3EDE3">
+                                <tr style="color: #7A6248">
+                                    <th scope="col">Ngày</th>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Tổng tiền</th>
+                                    <th scope="col">Tiền cọc</th>
+                                    <th scope="col">Tiền thu</th>
+                                    <th scope="col">Payment Method</th>
+                                </tr>
+                                </thead>
+                                <tbody style="color: #1C1209">
+                                <tr th:each="invoice :${invoiceResponseForManagers}">
+                                    <td th:text="${#dates.format(invoice.getPaymentDate(),'HH:mm dd/MM/yyyy')}">
+                                        2026-06-06
+                                    </td>
+                                    <td th:text="'INC-'+ ${invoice.getId()}">42</td>
+                                    <td th:text="${#numbers.formatDecimal(invoice.getTotalAmount(),0,'POINT',0,'COMMA')}">
+                                        8.519.000 đ
+                                    </td>
+                                    <td th:text="${#numbers.formatDecimal(invoice.getDeposit(),0,'POINT',0,'COMMA')}">
+                                        8.519.000 đ
+                                    </td>
+                                    <td th:text="${#numbers.formatDecimal(invoice.getFinalAmount(),0,'POINT',0,'COMMA')}">
+                                        8.519.000 đ
+                                    </td>
+                                    <td><span th:each="paymentMethod : ${invoice.getPaymentMethods()}"
+                                              class="badge rounded-pill text-bg-light me-1" th:text="${paymentMethod}">Cash</span>
+                                        <span th:if="${#lists.isEmpty(invoice.getPaymentMethods())}"
+                                              class="text-muted" style="text-align: center">-</span>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div class="col-md-12">
+                                <div class="paging">
+                                            <span th:text="'Trang hiện tại ' + ${currentPage + 1}+ '  trong ' + ${totalPages}"
+                                                  style=" font-weight: 500;padding: 6px 10px ; border-radius: 5px; margin-top: 5px; margin-bottom: 5px; font-size: 14px"></span>
+                                    <a th:if="${currentPage!=0}"
+                                       th:href="@{/manager/revenue(page=${currentPage - 1},filterType=${filterType},filterCode=${filterCode},startDate=${startDate},endDate=${endDate},trendRange=${trendRange})}"
+                                       class="pager-button">Trước</a>
+                                    <span th:if="${currentPage == 0}"
+                                          class="pager-button disabled"> Trước</span>
+
+                                    <a th:if="${currentPage < totalPages - 1}"
+                                       th:href="@{/manager/revenue(page=${currentPage + 1},filterType=${filterType},filterCode=${filterCode},startDate=${startDate},endDate=${endDate},trendRange=${trendRange})}"
+                                       class="pager-button">Sau</a>
+                                    <span th:if="${currentPage == totalPages -1}" class="pager-button disabled"> Sau</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            <div class="row mt-4 pb-4">-->
+<!--                <div class="col-md-6">-->
+<!--                    <div class="card" style="border-color: #E8DFD0">-->
+<!--                        <div class="card-body">-->
+<!--                            <h5 class="card-title"-->
+<!--                                style="font-family: Playfair Display;font-weight: 600;color: #1C1209">-->
+<!--                                Revenue by Category-->
+<!--                            </h5>-->
+
+<!--                            &lt;!&ndash; TODO: Chart.js - Em code doughnut chart Revenue by Category ở khu vực này &ndash;&gt;-->
+<!--                            <div class="mt-3 d-flex align-items-center justify-content-center"-->
+<!--                                 style="height: 250px;background: #FCF9F4;border: 1px dashed #E8DFD0;border-radius: 5px;color: #A58B72">-->
+<!--                                <div class="text-center">-->
+<!--                                    <i class="bi bi-pie-chart" style="font-size: 35px;color: #C9A84C"></i>-->
+<!--                                    <p class="mb-0 mt-2">Category Doughnut Chart Placeholder</p>-->
+<!--                                    <small>TODO: render Chart.js doughnut chart here</small>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <div class="card" style="border-color: #E8DFD0">-->
+<!--                        <div class="card-body">-->
+<!--                            <h5 class="card-title"-->
+<!--                                style="font-family: Playfair Display;font-weight: 600;color: #1C1209">-->
+<!--                                Revenue by Payment Method-->
+<!--                            </h5>-->
+
+<!--                            &lt;!&ndash; TODO: Chart.js - Em code doughnut chart Revenue by Payment Method ở khu vực này &ndash;&gt;-->
+<!--                            <div class="mt-3 d-flex align-items-center justify-content-center"-->
+<!--                                 style="height: 250px;background: #FCF9F4;border: 1px dashed #E8DFD0;border-radius: 5px;color: #A58B72">-->
+<!--                                <div class="text-center">-->
+<!--                                    <i class="bi bi-pie-chart-fill" style="font-size: 35px;color: #C9A84C"></i>-->
+<!--                                    <p class="mb-0 mt-2">Payment Method Doughnut Chart Placeholder</p>-->
+<!--                                    <small>TODO: render Chart.js doughnut chart here</small>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const trendLabels = /*[[${trendLabels}]]*/ [];
+        const trendRevenues = /*[[${trendRevenues}]]*/ [];
+        const trendCanvas = document.getElementById("revenueTrendChart");
+
+        if (trendCanvas) {
+            new Chart(trendCanvas, {
+                type: "line",
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: "Revenue",
+                        data: trendRevenues,
+                        borderColor: "#C9A84C",
+                        backgroundColor: "rgba(201, 168, 76, 0.15)",
+                        borderWidth: 2,
+                        pointBackgroundColor: "#C9A84C",
+                        pointBorderColor: "#C9A84C",
+                        tension: 0.35,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return new Intl.NumberFormat("vi-VN").format(context.raw) + " đ";
+                                }
+                            }
+                        }
+                    },
+
+                    //Phần này dùng để cấu hình trục X và Y vì x không có gì để validate nên để default
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return new Intl.NumberFormat("vi-VN", {
+                                        notation: "compact"
+                                    }).format(value);
+                                }
+                            },
+
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+
+</body>
+</html>

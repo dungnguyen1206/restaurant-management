@@ -13,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class OrderHistoryDTO {
     private Long orderId;
-    private int tableNumber;
+    private String tableNumber;
     private BigDecimal totalAmount;
     private OrderStatus orderStatus;
     private Instant createdAt;

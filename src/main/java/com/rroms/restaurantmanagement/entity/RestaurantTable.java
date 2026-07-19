@@ -24,7 +24,7 @@ public class RestaurantTable {
     private Long tableId;
 
     @Column(name = "table_number", nullable = false)
-    private Integer tableNumber;
+    private String tableNumber;
 
     @Column(nullable = false)
     private Integer capacity;
@@ -50,4 +50,8 @@ public class RestaurantTable {
 
     @OneToMany(mappedBy = "table")
     private List<ReservationTable> reservationTables;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_waiter_id")
+    private User assignedWaiter;
 }
