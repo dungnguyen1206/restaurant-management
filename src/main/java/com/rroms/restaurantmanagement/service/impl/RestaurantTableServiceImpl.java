@@ -1,7 +1,8 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.entity.RestaurantTable;
-import com.rroms.restaurantmanagement.enums.ReservationStatus;
+import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
+import com.rroms.restaurantmanagement.entity.constant.TableStatus;
 import com.rroms.restaurantmanagement.repository.RestaurantTableRepository;
 import com.rroms.restaurantmanagement.service.RestaurantTableService;
 import org.springframework.stereotype.Service;
@@ -20,24 +21,14 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     }
 
     @Override
-    public List<RestaurantTable> findAvailableTables(LocalDate date, Integer slot, Integer capacity) {
-        if (date == null) {
-            date = LocalDate.now();
+    public List<RestaurantTable> findAvailableTables(LocalDate date, Integer capacity) {
+        LocalDate selectedDate = date == null ? LocalDate.now() : date;
+        if (capacity != null && !List.of(2, 4, 6, 8).contains(capacity)) {
+            throw new IllegalArgumentException("Sức chứa bàn không hợp lệ");
         }
-
-        LocalDateTime startTime = date.atStartOfDay();
-        LocalDateTime endTime = startTime.plusDays(1);
-
+        LocalDateTime start = selectedDate.atStartOfDay();
         return restaurantTableRepository.findAvailableTables(
-                startTime,
-                endTime,
-                slot,
-                capacity,
-                List.of(
-                        ReservationStatus.PENDING,
-                        ReservationStatus.CONFIRMED
-                ),
-                4
-        );
+                start, start.plusDays(1), TableStatus.AVAILABLE, capacity,
+                List.of(ReservationStatus.PENDING, ReservationStatus.CONFIRMED, ReservationStatus.CHECKED_IN));
     }
 }

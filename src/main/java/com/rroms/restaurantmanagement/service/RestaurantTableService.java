@@ -6,9 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RestaurantTableService {
-    public List<RestaurantTable> findAvailableTables(
-            LocalDate date,
-            Integer slot,
-            Integer capacity
-    );
+    List<RestaurantTable> findAvailableTables(LocalDate date, Integer capacity);
 }

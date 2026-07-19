@@ -4,6 +4,7 @@ import com.rroms.restaurantmanagement.DtoMapper.DtoMapper;
 import com.rroms.restaurantmanagement.criteria.MenuItemCriteria;
 import com.rroms.restaurantmanagement.dto.request.MenuItemDto;
 import com.rroms.restaurantmanagement.entity.MenuItem;
+import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.MenuItemRepository;
 import com.rroms.restaurantmanagement.service.MenuItemService;
@@ -56,6 +57,12 @@ public class MenuItemServiceImpl implements MenuItemService {
 
         item.setVirtualInStock(virtualInStock);
         item.setIsSoldOut(virtualInStock == 0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MenuItem> findMostPopular(int limit) {
+        return menuItemRepository.findMostPopular(OrderStatus.CANCELLED, PageRequest.of(0, limit));
     }
 
     @Override

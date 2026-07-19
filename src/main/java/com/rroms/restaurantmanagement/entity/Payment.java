@@ -41,7 +41,7 @@ public class Payment {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id", nullable = false)
+    @JoinColumn(name = "invoice_id", nullable = true)
     private Invoice invoice;
 
     @Enumerated(EnumType.STRING)

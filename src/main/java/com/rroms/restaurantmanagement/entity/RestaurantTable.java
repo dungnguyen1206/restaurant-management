@@ -29,7 +29,7 @@ public class RestaurantTable {
     @Column(nullable = false)
     private Integer capacity;
 
-    @Column(length = 100)
+    @Column(length = 100, columnDefinition = "NVARCHAR(MAX)")
     private String area;
 
     @Enumerated(EnumType.STRING)

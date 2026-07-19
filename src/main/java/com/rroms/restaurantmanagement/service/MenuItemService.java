@@ -14,6 +14,7 @@ import java.util.List;
 public interface MenuItemService {
     Page<MenuItem> getAllMenuItems(String name, Long categoryId, Pageable pageable);
     void updateVirtualStock(Long itemId, Integer virtualInStock);
+    List<MenuItem> findMostPopular(int limit);
 
     Page<MenuItemDto> searchMenu(
             MenuItemCriteria criteriaMenuItem,

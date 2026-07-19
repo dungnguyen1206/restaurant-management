@@ -35,3 +35,12 @@
     border-radius: 4px;
     border: 1px solid #EDE4D6;
 }
+
+.table-label { cursor: pointer; }
+.table-check:checked + .table-card {
+    border: 2px solid #C9A84C;
+    background: #FFFCF3;
+    box-shadow: 0 5px 16px rgba(122, 98, 72, 0.14);
+}
+.selection-icon { color: #c9bda7; }
+.table-check:checked + .table-card .selection-icon { color: #C9A84C; font-weight: 900; }

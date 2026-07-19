@@ -1,6 +1,7 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.dto.request.UserRegisterDTO;
+import com.rroms.restaurantmanagement.dto.request.ProfileUpdateDTO;
 import com.rroms.restaurantmanagement.entity.User;
 import com.rroms.restaurantmanagement.entity.constant.RoleName;
 import com.rroms.restaurantmanagement.entity.constant.UserStatus;
@@ -37,5 +38,20 @@ public class UserServiceImpl implements UserService {
         user.setRole(this.roleService.findByRoleName(RoleName.CUSTOMER));
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public User updateProfile(Long userId, ProfileUpdateDTO profile) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
+        user.setFirstName(clean(profile.getFirstName()));
+        user.setMiddleName(clean(profile.getMiddleName()));
+        user.setLastName(profile.getLastName().trim());
+        user.setPhone(profile.getPhone().trim());
+        return userRepository.save(user);
+    }
+
+    private String clean(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 }
