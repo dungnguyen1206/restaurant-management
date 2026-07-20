@@ -486,7 +486,7 @@ public class ReservationServiceImpl implements ReservationService {
             if (waiterId != null) {
                 predicates.add(
                         criteriaBuilder.equal(
-                                root.get("user").get("userId"),
+                                restaurantTableJoin.get("assignedWaiter").get("userId"),
                                 waiterId
                         )
                 );
