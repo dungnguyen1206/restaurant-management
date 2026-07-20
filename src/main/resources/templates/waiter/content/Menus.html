@@ -11,16 +11,16 @@
 
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-            <h4 class="mb-1">Tao order gui bep</h4>
+            <h4 class="font-serif fw-bold mb-1">Tao don gui bep</h4>
             <div class="text-muted small">
                 <span th:text="${reservation.fullName}">Khach</span>
                 <span> - </span>
                 <span th:text="${reservation.phone}">0900000000</span>
                 <span> - </span>
-                <span th:text="${#temporals.format(reservation.reservationTime, 'HH:mm dd/MM')}">18:00 17/07</span>
+                <span th:text="${#temporals.format(reservation.reservationTime, 'HH:mm dd/MM')}">18:00 20/07</span>
             </div>
         </div>
-        <a class="btn btn-outline-secondary btn-sm" th:href="@{/waiter/reservations}">Quay lai</a>
+        <a class="btn btn-gold-ghost btn-sm" th:href="@{/waiter/reservations}">Quay lai</a>
     </div>
 
     <div class="row g-3">
@@ -37,25 +37,25 @@
                 </div>
                 <div class="col-md-4">
                     <select class="form-select" name="categoryId">
-                        <option value="">Tat ca category</option>
+                        <option value="">Tat ca danh muc</option>
                         <option th:each="category : ${categories}"
                                 th:value="${category.categoryId}"
                                 th:text="${category.categoryName}"
                                 th:selected="${categoryId != null and categoryId == category.categoryId}">
-                            Category
+                            Danh muc
                         </option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
-                    <button class="btn btn-primary flex-fill" type="submit">Loc</button>
-                    <a class="btn btn-outline-secondary"
+                    <button class="btn btn-gold-filled flex-fill" type="submit">Loc</button>
+                    <a class="btn btn-gold-ghost"
                        th:href="@{/waiter/order/create/{id}(id=${reservation.reservationId})}">
                         Xoa
                     </a>
                 </div>
             </form>
 
-            <div class="card">
+            <div class="custom-card">
                 <div class="card-body p-0">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-dark">
@@ -81,14 +81,14 @@
                             </td>
                             <td>
                                 <div class="fw-semibold" th:text="${item.itemName}">Ten mon</div>
-                                <div class="text-muted small" th:text="${item.category != null ? item.category.categoryName : '-'}">Category</div>
+                                <div class="text-muted small" th:text="${item.category != null ? item.category.categoryName : '-'}">Danh muc</div>
                                 <span th:if="${item.virtualInStock == null or item.virtualInStock <= 0}"
                                       class="badge bg-danger">Het mon</span>
                             </td>
                             <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">0</td>
                             <td th:text="${item.virtualInStock != null ? item.virtualInStock : 0}">0</td>
                             <td>
-                                <button class="btn btn-sm btn-primary"
+                                <button class="btn btn-sm btn-gold-filled"
                                         type="button"
                                         data-bs-toggle="modal"
                                         th:data-bs-target="'#addCartModal' + ${item.itemId}"
@@ -102,7 +102,7 @@
                                      th:aria-labelledby="'addCartModalLabel' + ${item.itemId}"
                                      aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
+                                        <div class="modal-content custom-card">
                                             <form th:action="@{/waiter/orders/from-reservation/{id}/cart/add(id=${reservation.reservationId})}"
                                                   method="post">
                                                 <div class="modal-header">
@@ -160,11 +160,11 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button"
-                                                            class="btn btn-outline-secondary"
+                                                            class="btn btn-gold-ghost"
                                                             data-bs-dismiss="modal">
                                                         Huy
                                                     </button>
-                                                    <button class="btn btn-primary" type="submit">
+                                                    <button class="btn btn-gold-filled" type="submit">
                                                         Them vao gio hang
                                                     </button>
                                                 </div>
@@ -230,7 +230,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card">
+            <div class="custom-card">
                 <div class="card-header bg-dark text-white">
                     Gio hang hien tai
                 </div>
@@ -256,7 +256,7 @@
                                 <div class="small text-muted"
                                      th:if="${orderItem.specialNote != null and !orderItem.specialNote.isBlank()}"
                                      th:text="${orderItem.specialNote}">
-                                    Note
+                                    Ghi chu
                                 </div>
                                 <span class="badge mt-1"
                                       th:classappend="${orderItem.status.name() == 'PENDING' ? ' bg-warning text-dark' :
@@ -266,6 +266,17 @@
                                       th:text="${orderItem.status}">
                                     PENDING
                                 </span>
+                                <form class="mt-2"
+                                      th:action="@{/waiter/orders/from-reservation/{reservationId}/cart/items/{orderItemId}/serve(
+                                            reservationId=${reservation.reservationId},
+                                            orderItemId=${orderItem.orderItemId}
+                                      )}"
+                                      method="post"
+                                      th:if="${orderItem.status.name() == 'READY'}">
+                                    <button class="btn btn-sm btn-gold-filled" type="submit">
+                                        Served
+                                    </button>
+                                </form>
                             </div>
                             <div class="fw-semibold text-end"
                                  th:text="${#numbers.formatDecimal(orderItem.unitPrice * orderItem.quantity, 0, 'COMMA', 0, 'POINT')}">
@@ -284,7 +295,7 @@
                                        name="quantity"
                                        class="form-control form-control-sm"
                                        th:value="${orderItem.quantity}">
-                                <button class="btn btn-sm btn-outline-primary" type="submit">Sua</button>
+                                <button class="btn btn-sm btn-gold-ghost" type="submit">Sua</button>
                             </div>
                             <input type="text"
                                    class="form-control form-control-sm mt-2"
@@ -311,7 +322,7 @@
                           method="post"
                           class="mt-3"
                           th:if="${activeOrder != null and activeOrder.submittedToKitchen != true}">
-                        <button class="btn btn-success w-100"
+                        <button class="btn btn-gold-filled w-100"
                                 type="submit"
                                 th:disabled="${#lists.isEmpty(activeOrderItems)}">
                             Gui bep
@@ -320,7 +331,7 @@
 
                     <div th:if="${activeOrder != null and activeOrder.submittedToKitchen == true}"
                          class="alert alert-info mt-3 mb-0">
-                        Order da gui bep. Mon them moi se duoc gui vao order nay thanh item rieng.
+                        Don da gui bep. Mon them moi se duoc gui vao don nay thanh item rieng.
                     </div>
                 </div>
             </div>

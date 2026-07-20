@@ -5,67 +5,53 @@
     <title>Navbar</title>
 </head>
 <body>
-<nav th:fragment="navbar" style="
-    background: #f5efe6;
-    min-height: 100vh;
-    padding: 20px 12px;
-    display: flex;
-    flex-direction: column;
-    font-family: Georgia, serif;
-">
-    <div style="margin-bottom: 24px; padding: 0 4px;">
-        <div style="font-size: 16px; font-weight: 700; color: #2c1a0e;">Doi Ngu Phuc Vu</div>
+<nav th:fragment="navbar" class="waiter-sidebar min-vh-100 p-3 d-flex flex-column">
+    <div class="mb-4 px-1">
+        <div class="waiter-sidebar-title">Nhan vien phuc vu</div>
     </div>
 
     <ul class="nav flex-column gap-1 flex-grow-1">
         <li class="nav-item">
-            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
-               th:href="@{/waiter/reservations}"
-               style="background: #2c1a0e; color: #f5efe6;">
-                Dat Ban
+            <a class="nav-link waiter-nav-link rounded px-3 py-2" th:href="@{/waiter/reservations}">
+                <i class="fa-regular fa-calendar-check me-2"></i>Dat ban
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
-               th:href="@{/waiter/orders}" style="color: #4a3728;">
-                Danh sach don hang
+            <a class="nav-link waiter-nav-link rounded px-3 py-2" th:href="@{/waiter/orders}">
+                <i class="fa-solid fa-receipt me-2"></i>Don hang
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2"
-               th:href="@{/waiter/profile}" style="color: #4a3728;">
-                Ho so
+            <a class="nav-link waiter-nav-link rounded px-3 py-2" th:href="@{/waiter/profile}">
+                <i class="fa-regular fa-user me-2"></i>Ho so
             </a>
         </li>
     </ul>
 
-    <hr style="border-color: #ddd0c0;">
+    <hr>
 
     <ul class="nav flex-column gap-1">
         <li class="nav-item">
-            <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none"
+            <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                th:href="@{/waiter/profile}">
-                <div style="width:30px; height:30px; border-radius:50%; background:#8b5e3c;
-                            display:flex; align-items:center; justify-content:center;
-                            color:#fff; font-size:12px; font-weight:600;"
+                <div class="waiter-avatar rounded-circle text-white d-flex align-items-center justify-content-center fw-bold"
                      th:text="${#authentication.principal.user.firstName != null and !#authentication.principal.user.firstName.isBlank()
                                 ? #strings.substring(#authentication.principal.user.firstName, 0, 1)
                                 : #strings.substring(#authentication.principal.username, 0, 1)}">N</div>
                 <div>
-                    <div style="font-size:13px; font-weight:600; color:#2c1a0e;"
+                    <div class="small fw-semibold"
                          th:text="${#authentication.principal.user.firstName + ' ' + #authentication.principal.user.lastName}">
-                        N. Nguyen
+                        Waiter Name
                     </div>
-                    <div style="font-size:10px; color:#9c7a5a; text-transform:uppercase; letter-spacing:1px;">Waiter</div>
+                    <div class="small text-muted">Waiter</div>
                 </div>
             </a>
         </li>
         <li class="nav-item">
             <form th:action="@{/auths/logout}" method="post" class="m-0">
                 <button type="submit"
-                        class="nav-link d-flex align-items-center gap-2 rounded px-3 py-2 border-0 bg-transparent w-100 text-start"
-                        style="color: #4a3728;">
-                    Dang xuat
+                        class="nav-link waiter-nav-link rounded px-3 py-2 border-0 bg-transparent w-100 text-start">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Dang xuat
                 </button>
             </form>
         </li>

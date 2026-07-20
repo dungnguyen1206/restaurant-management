@@ -7,13 +7,13 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h4 class="mb-1">Danh sach don hang</h4>
-            <div class="text-muted small">Theo doi cac order da tao va trang thai tung mon.</div>
+            <h4 class="font-serif fw-bold mb-1">Danh sach don hang</h4>
+            <div class="text-muted small">Theo doi cac don hang da tao va trang thai tung mon.</div>
         </div>
-        <a class="btn btn-outline-secondary btn-sm" th:href="@{/waiter/reservations}">Ve reservation</a>
+        <a class="btn btn-gold-ghost btn-sm" th:href="@{/waiter/reservations}">Ve dat ban</a>
     </div>
 
-    <div class="card">
+    <div class="custom-card">
         <div class="card-body p-0">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
@@ -23,7 +23,7 @@
                     <th>Khach hang</th>
                     <th>Mon</th>
                     <th class="text-end">Tong tien</th>
-                    <th class="text-center">Trang thai order</th>
+                    <th class="text-center">Trang thai don</th>
                     <th>Thao tac</th>
                 </tr>
                 </thead>
@@ -61,19 +61,11 @@
                         </span>
                     </td>
                     <td>
-                        <a class="btn btn-sm btn-outline-primary"
+                        <a class="btn btn-sm btn-gold-ghost"
                            th:if="${order.reservation != null}"
                            th:href="@{/waiter/order/create/{id}(id=${order.reservation.reservationId})}">
-                            Mo order
+                            Mo don
                         </a>
-                        <form th:if="${order.status.name() == 'PREPARING'}"
-                              th:action="@{/waiter/orders/{id}/serve(id=${order.orderId})}"
-                              method="post"
-                              class="d-inline">
-                            <button class="btn btn-sm btn-success" type="submit">
-                                Phuc vu mon
-                            </button>
-                        </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(orders)}">

@@ -84,6 +84,13 @@ public class MenuController {
         return "redirect:/waiter/orders";
     }
 
+    @PostMapping("/orders/from-reservation/{reservationId}/cart/items/{orderItemId}/serve")
+    public String serveOrderItem(@PathVariable Long reservationId,
+                                 @PathVariable Long orderItemId) {
+        orderService.markOrderItemServed(reservationId, orderItemId);
+        return "redirect:/waiter/order/create/" + reservationId;
+    }
+
     @GetMapping("/orders")
     public String orders(@AuthenticationPrincipal CustomUserDetails user,
                          @RequestParam(defaultValue = "0") int page,
@@ -96,9 +103,4 @@ public class MenuController {
         return "waiter/content/Orders";
     }
 
-    @PostMapping("/orders/{id}/serve")
-    public String serveOrder(@PathVariable Long id) {
-        orderService.markOrderServed(id);
-        return "redirect:/waiter/orders";
-    }
 }

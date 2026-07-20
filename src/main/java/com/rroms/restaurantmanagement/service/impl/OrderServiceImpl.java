@@ -476,6 +476,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    public void markOrderItemServed(Long reservationId, Long orderItemId) {
+        Order order = orderRepository.findByReservationIdWithDetails(reservationId)
+                .orElseThrow(() -> new RuntimeException("Order khong ton tai"));
+        OrderItem orderItem = findItemInOrder(order, orderItemId);
+
+        if (orderItem.getStatus() != OrderItemStatus.READY) {
+            throw new RuntimeException("Chi mon READY moi duoc phuc vu");
+        }
+
+        orderItem.setStatus(OrderItemStatus.SERVED);
+
+        boolean allServed = order.getOrderItems().stream()
+                .allMatch(item -> item.getStatus() == OrderItemStatus.SERVED);
+        if (allServed) {
+            order.setStatus(OrderStatus.SERVED);
+        }
+    }
+
+    @Override
+    @Transactional
 
     public void markOrderServed(Long orderId) {
         Order order = orderRepository.findByIdWithDetails(orderId)
