@@ -121,13 +121,13 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
                 o.created_by AS createdBy,
                 o.updated_by AS updatedBy,
 
-                t.table_id AS tableId,
-                t.table_number AS tableNumber,
+                COALESCE(reservationTables.tableId, t.table_id) AS tableId,
+                COALESCE(reservationTables.tableNumbers, t.table_number) AS tableNumber,
 
                 u.user_id AS userId,
                 u.username AS username,
 
-                ISNULL(SUM(oi.quantity), 0) AS totalItems
+                ISNULL(orderItems.totalItems, 0) AS totalItems
 
             FROM orders o
 
@@ -137,15 +137,28 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN users u
                 ON o.user_user_id = u.user_id
 
-            LEFT JOIN order_items oi
-                ON o.order_id = oi.order_order_id
+            OUTER APPLY (
+                SELECT
+                    MIN(rt2.table_id) AS tableId,
+                    STRING_AGG(rt2.table_number, ', ') AS tableNumbers
+                FROM reservation_tables rtb
+                INNER JOIN restaurant_tables rt2
+                    ON rtb.table_id = rt2.table_id
+                WHERE rtb.reservation_id = o.reservation_id
+            ) reservationTables
+
+            OUTER APPLY (
+                SELECT SUM(oi.quantity) AS totalItems
+                FROM order_items oi
+                WHERE oi.order_order_id = o.order_id
+            ) orderItems
 
             WHERE (
                 :keyword IS NULL
                 OR :keyword = ''
                 OR CAST(o.order_id AS VARCHAR(50))
                     LIKE CONCAT('%', :keyword, '%')
-                OR t.table_number
+                OR COALESCE(reservationTables.tableNumbers, t.table_number)
                     LIKE CONCAT('%', :keyword, '%')
                 OR u.username
                     LIKE CONCAT('%', :keyword, '%')
@@ -156,19 +169,6 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
                 OR :status = ''
                 OR o.status = :status
             )
-
-            GROUP BY
-                o.order_id,
-                o.totalAmount,
-                o.status,
-                o.created_at,
-                o.updated_at,
-                o.created_by,
-                o.updated_by,
-                t.table_id,
-                t.table_number,
-                u.user_id,
-                u.username
 
             ORDER BY o.created_at DESC
             """,
@@ -184,12 +184,20 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN users u
                 ON o.user_user_id = u.user_id
 
+            OUTER APPLY (
+                SELECT STRING_AGG(rt2.table_number, ', ') AS tableNumbers
+                FROM reservation_tables rtb
+                INNER JOIN restaurant_tables rt2
+                    ON rtb.table_id = rt2.table_id
+                WHERE rtb.reservation_id = o.reservation_id
+            ) reservationTables
+
             WHERE (
                 :keyword IS NULL
                 OR :keyword = ''
                 OR CAST(o.order_id AS VARCHAR(50))
                     LIKE CONCAT('%', :keyword, '%')
-                OR t.table_number
+                OR COALESCE(reservationTables.tableNumbers, t.table_number)
                     LIKE CONCAT('%', :keyword, '%')
                 OR u.username
                     LIKE CONCAT('%', :keyword, '%')
