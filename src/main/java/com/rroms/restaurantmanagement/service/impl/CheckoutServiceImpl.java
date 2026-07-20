@@ -13,6 +13,7 @@ import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.entity.constant.PaymentMethod;
 import com.rroms.restaurantmanagement.entity.constant.PaymentStatus;
 import com.rroms.restaurantmanagement.entity.constant.PaymentType;
+import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
 import com.rroms.restaurantmanagement.entity.constant.TableStatus;
 import com.rroms.restaurantmanagement.repository.InvoiceRepository;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
@@ -111,6 +112,9 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.COMPLETED);
+        if (order.getReservation() != null) {
+            order.getReservation().setStatus(ReservationStatus.COMPLETED);
+        }
         orderRepository.save(order);
 
         List<RestaurantTable> tables = getCheckoutTables(order);
