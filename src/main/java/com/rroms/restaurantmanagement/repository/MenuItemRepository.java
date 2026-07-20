@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -63,4 +64,5 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long>, JpaSp
             ORDER BY SUM(oi.quantity) DESC
             """)
     List<MenuItem> findMostPopular(@Param("excludedStatus") OrderStatus excludedStatus, Pageable pageable);
+
 }

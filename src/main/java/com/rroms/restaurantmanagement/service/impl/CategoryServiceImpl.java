@@ -1,5 +1,6 @@
 package com.rroms.restaurantmanagement.service.impl;
 
+import com.rroms.restaurantmanagement.dto.response.CategoryForWaiterResponse;
 import com.rroms.restaurantmanagement.DtoMapper.DtoMapper;
 import com.rroms.restaurantmanagement.dto.request.CategoryDto;
 import com.rroms.restaurantmanagement.dto.response.CategoryResponseForManager;
@@ -46,6 +47,19 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return dtos;
+    }
+
+    @Override
+    public List<CategoryForWaiterResponse> getCategoriesforWaiter() {
+         return toCategoriesForWaiter(categoryRepository.findAll());
+    }
+
+    private CategoryForWaiterResponse toCategoryForWaiter(Category category){
+        return CategoryForWaiterResponse.builder().categoryId(category.getCategoryId()).categoryName(category.getCategoryName()).build();
+    }
+
+    private List<CategoryForWaiterResponse> toCategoriesForWaiter(List<Category> categories){
+        return categories.stream().map(this::toCategoryForWaiter).toList();
     }
 
 

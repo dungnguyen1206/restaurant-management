@@ -92,6 +92,12 @@
                                            th:text="|Kho hiện tại: ${item.menuItem.virtualInStock != null ? item.menuItem.virtualInStock : 0}|">
                                         Kho hiện tại: 0
                                     </small>
+                                    <span class="badge mt-1"
+                                          th:classappend="${item.status.name() == 'PENDING' ? ' bg-warning text-dark' :
+                                                          (item.status.name() == 'PREPARING' ? ' bg-primary' :
+                                                          (item.status.name() == 'READY' ? ' bg-success' :
+                                                          (item.status.name() == 'SERVED' ? ' bg-info text-dark' : ' bg-secondary')))}"
+                                          th:text="${item.status}">PENDING</span>
                                 </div>
                                 <span class="item-quantity fw-bold" th:text="${item.quantity} + 'x'">2x</span>
                             </div>
@@ -116,7 +122,14 @@
 
                         <th:block th:if="${order.status.name() == 'PREPARING'}">
                             <div style="display: flex; gap: 8px;">
-                                <form th:action="@{/chef/orders/{id}/done(id=${order.orderId})}" method="post" style="flex:1">
+                                <form th:if="${order.hasPendingItems()}"
+                                      th:action="@{/chef/orders/{id}/confirm(id=${order.orderId})}" method="post" style="flex:1">
+                                    <button type="submit" class="btn btn-kds-primary w-100 fw-bold">
+                                        Nhan mon moi
+                                    </button>
+                                </form>
+                                <form th:unless="${order.hasPendingItems()}"
+                                      th:action="@{/chef/orders/{id}/done(id=${order.orderId})}" method="post" style="flex:1">
                                     <button type="submit" class="btn btn-kds-done w-100 fw-bold">
                                         <i class="ti ti-check"></i> Xong
                                     </button>

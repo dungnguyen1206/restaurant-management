@@ -1,6 +1,8 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.dto.request.ReservationPaymentDTO;
+import com.rroms.restaurantmanagement.dto.request.ReservationFilter;
+import com.rroms.restaurantmanagement.dto.request.ReservationRequest;
 import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
 import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
 import com.rroms.restaurantmanagement.entity.Payment;
@@ -30,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +40,17 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
@@ -403,6 +417,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.getAllTodayReservationsForManager(startDate,endDate, pageable).map(this::toReservationResponseForManager);
     }
 
+
     private ReservationResponseForManager toReservationResponseForManager(Reservation reservation) {
         return ReservationResponseForManager.builder()
                 .id(reservation.getReservationId())
@@ -412,5 +427,81 @@ public class ReservationServiceImpl implements ReservationService {
                 .reservationTime(reservation.getReservationTime())
                 .status(reservation.getStatus().toString())
                 .build();
+    }
+
+
+    @Override
+    public Page<Reservation> getReservations(Long waiterId, ReservationFilter reservationRequest, Pageable pageable) {
+         return reservationRepository.findAll(filter(waiterId, reservationRequest), pageable);
+    }
+
+    private Specification<Reservation> filter(Long waiterId, ReservationFilter reservation){
+        return((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            ReservationFilter reservationRequest = reservation != null ? reservation : new ReservationFilter();
+
+            query.distinct(true);
+
+            Join<Reservation, ReservationTable> reservationTableJoin = root.join("reservationTables", JoinType.LEFT);
+
+            Join<ReservationTable, RestaurantTable> restaurantTableJoin = reservationTableJoin.join("table", JoinType.LEFT);
+
+            if (waiterId != null) {
+                predicates.add(
+                        criteriaBuilder.equal(
+                                root.get("user").get("userId"),
+                                waiterId
+                        )
+                );
+            }
+
+            if(reservationRequest.getStatus() != null){
+                predicates.add(
+                        criteriaBuilder.equal(
+                                root.get("status"),
+                                ReservationStatus.CHECKED_IN
+                        )
+                );
+            }
+
+            if(reservationRequest.getKeyword() != null && !reservationRequest.getKeyword().isBlank()){
+                String keyword = reservationRequest.getKeyword().trim().toLowerCase();
+
+                Predicate fullName = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("fullName")),
+                        "%" + keyword + "%"
+                );
+
+                Predicate phone = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("phone")),
+                        "%" + keyword + "%"
+                );
+
+                Predicate tableName = criteriaBuilder.like(
+                        criteriaBuilder.lower(restaurantTableJoin.get("tableNumber")),
+                        "%" + keyword + "%"
+                );
+
+                predicates.add(criteriaBuilder.or(fullName, phone, tableName));
+            }
+
+            if(reservationRequest.getReservationDate() != null){
+                LocalDateTime start =reservationRequest.getReservationDate().atStartOfDay();
+
+                LocalDateTime end =reservationRequest.getReservationDate().atTime(23,59,59);
+
+                predicates.add(
+                        criteriaBuilder.between(
+                                root.get("reservationTime"),
+                                start, end
+                        )
+                );
+            }
+
+
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
+        });
     }
 }

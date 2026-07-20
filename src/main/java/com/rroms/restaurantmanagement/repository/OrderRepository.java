@@ -21,6 +21,54 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecificationExecutor<Order> {
 
+    @Query("""
+            SELECT DISTINCT o
+            FROM Order o
+            LEFT JOIN FETCH o.reservation r
+            LEFT JOIN FETCH o.table t
+            LEFT JOIN FETCH o.orderItems oi
+            LEFT JOIN FETCH oi.menuItem mi
+            WHERE r.reservationId = :reservationId
+            AND o.status <> com.rroms.restaurantmanagement.entity.constant.OrderStatus.COMPLETED
+            AND o.status <> com.rroms.restaurantmanagement.entity.constant.OrderStatus.CANCELLED
+            """)
+    Optional<Order> findActiveByReservationId(@Param("reservationId") Long reservationId);
+
+    @Query("""
+            SELECT DISTINCT o
+            FROM Order o
+            LEFT JOIN FETCH o.reservation r
+            LEFT JOIN FETCH o.table t
+            LEFT JOIN FETCH o.orderItems oi
+            LEFT JOIN FETCH oi.menuItem mi
+            WHERE r.reservationId = :reservationId
+            """)
+    Optional<Order> findByReservationIdWithDetails(@Param("reservationId") Long reservationId);
+
+    @Query("""
+            SELECT DISTINCT o
+            FROM Order o
+            LEFT JOIN FETCH o.reservation r
+            LEFT JOIN FETCH o.table t
+            LEFT JOIN FETCH o.orderItems oi
+            LEFT JOIN FETCH oi.menuItem mi
+            WHERE o.orderId = :id
+            """)
+    Optional<Order> findByIdWithDetails(@Param("id") Long id);
+
+    @Query(value = """
+            SELECT DISTINCT o
+            FROM Order o
+            LEFT JOIN FETCH o.reservation r
+            LEFT JOIN FETCH o.table t
+            LEFT JOIN FETCH o.orderItems oi
+            LEFT JOIN FETCH oi.menuItem mi
+            WHERE o.user.userId = :waiterId
+            ORDER BY o.createdAt DESC
+            """,
+            countQuery = "SELECT COUNT(o) FROM Order o WHERE o.user.userId = :waiterId")
+    Page<Order> findWaiterOrders(@Param("waiterId") Long waiterId, Pageable pageable);
+
     Page<Order> findByStatusInAndCreatedAtBetween(
             List<OrderStatus> statuses,
             Instant start,
@@ -165,10 +213,12 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
                    "LEFT JOIN FETCH oi.menuItem mi " +
                    "LEFT JOIN FETCH o.table t " +
                    "WHERE o.status IN :statuses " +
+                   "AND o.submittedToKitchen = true " +
                    "AND o.createdAt BETWEEN :start AND :end " +
                    "AND o.orderId = :orderId",
            countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
                         "WHERE o.status IN :statuses " +
+                        "AND o.submittedToKitchen = true " +
                         "AND o.createdAt BETWEEN :start AND :end " +
                         "AND o.orderId = :orderId")
     Page<Order> getKitchenOrdersWithId(
@@ -184,9 +234,11 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
                    "LEFT JOIN FETCH oi.menuItem mi " +
                    "LEFT JOIN FETCH o.table t " +
                    "WHERE o.status IN :statuses " +
+                   "AND o.submittedToKitchen = true " +
                    "AND o.createdAt BETWEEN :start AND :end",
            countQuery = "SELECT COUNT(DISTINCT o) FROM Order o " +
                         "WHERE o.status IN :statuses " +
+                        "AND o.submittedToKitchen = true " +
                         "AND o.createdAt BETWEEN :start AND :end")
     Page<Order> getKitchenOrdersWithoutId(
             @Param("statuses") List<OrderStatus> statuses,

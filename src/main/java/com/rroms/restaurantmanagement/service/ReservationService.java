@@ -1,5 +1,7 @@
 package com.rroms.restaurantmanagement.service;
 
+import com.rroms.restaurantmanagement.dto.request.ReservationFilter;
+import com.rroms.restaurantmanagement.dto.request.ReservationRequest;
 import com.rroms.restaurantmanagement.dto.request.ReservationPaymentDTO;
 import com.rroms.restaurantmanagement.dto.request.WalkInRequest;
 import com.rroms.restaurantmanagement.dto.response.ReservationResponseForManager;
@@ -9,6 +11,8 @@ import com.rroms.restaurantmanagement.entity.User;
 import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
 import com.rroms.restaurantmanagement.repository.projection.ReservationProjection;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 
 import java.time.LocalDate;
@@ -44,6 +48,8 @@ public interface ReservationService {
 
 
     Page<ReservationResponseForManager> getAllTodayReservationsForManager(LocalDateTime startDate, LocalDateTime endDate, Integer pageNumber, Integer pageSize);
+
+    Page<Reservation> getReservations(Long waiterId, ReservationFilter reservationRequest, Pageable pageable);
 }
 
 

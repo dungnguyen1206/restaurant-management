@@ -6,6 +6,10 @@ import com.rroms.restaurantmanagement.repository.projection.ReservationProjectio
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,7 +18,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long>, JpaSpecificationExecutor<Reservation> {
+
     @Query("""
             SELECT r.reservationId FROM Reservation r
             WHERE r.user.userId = :userId
@@ -92,4 +97,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("reservationId") Long reservationId,
             @Param("status") ReservationStatus status
     );
+
+
+    @EntityGraph(attributePaths = {"reservationTables", "reservationTables.table"})
+    Page<Reservation> findAll(Specification<Reservation> spec, Pageable pageable);
+
+    @Query("""
+            SELECT DISTINCT r
+            FROM Reservation r
+            LEFT JOIN FETCH r.reservationTables rt
+            LEFT JOIN FETCH rt.table
+            WHERE r.reservationId = :id
+            """)
+    Optional<Reservation> findByIdWithTables(@Param("id") Long id);
 }
