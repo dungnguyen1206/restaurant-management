@@ -86,7 +86,7 @@ public class ChefController {
     public String chefOrderDone(
             @PathVariable Long id
     ) {
-        this.orderService.handleUpdateStatusOrder(id, OrderStatus.COMPLETED);
+        this.orderService.markKitchenOrderReady(id);
         return "redirect:/chef/orders";
     }
 
