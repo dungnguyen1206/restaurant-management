@@ -37,7 +37,7 @@ public class MenuItem extends BaseEntity {
     @Column(name = "is_sold_out")
     private Boolean isSoldOut;
 
-    @Column(name = "virtualInStock")
+    @Column(name = "virtual_in_stock")
     private Integer virtualInStock;
 
 

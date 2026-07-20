@@ -28,6 +28,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN FETCH o.table t
             LEFT JOIN FETCH o.orderItems oi
             LEFT JOIN FETCH oi.menuItem mi
+            LEFT JOIN FETCH mi.category c
             WHERE r.reservationId = :reservationId
             AND o.status <> com.rroms.restaurantmanagement.entity.constant.OrderStatus.COMPLETED
             AND o.status <> com.rroms.restaurantmanagement.entity.constant.OrderStatus.CANCELLED
@@ -41,6 +42,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN FETCH o.table t
             LEFT JOIN FETCH o.orderItems oi
             LEFT JOIN FETCH oi.menuItem mi
+            LEFT JOIN FETCH mi.category c
             WHERE r.reservationId = :reservationId
             """)
     Optional<Order> findByReservationIdWithDetails(@Param("reservationId") Long reservationId);
@@ -52,6 +54,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN FETCH o.table t
             LEFT JOIN FETCH o.orderItems oi
             LEFT JOIN FETCH oi.menuItem mi
+            LEFT JOIN FETCH mi.category c
             WHERE o.orderId = :id
             """)
     Optional<Order> findByIdWithDetails(@Param("id") Long id);
@@ -63,6 +66,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             LEFT JOIN FETCH o.table t
             LEFT JOIN FETCH o.orderItems oi
             LEFT JOIN FETCH oi.menuItem mi
+            LEFT JOIN FETCH mi.category c
             WHERE o.user.userId = :waiterId
             ORDER BY o.createdAt DESC
             """,

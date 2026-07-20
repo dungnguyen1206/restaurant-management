@@ -62,9 +62,8 @@
                     </td>
                     <td>
                         <a class="btn btn-sm btn-gold-ghost"
-                           th:if="${order.reservation != null}"
-                           th:href="@{/waiter/order/create/{id}(id=${order.reservation.reservationId})}">
-                            Mo don
+                           th:href="@{/waiter/orders/{id}(id=${order.orderId})}">
+                            Xem don
                         </a>
                     </td>
                 </tr>

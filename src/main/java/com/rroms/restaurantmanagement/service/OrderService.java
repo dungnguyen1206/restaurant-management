@@ -22,7 +22,7 @@ public interface OrderService {
     void updateDraftOrderItem(Long reservationId, UpdateOrderItemRequest request);
     void removeDraftOrderItem(Long reservationId, Long orderItemId);
     void sendOrderToKitchen(Long reservationId);
-    void markOrderItemServed(Long reservationId, Long orderItemId);
+    void markOrderItemServed(Long orderId, Long orderItemId);
     void markOrderServed(Long orderId);
     Page<Order> getKitchenOrders(String orderId, String status, Pageable pageable);
     void confirmKitchenOrder(Long orderId);

@@ -266,17 +266,6 @@
                                       th:text="${orderItem.status}">
                                     PENDING
                                 </span>
-                                <form class="mt-2"
-                                      th:action="@{/waiter/orders/from-reservation/{reservationId}/cart/items/{orderItemId}/serve(
-                                            reservationId=${reservation.reservationId},
-                                            orderItemId=${orderItem.orderItemId}
-                                      )}"
-                                      method="post"
-                                      th:if="${orderItem.status.name() == 'READY'}">
-                                    <button class="btn btn-sm btn-gold-filled" type="submit">
-                                        Served
-                                    </button>
-                                </form>
                             </div>
                             <div class="fw-semibold text-end"
                                  th:text="${#numbers.formatDecimal(orderItem.unitPrice * orderItem.quantity, 0, 'COMMA', 0, 'POINT')}">

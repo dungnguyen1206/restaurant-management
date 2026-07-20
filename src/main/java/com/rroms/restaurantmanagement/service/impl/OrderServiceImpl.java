@@ -217,7 +217,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order findById(Long orderId) {
-        return this.orderRepository.findByIdWithItems(orderId).orElse(null);
+        return this.orderRepository.findByIdWithDetails(orderId).orElse(null);
     }
 
     @Override
@@ -421,6 +421,9 @@ public class OrderServiceImpl implements OrderService {
             order.getOrderItems().add(orderItem);
         }
 
+        if (order.getStatus() == OrderStatus.SERVED) {
+            order.setStatus(OrderStatus.PENDING);
+        }
         updateTotalAmount(order);
         orderRepository.save(order);
     }
