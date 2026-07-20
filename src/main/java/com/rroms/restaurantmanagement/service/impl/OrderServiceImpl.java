@@ -476,8 +476,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void markOrderItemServed(Long reservationId, Long orderItemId) {
-        Order order = orderRepository.findByReservationIdWithDetails(reservationId)
+    public void markOrderItemServed(Long orderId, Long orderItemId) {
+        Order order = orderRepository.findByIdWithDetails(orderId)
                 .orElseThrow(() -> new RuntimeException("Order khong ton tai"));
         OrderItem orderItem = findItemInOrder(order, orderItemId);
 
