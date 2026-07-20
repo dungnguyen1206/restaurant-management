@@ -2,6 +2,7 @@ package com.rroms.restaurantmanagement.controller.chef;
 
 import com.rroms.restaurantmanagement.dto.response.OrderHistoryDTO;
 import com.rroms.restaurantmanagement.entity.Order;
+import com.rroms.restaurantmanagement.entity.User;
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.service.OrderService;
 import com.rroms.restaurantmanagement.dto.response.ChefDashboardDTO;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 @Controller
 @RequestMapping("/chef")
@@ -33,7 +36,11 @@ public class ChefController {
     private final CategoryService categoryService;
 
     @GetMapping("/dashboard")
-    public String dashboardChef(Model model){
+    public String dashboardChef(
+            @AuthenticationPrincipal(expression = "user") User user,
+            Model model
+    ) {
+        addChefAccountToModel(user, model);
         ChefDashboardDTO dashboardData = orderService.getChefDashboardData();
         model.addAttribute("dashboard", dashboardData);
         model.addAttribute("activePage", "dashboard");
@@ -46,8 +53,10 @@ public class ChefController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal(expression = "user") User user,
             Model model
     ) {
+        addChefAccountToModel(user, model);
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         Page<Order> orderPage = orderService.getKitchenOrders(orderId, status, pageable);
 
@@ -77,7 +86,7 @@ public class ChefController {
     public String chefOrderDone(
             @PathVariable Long id
     ) {
-        this.orderService.markKitchenOrderReady(id);
+        this.orderService.handleUpdateStatusOrder(id, OrderStatus.COMPLETED);
         return "redirect:/chef/orders";
     }
 
@@ -98,7 +107,9 @@ public class ChefController {
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(name = "status", required = false) String status,
+            @AuthenticationPrincipal(expression = "user") User user,
             Model model){
+        addChefAccountToModel(user, model);
         model.addAttribute("activePage", "order-history");
         Page<OrderHistoryDTO> orderPage = orderService.searchChefOrderHistory(
                 keyword, startDate, endDate, status, page, size
@@ -125,8 +136,10 @@ public class ChefController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal(expression = "user") User user,
             Model model
     ) {
+        addChefAccountToModel(user, model);
         Pageable pageable = PageRequest.of(page, size);
         Page<MenuItem> menuItemPage = menuItemService.getAllMenuItems(search, categoryId, pageable);
         model.addAttribute("menuItems", menuItemPage.getContent());
@@ -167,5 +180,32 @@ public class ChefController {
             redirectAttributes.addAttribute("categoryId", categoryId);
         }
         return "redirect:/chef/menu";
+    }
+
+    private void addChefAccountToModel(User user, Model model) {
+        String displayName = buildFullName(user);
+
+        model.addAttribute("chefDisplayName", displayName);
+        model.addAttribute("chefEmail", user.getUsername());
+        model.addAttribute("chefInitials", buildInitials(displayName));
+    }
+
+    private String buildFullName(User user) {
+        String fullName = Stream.of(user.getFirstName(), user.getMiddleName(), user.getLastName())
+                .filter(part -> part != null && !part.isBlank())
+                .map(String::trim)
+                .reduce((left, right) -> left + " " + right)
+                .orElse("");
+        return fullName.isBlank() ? user.getUsername() : fullName;
+    }
+
+    private String buildInitials(String displayName) {
+        if (displayName == null || displayName.isBlank()) {
+            return "C";
+        }
+        String[] parts = displayName.trim().split("\\s+");
+        String firstInitial = parts[0].substring(0, 1);
+        String lastInitial = parts.length > 1 ? parts[parts.length - 1].substring(0, 1) : "";
+        return (firstInitial + lastInitial).toUpperCase();
     }
 }

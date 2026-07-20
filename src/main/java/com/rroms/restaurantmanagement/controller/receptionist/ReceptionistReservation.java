@@ -82,6 +82,8 @@ public class ReceptionistReservation {
     @GetMapping("/{id}/confirm")
     public String showConfirmPage(@PathVariable Long id, Model model) {
         Reservation reservation = reservationService.getReservationById(id);
+        boolean hasSelectedTables = reservation.getReservationTables() != null
+                && !reservation.getReservationTables().isEmpty();
 
         List<RestaurantTable> availableTables =
                 tableRepository.findByStatusAndCapacityGreaterThanEqualOrderByTableNumberAsc(
@@ -94,6 +96,7 @@ public class ReceptionistReservation {
         model.addAttribute("reservation", reservation);
         model.addAttribute("confirmRequest", request);
         model.addAttribute("tables", availableTables);
+        model.addAttribute("hasSelectedTables", hasSelectedTables);
         model.addAttribute("pageTitle", "Confirm Reservation");
         model.addAttribute("currentPage", "reservations");
 

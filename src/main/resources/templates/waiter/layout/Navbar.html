@@ -37,7 +37,7 @@
                 <div class="waiter-avatar rounded-circle text-white d-flex align-items-center justify-content-center fw-bold"
                      th:text="${#authentication.principal.user.firstName != null and !#authentication.principal.user.firstName.isBlank()
                                 ? #strings.substring(#authentication.principal.user.firstName, 0, 1)
-                                : #strings.substring(#authentication.principal.username, 0, 1)}">N</div>
+                                : #strings.substring(#authentication.principal.user.username, 0, 1)}">N</div>
                 <div>
                     <div class="small fw-semibold"
                          th:text="${#authentication.principal.user.firstName + ' ' + #authentication.principal.user.lastName}">

@@ -100,7 +100,7 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             SELECT
                 o.order_id AS orderId,
 
-                COALESCE(o.totalAmount, o.total_amount, 0) AS totalAmount,
+                COALESCE(o.totalAmount, 0) AS totalAmount,
 
                 o.status AS status,
 
@@ -156,7 +156,6 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
             GROUP BY
                 o.order_id,
                 o.totalAmount,
-                o.total_amount,
                 o.status,
                 o.created_at,
                 o.updated_at,

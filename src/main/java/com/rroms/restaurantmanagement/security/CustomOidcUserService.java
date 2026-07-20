@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
@@ -58,14 +57,20 @@ public class CustomOidcUserService {
 
         // Google supplies identity claims; authorization always comes from the local database.
         if (googleUser.getUserInfo() != null) {
-            return new DefaultOidcUser(
+            return new CustomOidcUser(
                     List.of(localRole),
                     googleUser.getIdToken(),
                     googleUser.getUserInfo(),
-                    "email"
+                    "email",
+                    localUser
             );
         }
-        return new DefaultOidcUser(List.of(localRole), googleUser.getIdToken(), "email");
+        return new CustomOidcUser(
+                List.of(localRole),
+                googleUser.getIdToken(),
+                "email",
+                localUser
+        );
     }
 
     private User registerCustomer(OidcUser googleUser, String email) {
