@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{Waiter/layout/Layout}">
+<body>
+<div layout:fragment="content" class="container-fluid p-3">
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h4 class="mb-1">Tao order gui bep</h4>
+            <div class="text-muted small">
+                <span th:text="${reservation.fullName}">Khach</span>
+                <span> - </span>
+                <span th:text="${reservation.phone}">0900000000</span>
+                <span> - </span>
+                <span th:text="${#temporals.format(reservation.reservationTime, 'HH:mm dd/MM')}">18:00 17/07</span>
+            </div>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" th:href="@{/waiter/reservations}">Quay lai</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <form class="row g-2 mb-3"
+                  th:action="@{/waiter/order/create/{id}(id=${reservation.reservationId})}"
+                  method="get">
+                <div class="col-md-5">
+                    <input type="text"
+                           class="form-control"
+                           name="keyword"
+                           placeholder="Tim mon..."
+                           th:value="${keyword}">
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" name="categoryId">
+                        <option value="">Tat ca category</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.categoryId}"
+                                th:text="${category.categoryName}"
+                                th:selected="${categoryId != null and categoryId == category.categoryId}">
+                            Category
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button class="btn btn-primary flex-fill" type="submit">Loc</button>
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/waiter/order/create/{id}(id=${reservation.reservationId})}">
+                        Xoa
+                    </a>
+                </div>
+            </form>
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th style="width: 86px;">Anh</th>
+                            <th>Mon</th>
+                            <th style="width: 120px;">Gia</th>
+                            <th style="width: 90px;">Con</th>
+                            <th style="width: 190px;">Thao tac</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${menuItemPage.content}">
+                            <td>
+                                <img th:if="${item.imageUrl != null and !item.imageUrl.isBlank()}"
+                                     th:src="${item.imageUrl}"
+                                     class="rounded"
+                                     style="width:72px;height:52px;object-fit:cover;"
+                                     alt="">
+                                <div th:unless="${item.imageUrl != null and !item.imageUrl.isBlank()}"
+                                     class="bg-light border rounded"
+                                     style="width:72px;height:52px;"></div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold" th:text="${item.itemName}">Ten mon</div>
+                                <div class="text-muted small" th:text="${item.category != null ? item.category.categoryName : '-'}">Category</div>
+                                <span th:if="${item.virtualInStock == null or item.virtualInStock <= 0}"
+                                      class="badge bg-danger">Het mon</span>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">0</td>
+                            <td th:text="${item.virtualInStock != null ? item.virtualInStock : 0}">0</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#addCartModal' + ${item.itemId}"
+                                        th:disabled="${item.virtualInStock == null or item.virtualInStock <= 0}">
+                                    Them vao gio hang
+                                </button>
+
+                                <div class="modal fade"
+                                     th:id="'addCartModal' + ${item.itemId}"
+                                     tabindex="-1"
+                                     th:aria-labelledby="'addCartModalLabel' + ${item.itemId}"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form th:action="@{/waiter/orders/from-reservation/{id}/cart/add(id=${reservation.reservationId})}"
+                                                  method="post">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title"
+                                                        th:id="'addCartModalLabel' + ${item.itemId}">
+                                                        Them vao gio hang
+                                                    </h5>
+                                                    <button type="button"
+                                                            class="btn-close"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="itemId" th:value="${item.itemId}">
+
+                                                    <div class="d-flex gap-3 mb-3">
+                                                        <img th:if="${item.imageUrl != null and !item.imageUrl.isBlank()}"
+                                                             th:src="${item.imageUrl}"
+                                                             class="rounded"
+                                                             style="width:86px;height:64px;object-fit:cover;"
+                                                             alt="">
+                                                        <div>
+                                                            <div class="fw-semibold" th:text="${item.itemName}">Ten mon</div>
+                                                            <div class="text-muted small">
+                                                                Gia:
+                                                                <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                                            </div>
+                                                            <div class="text-muted small">
+                                                                Con:
+                                                                <span th:text="${item.virtualInStock != null ? item.virtualInStock : 0}">0</span>
+                                                            </div>
+                                                            <div class="mt-1">
+                                                                <span class="badge bg-warning text-dark">PENDING</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label">So luong</label>
+                                                        <input type="number"
+                                                               min="1"
+                                                               th:max="${item.virtualInStock != null ? item.virtualInStock : 0}"
+                                                               value="1"
+                                                               name="quantity"
+                                                               class="form-control">
+                                                    </div>
+
+                                                    <div>
+                                                        <label class="form-label">Ghi chu</label>
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               name="note"
+                                                               placeholder="Ghi chu mon...">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        Huy
+                                                    </button>
+                                                    <button class="btn btn-primary" type="submit">
+                                                        Them vao gio hang
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${menuItemPage.empty}">
+                            <td colspan="5" class="text-center text-muted p-3">Khong tim thay mon phu hop</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <nav class="mt-3" th:if="${menuItemPage.totalPages > 1}" aria-label="Menu pagination">
+                <ul class="pagination justify-content-end mb-0">
+                    <li class="page-item" th:classappend="${menuItemPage.first} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/waiter/order/create/{id}(
+                                id=${reservation.reservationId},
+                                page=${menuItemPage.number - 1},
+                                size=${menuItemPage.size},
+                                keyword=${keyword},
+                                categoryId=${categoryId}
+                           )}">
+                            Truoc
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, menuItemPage.totalPages - 1)}"
+                        th:classappend="${i == menuItemPage.number} ? 'active'">
+                        <a class="page-link"
+                           th:text="${i + 1}"
+                           th:href="@{/waiter/order/create/{id}(
+                                id=${reservation.reservationId},
+                                page=${i},
+                                size=${menuItemPage.size},
+                                keyword=${keyword},
+                                categoryId=${categoryId}
+                           )}">
+                            1
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${menuItemPage.last} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/waiter/order/create/{id}(
+                                id=${reservation.reservationId},
+                                page=${menuItemPage.number + 1},
+                                size=${menuItemPage.size},
+                                keyword=${keyword},
+                                categoryId=${categoryId}
+                           )}">
+                            Sau
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    Gio hang hien tai
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(activeOrderItems)}"
+                         class="text-center text-muted py-4">
+                        Chua co mon nao trong gio hang
+                    </div>
+
+                    <div th:each="orderItem : ${activeOrderItems}"
+                         class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between gap-2">
+                            <div>
+                                <div class="fw-semibold"
+                                     th:text="${orderItem.menuItem != null ? orderItem.menuItem.itemName : 'Mon da xoa'}">
+                                    Ten mon
+                                </div>
+                                <div class="text-muted small">
+                                    <span th:text="${#numbers.formatDecimal(orderItem.unitPrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                    <span> x </span>
+                                    <span th:text="${orderItem.quantity}">1</span>
+                                </div>
+                                <div class="small text-muted"
+                                     th:if="${orderItem.specialNote != null and !orderItem.specialNote.isBlank()}"
+                                     th:text="${orderItem.specialNote}">
+                                    Note
+                                </div>
+                                <span class="badge mt-1"
+                                      th:classappend="${orderItem.status.name() == 'PENDING' ? ' bg-warning text-dark' :
+                                                      (orderItem.status.name() == 'PREPARING' ? ' bg-primary' :
+                                                      (orderItem.status.name() == 'READY' ? ' bg-success' :
+                                                      (orderItem.status.name() == 'SERVED' ? ' bg-info text-dark' : ' bg-secondary')))}"
+                                      th:text="${orderItem.status}">
+                                    PENDING
+                                </span>
+                            </div>
+                            <div class="fw-semibold text-end"
+                                 th:text="${#numbers.formatDecimal(orderItem.unitPrice * orderItem.quantity, 0, 'COMMA', 0, 'POINT')}">
+                                0
+                            </div>
+                        </div>
+
+                        <form class="mt-2"
+                              th:action="@{/waiter/orders/from-reservation/{id}/cart/update(id=${reservation.reservationId})}"
+                              method="post"
+                              th:if="${activeOrder != null and activeOrder.submittedToKitchen != true and orderItem.status.name() == 'PENDING'}">
+                            <input type="hidden" name="orderItemId" th:value="${orderItem.orderItemId}">
+                            <div class="d-flex gap-2">
+                                <input type="number"
+                                       min="1"
+                                       name="quantity"
+                                       class="form-control form-control-sm"
+                                       th:value="${orderItem.quantity}">
+                                <button class="btn btn-sm btn-outline-primary" type="submit">Sua</button>
+                            </div>
+                            <input type="text"
+                                   class="form-control form-control-sm mt-2"
+                                   name="note"
+                                   placeholder="Ghi chu..."
+                                   th:value="${orderItem.specialNote}">
+                        </form>
+
+                        <form class="mt-2"
+                              th:action="@{/waiter/orders/from-reservation/{id}/cart/remove(id=${reservation.reservationId})}"
+                              method="post"
+                              th:if="${activeOrder != null and activeOrder.submittedToKitchen != true and orderItem.status.name() == 'PENDING'}">
+                            <input type="hidden" name="orderItemId" th:value="${orderItem.orderItemId}">
+                            <button class="btn btn-sm btn-outline-danger w-100" type="submit">Xoa mon</button>
+                        </form>
+                    </div>
+
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Tong tien</span>
+                        <span th:text="${activeOrder != null && activeOrder.totalAmount != null ? #numbers.formatDecimal(activeOrder.totalAmount, 0, 'COMMA', 0, 'POINT') : '0'}">0</span>
+                    </div>
+
+                    <form th:action="@{/waiter/orders/from-reservation/{id}(id=${reservation.reservationId})}"
+                          method="post"
+                          class="mt-3"
+                          th:if="${activeOrder != null and activeOrder.submittedToKitchen != true}">
+                        <button class="btn btn-success w-100"
+                                type="submit"
+                                th:disabled="${#lists.isEmpty(activeOrderItems)}">
+                            Gui bep
+                        </button>
+                    </form>
+
+                    <div th:if="${activeOrder != null and activeOrder.submittedToKitchen == true}"
+                         class="alert alert-info mt-3 mb-0">
+                        Order da gui bep. Mon them moi se duoc gui vao order nay thanh item rieng.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

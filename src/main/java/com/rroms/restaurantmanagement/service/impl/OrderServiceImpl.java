@@ -1,14 +1,23 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.dto.response.OrderHistoryDTO;
+import com.rroms.restaurantmanagement.dto.request.AddOrderItemRequest;
+import com.rroms.restaurantmanagement.dto.request.UpdateOrderItemRequest;
 import com.rroms.restaurantmanagement.entity.MenuItem;
 import com.rroms.restaurantmanagement.entity.Order;
 import com.rroms.restaurantmanagement.entity.OrderItem;
+import com.rroms.restaurantmanagement.entity.Reservation;
+import com.rroms.restaurantmanagement.entity.ReservationTable;
+import com.rroms.restaurantmanagement.entity.RestaurantTable;
+import com.rroms.restaurantmanagement.entity.User;
 import com.rroms.restaurantmanagement.entity.constant.OrderItemStatus;
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
+import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
 import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.MenuItemRepository;
+import com.rroms.restaurantmanagement.repository.OrderItemRepository;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
+import com.rroms.restaurantmanagement.repository.ReservationRepository;
 import com.rroms.restaurantmanagement.repository.projection.OrderListProjection;
 import com.rroms.restaurantmanagement.service.OrderService;
 import com.rroms.restaurantmanagement.dto.response.ChefDashboardDTO;
@@ -22,6 +31,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +47,8 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final MenuItemRepository menuItemRepository;
+    private final ReservationRepository reservationRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public Page<Order> getKitchenOrders(String orderId, String status, Pageable pageable) {
@@ -74,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng #" + orderId + "."));
 
-        if (order.getStatus() != OrderStatus.PENDING) {
+        if (order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.PREPARING) {
             throw new IllegalStateException("Chỉ có thể xác nhận đơn hàng đang ở trạng thái chờ xử lý.");
         }
         if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
@@ -83,6 +95,9 @@ public class OrderServiceImpl implements OrderService {
 
         Map<Long, Integer> requiredQuantities = new TreeMap<>();
         for (OrderItem orderItem : order.getOrderItems()) {
+            if (orderItem.getStatus() != OrderItemStatus.PENDING) {
+                continue;
+            }
             if (orderItem.getMenuItem() == null || orderItem.getMenuItem().getItemId() == null) {
                 throw new IllegalStateException("Đơn hàng có món ăn không còn tồn tại trong thực đơn.");
             }
@@ -94,6 +109,9 @@ public class OrderServiceImpl implements OrderService {
                     orderItem.getQuantity(),
                     Math::addExact
             );
+        }
+        if (requiredQuantities.isEmpty()) {
+            throw new IllegalStateException("Order khong co mon PENDING moi de xac nhan.");
         }
 
         List<MenuItem> lockedMenuItems = menuItemRepository.findAllByIdForUpdate(requiredQuantities.keySet());
@@ -125,9 +143,34 @@ public class OrderServiceImpl implements OrderService {
             menuItem.setIsSoldOut(remainingStock == 0);
         }
         for (OrderItem orderItem : order.getOrderItems()) {
-            orderItem.setStatus(OrderItemStatus.PREPARING);
+            if (orderItem.getStatus() == OrderItemStatus.PENDING) {
+                orderItem.setStatus(OrderItemStatus.PREPARING);
+            }
         }
         order.setStatus(OrderStatus.PREPARING);
+    }
+
+    @Override
+    @Transactional
+    public void markKitchenOrderReady(Long orderId) {
+        Order order = orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Order khong ton tai"));
+
+        if (order.getStatus() != OrderStatus.PREPARING) {
+            throw new RuntimeException("Chi order PREPARING moi duoc bao san sang");
+        }
+        boolean hasPendingItems = order.getOrderItems().stream()
+                .anyMatch(item -> item.getStatus() == OrderItemStatus.PENDING);
+        if (hasPendingItems) {
+            throw new RuntimeException("Con mon PENDING moi, chef can xac nhan truoc khi bao san sang");
+        }
+
+        // Chef bao mon san sang: OrderItem READY, order van PREPARING cho toi khi waiter phuc vu.
+        for (OrderItem item : order.getOrderItems()) {
+            if (item.getStatus() == OrderItemStatus.PREPARING) {
+                item.setStatus(OrderItemStatus.READY);
+            }
+        }
     }
 
 
@@ -254,6 +297,207 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository.getReceptionistOrderList(searchKeyword, orderStatus, pageable);
     }
+
+    private Reservation getCheckedInReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findByIdWithTables(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation khong ton tai"));
+
+        if (reservation.getStatus() != ReservationStatus.CHECKED_IN) {
+            throw new RuntimeException("Chi reservation CHECKED_IN moi duoc tao order");
+        }
+
+        return reservation;
+    }
+
+
+    ///waiter
+    private Order createDraftOrder(Reservation reservation, User waiter) {
+        RestaurantTable table = reservation.getReservationTables().stream()
+                .findFirst()
+                .map(ReservationTable::getTable)
+                .orElse(null);
+
+        return Order.builder()
+                .reservation(reservation)
+                .table(table)
+                .user(waiter)
+                .status(OrderStatus.PENDING)
+                .submittedToKitchen(false)
+                .totalAmount(BigDecimal.ZERO)
+                .orderItems(new ArrayList<>())
+                .build();
+    }
+
+    private Order getDraftOrder(Long reservationId) {
+        Order order = orderRepository.findActiveByReservationId(reservationId)
+                .orElseThrow(() -> new RuntimeException("Chua co order cho reservation nay"));
+
+        if (Boolean.TRUE.equals(order.getSubmittedToKitchen())) {
+            throw new RuntimeException("Chi duoc sua gio hang khi order chua gui bep");
+        }
+
+        return order;
+    }
+
+    private OrderItem findPendingItem(Order order, Long itemId) {
+        for (OrderItem item : order.getOrderItems()) {
+            if (item.getStatus() == OrderItemStatus.PENDING
+                    && item.getMenuItem() != null
+                    && item.getMenuItem().getItemId().equals(itemId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private OrderItem findItemInOrder(Order order, Long orderItemId) {
+        return order.getOrderItems().stream()
+                .filter(item -> item.getOrderItemId().equals(orderItemId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Mon khong nam trong order nay"));
+    }
+
+    private void updateTotalAmount(Order order) {
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (OrderItem item : order.getOrderItems()) {
+            BigDecimal unitPrice = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
+            int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+            total = total.add(unitPrice.multiply(BigDecimal.valueOf(quantity)));
+        }
+
+        order.setTotalAmount(total);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Order getActiveOrderForReservation(Long reservationId) {
+        return orderRepository.findActiveByReservationId(reservationId).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Order> getWaiterOrders(Long waiterId, Pageable pageable) {
+        return orderRepository.findWaiterOrders(waiterId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void addItemToDraftOrder(Long reservationId, AddOrderItemRequest request, User waiter) {
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            throw new RuntimeException("So luong mon phai lon hon 0");
+        }
+
+        Reservation reservation = getCheckedInReservation(reservationId);
+        MenuItem menuItem = menuItemRepository.findById(request.getItemId())
+                .orElseThrow(() -> new RuntimeException("Mon khong ton tai"));
+
+        int stock = menuItem.getVirtualInStock() == null ? 0 : menuItem.getVirtualInStock();
+        if (Boolean.TRUE.equals(menuItem.getIsSoldOut()) || stock < request.getQuantity()) {
+            throw new RuntimeException("Mon khong du so luong trong kho");
+        }
+
+        Order order = orderRepository.findByReservationIdWithDetails(reservationId)
+                .orElseGet(() -> createDraftOrder(reservation, waiter));
+        if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("Order nay da ket thuc, khong the them mon moi");
+        }
+
+        OrderItem existingItem = Boolean.TRUE.equals(order.getSubmittedToKitchen())
+                ? null
+                : findPendingItem(order, menuItem.getItemId());
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + request.getQuantity());
+            existingItem.setSpecialNote(request.getNote());
+        } else {
+            OrderItem orderItem = OrderItem.builder()
+                    .order(order)
+                    .menuItem(menuItem)
+                    .quantity(request.getQuantity())
+                    .unitPrice(menuItem.getPrice())
+                    .specialNote(request.getNote())
+                    .status(OrderItemStatus.PENDING)
+                    .build();
+            order.getOrderItems().add(orderItem);
+        }
+
+        updateTotalAmount(order);
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void updateDraftOrderItem(Long reservationId, UpdateOrderItemRequest request) {
+        Order order = getDraftOrder(reservationId);
+        OrderItem orderItem = findItemInOrder(order, request.getOrderItemId());
+
+        if (orderItem.getStatus() != OrderItemStatus.PENDING) {
+            throw new RuntimeException("Chi duoc sua mon dang PENDING");
+        }
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            throw new RuntimeException("So luong mon phai lon hon 0");
+        }
+
+        orderItem.setQuantity(request.getQuantity());
+        orderItem.setSpecialNote(request.getNote());
+        updateTotalAmount(order);
+    }
+
+    @Override
+    @Transactional
+    public void removeDraftOrderItem(Long reservationId, Long orderItemId) {
+        Order order = getDraftOrder(reservationId);
+        OrderItem orderItem = findItemInOrder(order, orderItemId);
+
+        if (orderItem.getStatus() != OrderItemStatus.PENDING) {
+            throw new RuntimeException("Chi duoc xoa mon dang PENDING");
+        }
+
+        order.getOrderItems().remove(orderItem);
+        orderItemRepository.delete(orderItem);
+        updateTotalAmount(order);
+    }
+
+    @Override
+    @Transactional
+    public void sendOrderToKitchen(Long reservationId) {
+        Order order = getDraftOrder(reservationId);
+
+        if (order.getOrderItems().isEmpty()) {
+            throw new RuntimeException("Gio hang chua co mon de gui bep");
+        }
+
+        order.setSubmittedToKitchen(true);
+        for (OrderItem item : order.getOrderItems()) {
+            item.setStatus(OrderItemStatus.PENDING);
+        }
+        updateTotalAmount(order);
+    }
+
+    @Override
+    @Transactional
+
+    public void markOrderServed(Long orderId) {
+        Order order = orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Order khong ton tai"));
+
+        if (order.getStatus() != OrderStatus.PREPARING) {
+            throw new RuntimeException("Chi order PREPARING moi duoc phuc vu");
+        }
+        boolean allReady = order.getOrderItems().stream()
+                .allMatch(item -> item.getStatus() == OrderItemStatus.READY);
+        if (!allReady) {
+            throw new RuntimeException("Chi duoc phuc vu khi tat ca mon da READY");
+        }
+
+        order.setStatus(OrderStatus.SERVED);
+        for (OrderItem item : order.getOrderItems()) {
+            if (item.getStatus() == OrderItemStatus.READY) {
+                item.setStatus(OrderItemStatus.SERVED);
+            }
+        }
+    }
+
 }
 
 

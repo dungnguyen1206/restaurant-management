@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "users")
@@ -51,4 +53,20 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
+
+    @Transient
+    public String getFullName() {
+        return Stream.of(firstName, middleName, lastName)
+                .filter(value -> value != null && !value.isBlank())
+                .collect(Collectors.joining(" "));
+    }
+
+    @Transient
+    public String getInitials() {
+        String initials = Stream.of(firstName, middleName, lastName)
+                .filter(value -> value != null && !value.isBlank())
+                .map(value -> value.substring(0, 1).toUpperCase())
+                .collect(Collectors.joining());
+        return initials.isBlank() ? "U" : initials;
+    }
 }

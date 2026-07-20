@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RROMS - Trang chủ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Playfair+Display:wght@600;700&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+<main>
+    <section class="py-5" style="background-color:#FAF7F2">
+        <div class="container py-5 text-center"><h1 class="font-serif display-5 mb-2 fw-bold">Chào mừng trở lại, <span
+                th:text="${currentUser != null ? currentUser.fullName : 'Quý khách'}"></span></h1>
+            <p class="font-sans text-secondary-custom fs-5 mb-4">Bàn ăn của bạn luôn sẵn sàng.</p>
+            <div class="d-flex justify-content-center gap-3"><a th:href="@{/customer/reservations/available}"
+                                                                class="btn btn-gold-filled px-4 py-2">Đặt bàn ngay</a><a
+                    th:href="@{/menu}" class="btn btn-gold-ghost px-4 py-2">Xem thực đơn</a></div>
+        </div>
+    </section>
+    <section class="container my-5 py-3">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div><h2 class="font-serif fw-bold mb-1">Top 6 món được yêu thích nhất</h2>
+                <p class="text-secondary-custom mb-0">Những món ăn được khách hàng gọi nhiều nhất</p></div>
+            <a th:href="@{/menu}" class="text-gold font-sans text-decoration-none fw-bold">Xem toàn bộ thực đơn →</a>
+        </div>
+        <div th:if="${menuItems.isEmpty()}" class="custom-card text-center p-5"><i
+                class="fa-solid fa-utensils display-5 text-muted"></i>
+            <p class="mt-3 mb-0">Chưa có dữ liệu gọi món để thống kê.</p></div>
+        <div class="row g-4 row-cols-1 row-cols-md-3">
+            <div class="col" th:each="menuItem,stat : ${menuItems}">
+                <div class="card custom-card overflow-hidden h-100 position-relative"><span
+                        class="position-absolute top-0 start-0 m-2 badge text-bg-warning"
+                        th:text="${'Top ' + (stat.index + 1)}"></span>
+                    <div th:if="${menuItem.imageUrl == null || menuItem.imageUrl.isEmpty()}"
+                         class="dish-img-placeholder d-flex align-items-center justify-content-center text-muted"><i
+                            class="fa-regular fa-image fs-3"></i></div>
+                    <img th:if="${menuItem.imageUrl != null && !menuItem.imageUrl.isEmpty()}"
+                         th:src="${menuItem.imageUrl}" alt="Hình món ăn" class="w-100"
+                         style="height:180px;object-fit:cover">
+                    <div class="card-body p-3 d-flex flex-column"><span class="badge mb-2 align-self-start"
+                                                                        style="background:#FAF7F2;color:#7A6248">Món được yêu thích</span>
+                        <h5 class="font-serif fw-bold mb-2" th:text="${menuItem.itemName}"></h5>
+                        <p class="font-mono text-gold fw-bold mb-0 mt-auto"
+                           th:text="${#numbers.formatDecimal(menuItem.price,0,'COMMA',0,'POINT') + ' ₫'}"></p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

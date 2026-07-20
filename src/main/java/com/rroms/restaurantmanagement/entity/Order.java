@@ -1,6 +1,7 @@
 package com.rroms.restaurantmanagement.entity;
 
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
+import com.rroms.restaurantmanagement.entity.constant.OrderItemStatus;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -35,6 +36,12 @@ public class Order extends BaseEntity{
     @JoinColumn(name = "user_user_id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
+
+    private Boolean submittedToKitchen;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
@@ -48,4 +55,9 @@ public class Order extends BaseEntity{
 
     @OneToOne(mappedBy = "order")
     private Invoice invoice;
+
+    public boolean hasPendingItems() {
+        return orderItems != null && orderItems.stream()
+                .anyMatch(item -> item.getStatus() == OrderItemStatus.PENDING);
+    }
 }

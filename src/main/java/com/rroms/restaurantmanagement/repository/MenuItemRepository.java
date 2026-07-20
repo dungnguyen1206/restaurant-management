@@ -1,14 +1,18 @@
 package com.rroms.restaurantmanagement.repository;
 
 import com.rroms.restaurantmanagement.entity.MenuItem;
+import com.rroms.restaurantmanagement.entity.Reservation;
+import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
+public interface MenuItemRepository extends JpaRepository<MenuItem, Long>, JpaSpecificationExecutor<MenuItem> {
 
 
 
@@ -52,4 +56,13 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT mi FROM MenuItem mi WHERE mi.itemId IN :itemIds ORDER BY mi.itemId")
     List<MenuItem> findAllByIdForUpdate(@Param("itemIds") Collection<Long> itemIds);
+
+    @Query("""
+            SELECT oi.menuItem FROM OrderItem oi
+            WHERE oi.order.status <> :excludedStatus
+            GROUP BY oi.menuItem
+            ORDER BY SUM(oi.quantity) DESC
+            """)
+    List<MenuItem> findMostPopular(@Param("excludedStatus") OrderStatus excludedStatus, Pageable pageable);
+
 }

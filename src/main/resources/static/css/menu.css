@@ -1,0 +1,70 @@
+/* ==========================================================================
+   MENU PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+/* Thanh tìm kiếm */
+.search-container {
+    max-width: 100%;
+    position: relative;
+}
+.search-container i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #C4B49C; /* Placeholder color */
+}
+.search-input {
+    padding-left: 45px;
+    height: 48px;
+    border: 1px solid #EDE4D6;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+}
+.search-input:focus {
+    border-color: #C9A84C;
+    box-shadow: 0 0 0 0.25rem rgba(201, 168, 76, 0.15);
+}
+
+/* Tab danh mục món ăn */
+.category-nav .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #7A6248;
+    border: none;
+    background: none;
+    padding-bottom: 8px;
+}
+.category-nav .nav-link.active {
+    color: #C9A84C;
+    font-weight: 600;
+    border-bottom: 2px solid #C9A84C;
+    border-radius: 0;
+}
+
+/* Thẻ món ăn hết hàng (50% Opacity) */
+.dish-card-unavailable {
+    opacity: 0.5;
+}
+
+/* Các nhãn Tag thành phần trong Modal */
+.tag-ingredient {
+    background-color: #FAF7F2;
+    color: #7A6248;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* Nhãn cảnh báo dị ứng trong Modal */
+.tag-allergen {
+    background-color: #FEE2E2; /* fill soft red */
+    color: #991B1B;            /* text red */
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+}

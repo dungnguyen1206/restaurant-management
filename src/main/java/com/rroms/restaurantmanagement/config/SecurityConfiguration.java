@@ -51,7 +51,7 @@ public class SecurityConfiguration {
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CHEF"))) {
                 redirectUrl = "/chef/dashboard";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WAITER"))) {
-                redirectUrl = "/waiter/dashboard";
+                redirectUrl = "/waiter/reservations";
             } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))) {
                 redirectUrl = "/customer/home";
             }

@@ -1,0 +1,106 @@
+/* ==========================================================================
+   GLOBAL DESIGN TOKENS & BASE STYLES
+   ========================================================================== */
+body {
+    background-color: #FFFDF9; /* Page background warm tint */
+    color: #1C1209;            /* Text primary */
+    padding-top: 64px;         /* Tránh bị che bởi fixed navbar (height 64px) */
+}
+
+/* Typography Classes */
+.font-serif { font-family: 'Playfair Display', serif; }
+.font-sans { font-family: 'Inter', sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Text Colors */
+.text-secondary-custom { color: #7A6248; }
+.text-gold { color: #C9A84C; }
+
+/* ==========================================================================
+   COMPONENTS
+   ========================================================================== */
+
+/* Navigation Bar */
+.custom-navbar {
+    height: 64px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #F0E8D8;
+    padding: 0 2rem;
+}
+
+.custom-navbar .navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #1C1209;
+}
+
+.custom-navbar .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #7A6248;
+    transition: color 0.2s;
+}
+
+.custom-navbar .nav-link:hover { color: #C9A84C; }
+
+.custom-navbar .nav-link.active {
+    font-weight: 600;
+    color: #C9A84C;
+    border-bottom: 2px solid #C9A84C;
+    padding-bottom: 4px;
+}
+
+/* User Avatar */
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    background-color: #C9A84C;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-gold-filled {
+    background-color: #C9A84C;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    border: none;
+    transition: background-color 0.2s;
+}
+.btn-gold-filled:hover { background-color: #A6852E; color: #FFFFFF; }
+
+.btn-gold-ghost {
+    background-color: transparent;
+    border: 1px solid #C9A84C;
+    color: #C9A84C;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+.btn-gold-ghost:hover {
+    background-color: #FDF6E7;
+    color: #A6852E;
+}
+
+/* Cards Base */
+.custom-card {
+    background-color: #FFFFFF;
+    border: 1px solid #EDE4D6;
+    border-radius: 12px;
+}
+
+/* Image Placeholders (16:9 ratio) */
+.dish-img-placeholder {
+    width: 100%;
+    height: 180px;
+    background-color: #EDE4D6;
+}
+
+/* Footer */
+.custom-footer {
+    background-color: #FFFFFF;
+    border-top: 1px solid #F0E8D8;
+    font-family: 'Inter', sans-serif;
+    color: #7A6248;
+    font-size: 0.85rem;
+}

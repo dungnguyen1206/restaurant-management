@@ -1,31 +1,48 @@
 package com.rroms.restaurantmanagement.service.impl;
 
 import com.rroms.restaurantmanagement.dto.request.CreateMenuItemsRequest;
+import com.rroms.restaurantmanagement.dto.request.MenuFilter;
 import com.rroms.restaurantmanagement.dto.response.MenuItemResponseForManager;
 import com.rroms.restaurantmanagement.entity.Category;
+import com.rroms.restaurantmanagement.DtoMapper.DtoMapper;
+import com.rroms.restaurantmanagement.criteria.MenuItemCriteria;
+import com.rroms.restaurantmanagement.dto.request.MenuItemDto;
 import com.rroms.restaurantmanagement.entity.MenuItem;
+import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.exception.DataConflictException;
 import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.CategoryRepository;
-import com.rroms.restaurantmanagement.exception.ResourceNotFoundException;
 import com.rroms.restaurantmanagement.repository.MenuItemRepository;
 import com.rroms.restaurantmanagement.service.CloudinaryService;
 import com.rroms.restaurantmanagement.service.MenuItemService;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import com.rroms.restaurantmanagement.specfication.MenuItemSpecification;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MenuItemServiceImpl implements MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
+    private final DtoMapper dtoMapper;
+
     private final CategoryRepository categoryRepository;
     private final CloudinaryService cloudinaryService;
 
@@ -138,5 +155,91 @@ public class MenuItemServiceImpl implements MenuItemService {
         item.setIsSoldOut(virtualInStock == 0);
     }
 
+    @Override
+    public Page<MenuItem> getMenusforWaiter(Long categoryId, MenuFilter menuFilter, Pageable pageable) {
+        return menuItemRepository.findAll(filterMenu(menuFilter, categoryId), pageable);
+    }
 
+    private Specification<MenuItem> filterMenu(MenuFilter menuFilter, Long categoryId){
+        return ((root, query, cr) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            MenuFilter menu = menuFilter != null ? menuFilter : new MenuFilter();
+
+            if (query.getResultType() != Long.class) {
+                root.fetch("category", JoinType.LEFT);
+                query.distinct(true);
+            }
+
+            if(categoryId != null){
+                predicates.add(
+                        cr.equal(
+                                root.get("category").get("categoryId"),
+                                categoryId
+                        )
+                );
+            }
+
+            if(menu.getKeyword() != null && !menu.getKeyword().isBlank()){
+                String keyword = menu.getKeyword().toLowerCase().trim();
+
+                Predicate name = cr.like(
+                        cr.lower(root.get("itemName")),
+                        "%" + keyword + "%"
+                );
+
+                Predicate description = cr.like(
+                        cr.lower(root.get("description")),
+                        "%" + keyword + "%"
+                );
+
+                predicates.add(cr.or(name, description));
+            }
+
+            return cr.and(predicates.toArray(new Predicate[0]));
+        });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MenuItem> findMostPopular(int limit) {
+        return menuItemRepository.findMostPopular(OrderStatus.CANCELLED, PageRequest.of(0, limit));
+    }
+
+    @Override
+    public Page<MenuItemDto> searchMenu(MenuItemCriteria criteriaMenuItem, int page, int size) {
+
+//        if ("available".equals(status)) {
+//            soldOut = false;
+//        } else if ("soldout".equals(status)) {
+//            soldOut = true;
+//        }
+
+        Sort sorting = Sort.unsorted();
+
+        if ("priceAsc".equals(criteriaMenuItem.getSort())) {
+
+            sorting = Sort.by("price").ascending();
+
+        } else if ("priceDesc".equals(criteriaMenuItem.getSort())) {
+
+            sorting = Sort.by("price").descending();
+
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
+        Page<MenuItem> menuItems = menuItemRepository.findAll(MenuItemSpecification.build(criteriaMenuItem), pageable);
+        List<MenuItemDto> dtos = new ArrayList<>();
+
+        for(MenuItem item : menuItems.getContent()){
+            dtos.add(dtoMapper.toMenuItemDto(item));
+        }
+
+        return new PageImpl<>(
+                dtos,
+                menuItems.getPageable(),
+                menuItems.getTotalElements()
+        );
+
+
+    }
 }
