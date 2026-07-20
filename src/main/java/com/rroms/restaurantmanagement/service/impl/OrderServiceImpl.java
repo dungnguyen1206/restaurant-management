@@ -217,7 +217,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order findById(Long orderId) {
-        return this.orderRepository.findByIdWithItems(orderId).orElse(null);
+        return this.orderRepository.findByIdWithDetails(orderId).orElse(null);
     }
 
     @Override
@@ -421,6 +421,9 @@ public class OrderServiceImpl implements OrderService {
             order.getOrderItems().add(orderItem);
         }
 
+        if (order.getStatus() == OrderStatus.SERVED) {
+            order.setStatus(OrderStatus.PENDING);
+        }
         updateTotalAmount(order);
         orderRepository.save(order);
     }
@@ -472,6 +475,26 @@ public class OrderServiceImpl implements OrderService {
             item.setStatus(OrderItemStatus.PENDING);
         }
         updateTotalAmount(order);
+    }
+
+    @Override
+    @Transactional
+    public void markOrderItemServed(Long orderId, Long orderItemId) {
+        Order order = orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Order khong ton tai"));
+        OrderItem orderItem = findItemInOrder(order, orderItemId);
+
+        if (orderItem.getStatus() != OrderItemStatus.READY) {
+            throw new RuntimeException("Chi mon READY moi duoc phuc vu");
+        }
+
+        orderItem.setStatus(OrderItemStatus.SERVED);
+
+        boolean allServed = order.getOrderItems().stream()
+                .allMatch(item -> item.getStatus() == OrderItemStatus.SERVED);
+        if (allServed) {
+            order.setStatus(OrderStatus.SERVED);
+        }
     }
 
     @Override

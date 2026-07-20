@@ -23,12 +23,10 @@
     </div>
 
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show menu-alert" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>
         <span th:text="${successMessage}">Cập nhật thành công.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
     </div>
     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show menu-alert" role="alert">
-        <i class="bi bi-exclamation-circle-fill me-2"></i>
         <span th:text="${errorMessage}">Không thể cập nhật tồn kho.</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
     </div>
@@ -83,7 +81,6 @@
                         <td>
                             <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" class="menu-item-img" alt="Dish image">
                             <div th:if="${#strings.isEmpty(item.imageUrl)}" class="menu-item-fallback-img">
-                                <i class="bi bi-egg-fried fs-3"></i>
                             </div>
                         </td>
                         <td>
@@ -138,13 +135,12 @@
                         </td>
                         <td class="pe-4 text-end">
                             <button type="submit" class="btn btn-save-stock" th:form="|stock-form-${item.itemId}|">
-                                <i class="bi bi-check2 me-1"></i>Lưu
+                                Lưu
                             </button>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(menuItems)}">
                         <td colspan="8" class="text-center py-5 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                             <span>Không tìm thấy món ăn nào.</span>
                         </td>
                     </tr>

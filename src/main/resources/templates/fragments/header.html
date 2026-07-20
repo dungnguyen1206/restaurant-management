@@ -25,14 +25,14 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/menu}">Thực đơn</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${currentUser != null}">
                     <a class="nav-link" th:href="@{/customer/reservations}">Lịch đặt bàn</a>
                 </li>
             </ul>
         </div>
 
-        <!-- Right: Notifications & Profile -->
-        <div class="d-flex align-items-center gap-3">
+        <!-- Đã đăng nhập: hiển thị thông báo và avatar -->
+        <div class="d-flex align-items-center gap-3" th:if="${currentUser != null}">
             <button class="btn p-1 text-secondary-custom">
                 <i class="fa-regular fa-bell fs-5"></i>
             </button>
@@ -43,6 +43,16 @@
                     NVA
                 </div>
                 <i class="fa-solid fa-chevron-down" style="font-size: 0.75rem; color: #7A6248;"></i>
+            </a>
+        </div>
+
+        <!-- Chưa đăng nhập: hiển thị nút đăng ký và đăng nhập -->
+        <div class="d-flex align-items-center gap-2" th:if="${currentUser == null}">
+            <a th:href="@{/auths/register}" class="btn btn-gold-ghost px-3">
+                Đăng ký
+            </a>
+            <a th:href="@{/auths/login}" class="btn btn-gold-filled px-3">
+                Đăng nhập
             </a>
         </div>
 

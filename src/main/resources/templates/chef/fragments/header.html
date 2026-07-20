@@ -3,43 +3,41 @@
         th:fragment="header" xmlns:th="http://www.thymeleaf.org">
     <div class="header-left">
         <div class="breadcrumbs">
-            <span class="breadcrumb-item active">Xin chào, Chef Tuấn</span>
+            <span class="breadcrumb-item active"
+                  th:text="|Xin chào, ${chefDisplayName}|">Xin chào, Chef</span>
         </div>
     </div>
 
     <div class="header-right">
-
-
         <div class="header-divider"></div>
 
         <div class="actions-container">
-            <div class="user-profile" id="header-profile-trigger">
-                <div class="user-info">
-                    <span class="user-name">Bếp Trưởng Trần</span>
-                    <span class="user-role">Bếp Trưởng</span>
-                </div>
-                <img class="user-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHEKhd6O2KfXNVmtIdlfsrIeFL5goL_UJ5AknrKYAEHENiu-4E_BjKMqNSkMs160K_N4APHr_SAhdjqYsz2z1i-_2JBrkR1GpwurAaT8D1cNhIu7LE6OCgEgeC57R4niyHXvXjvcJlmapSVzY_sPptitCdJc0q7d4MuK689zroA5ELLJJapcIrmYAwsSe5j0BXTj0K9BiEJrvuxug3q5XDHpSbMGUl6HuJGkdui1AD4CoE5DeomQNHK0SxYrkdquHsJg6AAonMA4o" alt="Chef Portrait">
+            <div class="account-menu" id="header-account-menu">
+                <button class="user-profile"
+                        id="header-profile-trigger"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-controls="accountDropdown">
+                    <span class="user-info">
+                        <span class="user-name" th:text="${chefDisplayName}">Chef</span>
+                        <span class="user-role">Đầu bếp</span>
+                    </span>
+                    <span class="user-avatar" th:text="${chefInitials}" aria-hidden="true">C</span>
+                </button>
 
-                <div class="account-dropdown" id="accountDropdown">
+                <div class="account-dropdown" id="accountDropdown" role="menu">
                     <div class="dropdown-header">
-                        <p class="dropdown-name">Bếp Trưởng Tuấn</p>
-                        <p class="dropdown-email">tuan040905@gmail.com</p>
+                        <p class="dropdown-name" th:text="${chefDisplayName}">Chef</p>
+                        <p class="dropdown-email" th:text="${chefEmail}">chef@example.com</p>
                     </div>
                     <hr class="dropdown-divider">
-                    <ul class="dropdown-list">
-                        <li>
-                            <a href="/chef/profile">
-                                <span class="material-symbols-outlined">person</span> Thông tin cá nhân
-                            </a>
-                        </li>
-
-                    </ul>
-                    <hr class="dropdown-divider">
                     <div class="dropdown-footer">
-                        <form th:action="@{/auths/logout}" method="post" id="logoutForm" style="display: none;"></form>
-                        <button class="logout-btn" onclick="document.getElementById('logoutForm').submit();">
-                            <span class="material-symbols-outlined">logout</span> Đăng xuất
-                        </button>
+                        <form th:action="@{/auths/logout}" method="post">
+                            <button class="logout-btn" type="submit" role="menuitem">
+                                <span class="material-symbols-outlined"></span> Đăng xuất
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -73,7 +73,8 @@ public class SecurityConfiguration {
                                 "/login/oauth2/**",
                                 "/register",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/home", "/menu"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER")

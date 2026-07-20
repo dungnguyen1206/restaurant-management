@@ -5,7 +5,7 @@ import com.rroms.restaurantmanagement.dto.request.AddOrderItemRequest;
 import com.rroms.restaurantmanagement.dto.request.UpdateOrderItemRequest;
 import com.rroms.restaurantmanagement.entity.Order;
 import com.rroms.restaurantmanagement.entity.Reservation;
-import com.rroms.restaurantmanagement.security.CustomUserDetails;
+import com.rroms.restaurantmanagement.entity.User;
 import com.rroms.restaurantmanagement.service.CategoryService;
 import com.rroms.restaurantmanagement.service.MenuItemService;
 import com.rroms.restaurantmanagement.service.OrderService;
@@ -19,8 +19,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Controller
 @RequestMapping("/waiter")
@@ -59,8 +63,8 @@ public class MenuController {
     @PostMapping("/orders/from-reservation/{id}/cart/add")
     public String addToCart(@PathVariable("id") Long reservationId,
                             @ModelAttribute AddOrderItemRequest request,
-                            @AuthenticationPrincipal CustomUserDetails user) {
-        orderService.addItemToDraftOrder(reservationId, request, user.getUser());
+                            @AuthenticationPrincipal(expression = "user") User user) {
+        orderService.addItemToDraftOrder(reservationId, request, user);
         return "redirect:/waiter/order/create/" + reservationId;
     }
 
@@ -84,21 +88,40 @@ public class MenuController {
         return "redirect:/waiter/orders";
     }
 
+    @PostMapping("/orders/{orderId}/items/{orderItemId}/serve")
+    public String serveOrderItem(@PathVariable Long orderId,
+                                 @PathVariable Long orderItemId) {
+        orderService.markOrderItemServed(orderId, orderItemId);
+        return "redirect:/waiter/orders/" + orderId;
+    }
+
     @GetMapping("/orders")
-    public String orders(@AuthenticationPrincipal CustomUserDetails user,
+    public String orders(@AuthenticationPrincipal(expression = "user") User user,
                          @RequestParam(defaultValue = "0") int page,
                          @RequestParam(defaultValue = "5") int size,
                          Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Order> orderPage = orderService.getWaiterOrders(user.getUser().getUserId(), pageable);
+        Page<Order> orderPage = orderService.getWaiterOrders(user.getUserId(), pageable);
         model.addAttribute("orderPage", orderPage);
         model.addAttribute("orders", orderPage.getContent());
         return "waiter/content/Orders";
     }
 
-    @PostMapping("/orders/{id}/serve")
-    public String serveOrder(@PathVariable Long id) {
-        orderService.markOrderServed(id);
-        return "redirect:/waiter/orders";
+    @GetMapping("/orders/{orderId}")
+    public String viewOrder(@PathVariable Long orderId,
+                            @AuthenticationPrincipal(expression = "user") User user,
+                            Model model) {
+        Order order = orderService.findById(orderId);
+        if (order == null) {
+            throw new ResponseStatusException(NOT_FOUND, "Order khong ton tai");
+        }
+        if (order.getUser() == null || !order.getUser().getUserId().equals(user.getUserId())) {
+            throw new ResponseStatusException(FORBIDDEN, "Ban khong co quyen xem order nay");
+        }
+
+        model.addAttribute("order", order);
+        model.addAttribute("orderItems", order.getOrderItems());
+        return "waiter/content/ViewOrders";
     }
+
 }
