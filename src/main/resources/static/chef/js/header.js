@@ -1,18 +1,33 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const accountMenu = document.getElementById("header-account-menu");
     const profileTrigger = document.getElementById("header-profile-trigger");
     const accountDropdown = document.getElementById("accountDropdown");
 
-    // Click vào Avatar hoặc vùng chứa thông tin -> Bật / Tắt menu
+    if (!accountMenu || !profileTrigger || !accountDropdown) {
+        return;
+    }
+
+    function closeDropdown() {
+        accountDropdown.classList.remove("show");
+        profileTrigger.setAttribute("aria-expanded", "false");
+    }
+
     profileTrigger.addEventListener("click", function (event) {
-        // Ngăn sự kiện nổi bọt để tránh kích hoạt sự kiện click out ngay lập tức
         event.stopPropagation();
-        accountDropdown.classList.toggle("show");
+        const isOpen = accountDropdown.classList.toggle("show");
+        profileTrigger.setAttribute("aria-expanded", String(isOpen));
     });
 
-    // Bấm ra ngoài vùng menu -> Tự động đóng menu lại cho tinh tế
     document.addEventListener("click", function (event) {
-        if (!profileTrigger.contains(event.target)) {
-            accountDropdown.classList.remove("show");
+        if (!accountMenu.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            closeDropdown();
+            profileTrigger.focus();
         }
     });
 });

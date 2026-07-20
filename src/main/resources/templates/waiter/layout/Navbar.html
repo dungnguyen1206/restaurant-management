@@ -50,7 +50,7 @@
                             color:#fff; font-size:12px; font-weight:600;"
                      th:text="${#authentication.principal.user.firstName != null and !#authentication.principal.user.firstName.isBlank()
                                 ? #strings.substring(#authentication.principal.user.firstName, 0, 1)
-                                : #strings.substring(#authentication.principal.username, 0, 1)}">N</div>
+                                : #strings.substring(#authentication.principal.user.username, 0, 1)}">N</div>
                 <div>
                     <div style="font-size:13px; font-weight:600; color:#2c1a0e;"
                          th:text="${#authentication.principal.user.firstName + ' ' + #authentication.principal.user.lastName}">
