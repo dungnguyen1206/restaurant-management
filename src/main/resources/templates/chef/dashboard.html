@@ -24,7 +24,7 @@
                 <span class="text-muted fw-bold small text-uppercase">Đang chờ</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="display-5 fw-bold text-warning" th:text="${dashboard.pendingCount}">0</span>
-                    <span class="fs-3 text-warning"><i class="bi bi-clipboard"></i></span>
+                    <span class="fs-3 text-warning"></span>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 <span class="text-muted fw-bold small text-uppercase">Đang làm</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="display-5 fw-bold text-primary" th:text="${dashboard.preparingCount}">0</span>
-                    <span class="fs-3 text-primary"><i class="bi bi-egg-fried"></i></span>
+                    <span class="fs-3 text-primary"></span>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
                 <span class="text-muted fw-bold small text-uppercase">Đã hoàn thành hôm nay</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="display-5 fw-bold text-success" th:text="${dashboard.completedCountToday}">0</span>
-                    <span class="fs-3 text-success"><i class="bi bi-check-circle"></i></span>
+                    <span class="fs-3 text-success"></span>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <span class="text-muted fw-bold small text-uppercase">Thời gian nấu trung bình</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
                     <span class="display-5 fw-bold text-dark" th:text="${dashboard.avgCookingTimeToday}">00:00</span>
-                    <span class="fs-3 text-secondary"><i class="bi bi-clock"></i></span>
+                    <span class="fs-3 text-secondary"></span>
                 </div>
             </div>
         </div>
@@ -83,7 +83,6 @@
                                         <div class="d-flex align-items-center gap-3">
                                             <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;" alt="Image">
                                             <div th:if="${#strings.isEmpty(item.imageUrl)}" class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                                <i class="bi bi-egg-fried text-muted"></i>
                                             </div>
                                             <span class="fw-bold text-dark" th:text="${item.itemName}">Món ăn</span>
                                         </div>
@@ -94,7 +93,6 @@
                         </table>
                     </div>
                     <div th:if="${#lists.isEmpty(dashboard.popularItems)}" class="text-center py-5 text-muted">
-                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                         <span>Chưa có món ăn nào được đặt hôm nay.</span>
                     </div>
                 </div>
@@ -117,7 +115,6 @@
                                     <span class="badge bg-light text-dark border" th:text="${order.table != null ? 'Bàn ' + order.table.tableId : 'Mang về'}">Bàn 1</span>
                                 </div>
                                 <small class="text-muted">
-                                    <i class="bi bi-clock-history me-1"></i>
                                     <span th:text="${#temporals.format(order.createdAt.atZone(T(java.time.ZoneId).of('Asia/Ho_Chi_Minh')), 'HH:mm:ss')}">10:00:00</span>
                                 </small>
                             </div>
@@ -134,7 +131,6 @@
                         </div>
                     </div>
                     <div th:if="${#lists.isEmpty(dashboard.latestOrders)}" class="text-center py-5 text-muted">
-                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                         <span>Không có đơn hàng nào hôm nay.</span>
                     </div>
                 </div>
