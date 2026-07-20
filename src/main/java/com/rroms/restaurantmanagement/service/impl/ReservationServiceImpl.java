@@ -195,7 +195,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation getReservationById(Long id) {
-        return reservationRepository.findById(id).orElseThrow(() -> new RuntimeException("Reservation không tồn tại"));
+        return reservationRepository.findByIdWithTables(id).orElseThrow(() -> new RuntimeException("Reservation không tồn tại"));
     }
 
     @Override
@@ -380,6 +380,43 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException("Chỉ có thể xác nhận reservation đang PENDING");
         }
 
+        if (reservation.getReservationTables() != null && !reservation.getReservationTables().isEmpty()) {
+            int totalCapacity = 0;
+
+            for (ReservationTable reservationTable : reservation.getReservationTables()) {
+                RestaurantTable selectedTable = reservationTable.getTable();
+
+                if (selectedTable == null) {
+                    throw new RuntimeException("Table khong ton tai");
+                }
+
+                if (selectedTable.getStatus() != TableStatus.AVAILABLE) {
+                    throw new RuntimeException("Chi co the xac nhan ban dang trong");
+                }
+
+                totalCapacity += selectedTable.getCapacity();
+            }
+
+            if (reservation.getNumberOfGuests() != null
+                    && totalCapacity < reservation.getNumberOfGuests()) {
+                throw new RuntimeException("Tong suc chua cua ban khong du so luong khach");
+            }
+
+            for (ReservationTable reservationTable : reservation.getReservationTables()) {
+                RestaurantTable selectedTable = reservationTable.getTable();
+                selectedTable.setStatus(TableStatus.RESERVED);
+                tableRepository.save(selectedTable);
+            }
+
+            reservation.setStatus(ReservationStatus.CONFIRMED);
+            reservationRepository.save(reservation);
+            return;
+        }
+
+        if (tableId == null) {
+            throw new RuntimeException("Vui long chon ban");
+        }
+
         RestaurantTable table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new RuntimeException("Table không tồn tại"));
 
@@ -449,7 +486,7 @@ public class ReservationServiceImpl implements ReservationService {
             if (waiterId != null) {
                 predicates.add(
                         criteriaBuilder.equal(
-                                root.get("user").get("userId"),
+                                restaurantTableJoin.get("assignedWaiter").get("userId"),
                                 waiterId
                         )
                 );
@@ -505,3 +542,4 @@ public class ReservationServiceImpl implements ReservationService {
         });
     }
 }
+
