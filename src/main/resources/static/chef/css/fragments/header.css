@@ -21,7 +21,7 @@ body {
   top: 0;
   z-index: 100;
   color: #2c1a0e;
-  overflow:hidden;
+  overflow: visible;
   left:240px;
       right:0;
       height:80px;
@@ -169,6 +169,9 @@ body {
   gap: 12px;
   cursor: pointer;
   padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  font: inherit;
   border-radius: 20px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -199,7 +202,15 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-cover: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #2c1a0e;
+  color: #fcf9f4;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   border: 2px solid #c9a84c;
 }
 
@@ -217,13 +228,9 @@ body {
 }
 
 
-/* Style cho phần chữ User Info hiện tại */
-.user-profile {
-    position: relative; /* Quan trọng: làm điểm tựa cho dropdown định vị absolute */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
+/* Account menu */
+.account-menu {
+    position: relative;
     user-select: none;
 }
 
@@ -244,17 +251,27 @@ body {
     color: #777;
 }
 
+.account-chevron {
+    color: rgba(44, 26, 14, 0.55);
+    font-size: 20px;
+    transition: transform 0.2s ease;
+}
+
+.user-profile[aria-expanded="true"] .account-chevron {
+    transform: rotate(180deg);
+}
+
 /* KHỐI DROPDOWN BOX */
 .account-dropdown {
     position: absolute;
-    top: calc(100% + 12px); /* Đẩy xuống dưới thanh header một chút */
+    top: calc(100% + 10px);
     right: 0;
-    width: 240px;
+    width: min(280px, calc(100vw - 32px));
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    border: 1px solid #eee;
-    z-index: 1000;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(44, 26, 14, 0.18);
+    border: 1px solid rgba(44, 26, 14, 0.1);
+    z-index: 1100;
 
     /* Trạng thái ẩn mặc định */
     display: none;
@@ -269,16 +286,23 @@ body {
 /* Chi tiết các phần bên trong */
 .dropdown-header {
     padding: 16px;
+    min-width: 0;
 }
 .dropdown-name {
     font-weight: 600;
     color: #222;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .dropdown-email {
     font-size: 12px;
     color: #666;
     margin: 4px 0 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .dropdown-divider {
@@ -318,6 +342,11 @@ body {
     padding: 8px;
 }
 
+.dropdown-footer form {
+    width: 100%;
+    margin: 0;
+}
+
 .logout-btn {
     width: 100%;
     display: flex;
@@ -337,4 +366,15 @@ body {
 
 .logout-btn:hover {
     background-color: #fff5f5;
+}
+
+@media (max-width: 768px) {
+    .user-info,
+    .account-chevron {
+        display: none;
+    }
+
+    .account-dropdown {
+        right: -4px;
+    }
 }
