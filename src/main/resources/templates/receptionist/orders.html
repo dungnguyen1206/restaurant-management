@@ -143,14 +143,14 @@
             <ul class="pagination mb-0" th:if="${orderPage.totalPages > 1}">
                 <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/receptionist/orders(page=${currentPage - 1}, keyword=${keyword}, status=${status})}">
+                       th:href="@{/receptionist/orders(page=${orderPage.number - 1}, keyword=${keyword}, status=${status})}">
                         ←
                     </a>
                 </li>
 
                 <li class="page-item"
                     th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
-                    th:classappend="${pageNumber == currentPage} ? 'active'">
+                    th:classappend="${pageNumber == orderPage.number} ? 'active'">
                     <a class="page-link"
                        th:href="@{/receptionist/orders(page=${pageNumber}, keyword=${keyword}, status=${status})}"
                        th:text="${pageNumber + 1}">
@@ -160,7 +160,7 @@
 
                 <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/receptionist/orders(page=${currentPage + 1}, keyword=${keyword}, status=${status})}">
+                       th:href="@{/receptionist/orders(page=${orderPage.number + 1}, keyword=${keyword}, status=${status})}">
                         →
                     </a>
                 </li>

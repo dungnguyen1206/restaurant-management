@@ -7,19 +7,18 @@
 <div layout:fragment="content" class="container-fluid p-3">
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-            <h4 class="mb-1">Ho so nhan vien</h4>
-            <div class="text-muted small">Thong tin tai khoan waiter dang dang nhap</div>
+            <h4 class="font-serif fw-bold mb-1">Ho so nhan vien</h4>
+            <div class="text-muted small">Thong tin tai khoan dang dang nhap</div>
         </div>
-        <a class="btn btn-outline-secondary btn-sm" th:href="@{/waiter/reservations}">Quay lai</a>
+        <a class="btn btn-gold-ghost btn-sm" th:href="@{/waiter/reservations}">Quay lai</a>
     </div>
 
     <div class="row g-3">
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm">
+            <div class="custom-card shadow-sm">
                 <div class="card-body text-center p-4">
-                    <div class="mx-auto mb-3"
-                         style="width:86px;height:86px;border-radius:50%;background:#8b5e3c;color:#fff;
-                                display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;"
+                    <div class="mx-auto mb-3 waiter-avatar rounded-circle text-white d-flex align-items-center justify-content-center"
+                         style="width:86px;height:86px;font-size:34px;font-weight:600;"
                          th:text="${waiter.firstName != null and !waiter.firstName.isBlank()
                                     ? #strings.substring(waiter.firstName, 0, 1)
                                     : #strings.substring(waiter.username, 0, 1)}">W</div>
@@ -34,7 +33,7 @@
         </div>
 
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
+            <div class="custom-card shadow-sm">
                 <div class="card-header bg-dark text-white">
                     Thong tin ca nhan
                 </div>

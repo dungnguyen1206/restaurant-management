@@ -6,12 +6,14 @@ import com.rroms.restaurantmanagement.entity.Invoice;
 import com.rroms.restaurantmanagement.entity.Order;
 import com.rroms.restaurantmanagement.entity.OrderItem;
 import com.rroms.restaurantmanagement.entity.Payment;
+import com.rroms.restaurantmanagement.entity.ReservationTable;
 import com.rroms.restaurantmanagement.entity.RestaurantTable;
 import com.rroms.restaurantmanagement.entity.constant.InvoiceStatus;
 import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
 import com.rroms.restaurantmanagement.entity.constant.PaymentMethod;
 import com.rroms.restaurantmanagement.entity.constant.PaymentStatus;
 import com.rroms.restaurantmanagement.entity.constant.PaymentType;
+import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
 import com.rroms.restaurantmanagement.entity.constant.TableStatus;
 import com.rroms.restaurantmanagement.repository.InvoiceRepository;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
@@ -30,7 +32,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -108,14 +112,17 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.COMPLETED);
+        if (order.getReservation() != null) {
+            order.getReservation().setStatus(ReservationStatus.COMPLETED);
+        }
         orderRepository.save(order);
 
-        RestaurantTable table = order.getTable();
-        if (table != null) {
+        List<RestaurantTable> tables = getCheckoutTables(order);
+        for (RestaurantTable table : tables) {
             table.setStatus(TableStatus.AVAILABLE);
             table.setAssignedWaiter(null);
-            tableRepository.save(table);
         }
+        tableRepository.saveAll(tables);
     }
 
     private Order getOrder(Long orderId) {
@@ -169,6 +176,24 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
 
         return items;
+    }
+
+    private List<RestaurantTable> getCheckoutTables(Order order) {
+        Set<RestaurantTable> tables = new LinkedHashSet<>();
+
+        if (order.getReservation() != null && order.getReservation().getReservationTables() != null) {
+            for (ReservationTable reservationTable : order.getReservation().getReservationTables()) {
+                if (reservationTable.getTable() != null) {
+                    tables.add(reservationTable.getTable());
+                }
+            }
+        }
+
+        if (order.getTable() != null) {
+            tables.add(order.getTable());
+        }
+
+        return new ArrayList<>(tables);
     }
 
     private String buildVietQrUrl(BigDecimal amount, String transferContent) {
