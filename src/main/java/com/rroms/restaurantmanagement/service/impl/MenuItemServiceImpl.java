@@ -90,7 +90,7 @@ public class MenuItemServiceImpl implements MenuItemService {
                 .imageUrl(createMenuItemsRequest.getItemImageUrl())
                 .category(category)
                 .isSoldOut(false)
-                .virtualInStock(0)
+                .virtualInStock(100)
                 .build();
 
         menuItemRepository.save(result);

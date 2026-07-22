@@ -94,7 +94,7 @@ public class ChefController {
     public String chefOrderCancel(
             @PathVariable Long id
     ) {
-        this.orderService.handleUpdateStatusOrder(id, OrderStatus.CANCELLED);
+        this.orderService.handleUpdateStatusOrder(id, OrderStatus.SERVED);
         return "redirect:/chef/orders";
     }
 

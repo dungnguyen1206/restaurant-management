@@ -175,11 +175,19 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Transactional
     public void handleUpdateStatusOrder(Long orderId, OrderStatus orderStatus) {
         Optional<Order> orderOpt = this.orderRepository.findById(orderId);
         if(orderOpt.isPresent()) {
             Order order = orderOpt.get();
             order.setStatus(orderStatus);
+            List<OrderItem> orderItems = order.getOrderItems();
+            for (OrderItem orderItem : orderItems) {
+                if(orderItem.getStatus() == OrderItemStatus.PREPARING) {
+                    orderItem.setStatus(OrderItemStatus.CANCELLED);
+                    this.orderItemRepository.save(orderItem);
+                }
+            }
             this.orderRepository.save(order);
         }
     }

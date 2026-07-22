@@ -8,13 +8,7 @@ import com.rroms.restaurantmanagement.entity.OrderItem;
 import com.rroms.restaurantmanagement.entity.Payment;
 import com.rroms.restaurantmanagement.entity.ReservationTable;
 import com.rroms.restaurantmanagement.entity.RestaurantTable;
-import com.rroms.restaurantmanagement.entity.constant.InvoiceStatus;
-import com.rroms.restaurantmanagement.entity.constant.OrderStatus;
-import com.rroms.restaurantmanagement.entity.constant.PaymentMethod;
-import com.rroms.restaurantmanagement.entity.constant.PaymentStatus;
-import com.rroms.restaurantmanagement.entity.constant.PaymentType;
-import com.rroms.restaurantmanagement.entity.constant.ReservationStatus;
-import com.rroms.restaurantmanagement.entity.constant.TableStatus;
+import com.rroms.restaurantmanagement.entity.constant.*;
 import com.rroms.restaurantmanagement.repository.InvoiceRepository;
 import com.rroms.restaurantmanagement.repository.OrderRepository;
 import com.rroms.restaurantmanagement.repository.PaymentRepository;
@@ -142,9 +136,10 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
 
         for (OrderItem item : order.getOrderItems()) {
+            if(item.getStatus().equals(OrderItemStatus.SERVED)){
             BigDecimal unitPrice = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
             int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
-            total = total.add(unitPrice.multiply(BigDecimal.valueOf(quantity)));
+            total = total.add(unitPrice.multiply(BigDecimal.valueOf(quantity)));}
         }
 
         return total;

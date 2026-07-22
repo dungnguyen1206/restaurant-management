@@ -147,12 +147,12 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
                 WHERE rtb.reservation_id = o.reservation_id
             ) reservationTables
 
-            OUTER APPLY (
-                SELECT SUM(oi.quantity) AS totalItems
-                FROM order_items oi
-                WHERE oi.order_order_id = o.order_id
-            ) orderItems
-
+OUTER APPLY (
+    SELECT SUM(oi.quantity) AS totalItems
+    FROM order_items oi
+    WHERE oi.order_order_id = o.order_id
+      AND oi.status = 'SERVED'
+) orderItems
             WHERE (
                 :keyword IS NULL
                 OR :keyword = ''
