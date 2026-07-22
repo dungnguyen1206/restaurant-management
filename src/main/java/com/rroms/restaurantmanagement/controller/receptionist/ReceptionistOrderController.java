@@ -32,6 +32,7 @@ public class ReceptionistOrderController {
         model.addAttribute("orderPage", orderPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
+        model.addAttribute("pageSize", size);
         model.addAttribute("currentPageName", "orders");
         model.addAttribute("pageTitle", "Order Management");
         model.addAttribute("currentPage", "orders");

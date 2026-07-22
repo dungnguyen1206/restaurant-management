@@ -15,32 +15,32 @@
 <div layout:fragment="content" th:with="currentPage='orders'">
 
     <div class="order-tabs">
-        <a th:href="@{/receptionist/orders(keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == null or status == ''} ? 'active'">
             Tất cả
         </a>
 
-        <a th:href="@{/receptionist/orders(status='PENDING', keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(status='PENDING', keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == 'PENDING'} ? 'active'">
             Đang chờ
         </a>
 
-        <a th:href="@{/receptionist/orders(status='PREPARING', keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(status='PREPARING', keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == 'PREPARING'} ? 'active'">
             Đang chuẩn bị
         </a>
 
-        <a th:href="@{/receptionist/orders(status='SERVED', keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(status='SERVED', keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == 'SERVED'} ? 'active'">
             Đã phục vụ
         </a>
 
-        <a th:href="@{/receptionist/orders(status='COMPLETED', keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(status='COMPLETED', keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == 'COMPLETED'} ? 'active'">
             Hoàn thành
         </a>
 
-        <a th:href="@{/receptionist/orders(status='CANCELLED', keyword=${keyword})}"
+        <a th:href="@{/receptionist/orders(status='CANCELLED', keyword=${keyword}, size=${pageSize})}"
            th:classappend="${status == 'CANCELLED'} ? 'active'">
             Đã hủy
         </a>
@@ -48,6 +48,7 @@
 
     <form th:action="@{/receptionist/orders}" method="get" class="row g-3 mb-4">
         <input type="hidden" name="status" th:value="${status}">
+        <input type="hidden" name="size" th:value="${pageSize}">
 
         <div class="col-md-10">
             <div class="input-group">
@@ -140,10 +141,10 @@
                 Hiển thị 0 đơn hàng
             </span>
 
-            <ul class="pagination mb-0" th:if="${orderPage.totalPages > 1}">
+            <ul class="pagination mb-0" th:if="${orderPage.totalElements > 0}">
                 <li class="page-item" th:classappend="${!orderPage.hasPrevious()} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/receptionist/orders(page=${orderPage.number - 1}, keyword=${keyword}, status=${status})}">
+                       th:href="@{/receptionist/orders(page=${orderPage.number - 1}, keyword=${keyword}, status=${status}, size=${pageSize})}">
                         ←
                     </a>
                 </li>
@@ -152,7 +153,7 @@
                     th:each="pageNumber : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
                     th:classappend="${pageNumber == orderPage.number} ? 'active'">
                     <a class="page-link"
-                       th:href="@{/receptionist/orders(page=${pageNumber}, keyword=${keyword}, status=${status})}"
+                       th:href="@{/receptionist/orders(page=${pageNumber}, keyword=${keyword}, status=${status}, size=${pageSize})}"
                        th:text="${pageNumber + 1}">
                         1
                     </a>
@@ -160,7 +161,7 @@
 
                 <li class="page-item" th:classappend="${!orderPage.hasNext()} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/receptionist/orders(page=${orderPage.number + 1}, keyword=${keyword}, status=${status})}">
+                       th:href="@{/receptionist/orders(page=${orderPage.number + 1}, keyword=${keyword}, status=${status}, size=${pageSize})}">
                         →
                     </a>
                 </li>
