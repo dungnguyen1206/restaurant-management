@@ -110,13 +110,7 @@
                                     <button type="button" class="stock-step-button" data-stock-action="decrease" aria-label="Giảm tồn kho">
                                         <i class="bi bi-dash-lg"></i>
                                     </button>
-                                    <input type="number"
-                                           name="virtualInStock"
-                                           class="stock-input"
-                                           min="0"
-                                           step="1"
-                                           required
-                                           inputmode="numeric"
+                                    <input type="number" name="virtualInStock" class="stock-input" min="0" step="1" required inputmode="numeric"
                                            th:value="${item.virtualInStock != null ? item.virtualInStock : 0}"
                                            th:aria-label="|Tồn kho của ${item.itemName}|">
                                     <button type="button" class="stock-step-button" data-stock-action="increase" aria-label="Tăng tồn kho">

@@ -280,6 +280,7 @@ public class OrderServiceImpl implements OrderService {
                 .latestOrders(latestOrders)
                 .build();
     }
+
     @Override
     @Transactional(readOnly = true)
     public Page<OrderListProjection> getReceptionistOrderList(String keyword, String status, int page, int size) {

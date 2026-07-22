@@ -23,8 +23,7 @@
             <div class="card p-3 border-0 shadow-sm h-100 bg-white">
                 <span class="text-muted fw-bold small text-uppercase">Đang chờ</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="display-5 fw-bold text-warning" th:text="${dashboard.pendingCount}">0</span>
-                    <span class="fs-3 text-warning"></span>
+                    <span class="display-5 fw-bold " th:text="${dashboard.pendingCount}">0</span>
                 </div>
             </div>
         </div>
@@ -33,8 +32,7 @@
             <div class="card p-3 border-0 shadow-sm h-100 bg-white">
                 <span class="text-muted fw-bold small text-uppercase">Đang làm</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="display-5 fw-bold text-primary" th:text="${dashboard.preparingCount}">0</span>
-                    <span class="fs-3 text-primary"></span>
+                    <span class="display-5 fw-bold" th:text="${dashboard.preparingCount}">0</span>
                 </div>
             </div>
         </div>
@@ -43,8 +41,7 @@
             <div class="card p-3 border-0 shadow-sm h-100 bg-white">
                 <span class="text-muted fw-bold small text-uppercase">Đã hoàn thành hôm nay</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="display-5 fw-bold text-success" th:text="${dashboard.completedCountToday}">0</span>
-                    <span class="fs-3 text-success"></span>
+                    <span class="display-5 fw-bold" th:text="${dashboard.completedCountToday}">0</span>
                 </div>
             </div>
         </div>
@@ -53,8 +50,7 @@
             <div class="card p-3 border-0 shadow-sm h-100 bg-white">
                 <span class="text-muted fw-bold small text-uppercase">Thời gian nấu trung bình</span>
                 <div class="d-flex align-items-center justify-content-between mt-2">
-                    <span class="display-5 fw-bold text-dark" th:text="${dashboard.avgCookingTimeToday}">00:00</span>
-                    <span class="fs-3 text-secondary"></span>
+                    <span class="display-5 fw-bold " th:text="${dashboard.avgCookingTimeToday}">00:00</span>
                 </div>
             </div>
         </div>
